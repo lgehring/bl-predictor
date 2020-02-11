@@ -1,8 +1,10 @@
+# This is a configuration script for travis-ci.com, that specifies actions to
+# be taken whenever a commit is pushed to github. For this to work, you need
+# a travis-ci account:
 language: python
 python:
-  - "3.5"
-  - "3.6"
   - "3.7"
+  - "3.8"
 
 install:
   # Need recent pip versions to deal with the most recent manylinux wheels:
@@ -24,21 +26,8 @@ script:
   # Project specific tests:
   - coverage run --source=src -m pytest tests
 
-  # Also build docs:
-  - cd docs
-  - make html
-
 after_success:
+  # Upload coverage results to coveralls.io:
+  # (for this to work, you need an account there)
   - coverage combine
   - coveralls
-
-jobs:
-  include:
-    - stage: deploy
-      name: Upload release to PyPI
-      if: tag is present
-      script: twine upload dist/*.tar.gz dist/*.whl
-      env:
-        - TWINE_USERNAME=moml-deploy
-        # TWINE_PASSWORD:
-        - secure: "Use: `gem install travis; travis encrypt 'TWINE_PASSWORD=XXX'`"

@@ -1,3 +1,2 @@
-include COPYING.GPLv3.txt
 include README.rst
 include tests/*.py
