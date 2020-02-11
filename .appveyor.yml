@@ -1,0 +1,33 @@
+platform:
+  - x64
+
+environment:
+  matrix:
+    - PYTHON: "C:\\Python36-x64"
+    - PYTHON: "C:\\Python37-x64"
+
+install:
+  - set "PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%"
+
+  - pip install --upgrade pip
+  - pip install -e .
+
+  - pip install wheel twine flake8 pytest coverage coveralls
+
+build: off
+
+test_script:
+  # Check wheel/source distribution for obvious problems
+  # (missing version, invalid markdown in README, etc):
+  - python setup.py sdist bdist_wheel
+  - twine check dist/*
+
+  # Static analysis (style checks, missing imports, typos, code complexity):
+  - flake8
+
+  # Project specific tests:
+  - coverage run --source=src -m pytest tests
+
+after_test:
+  - coverage combine
+  - coveralls

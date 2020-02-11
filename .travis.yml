@@ -1,0 +1,44 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+
+install:
+  # Need recent pip versions to deal with the most recent manylinux wheels:
+  - pip install --upgrade pip
+  - pip install -e .
+
+  # Further tools for packaging/testing:
+  - pip install wheel twine flake8 pytest coverage coveralls
+
+script:
+  # Check wheel/source distribution for obvious problems
+  # (missing version, invalid markdown in README, etc):
+  - python setup.py sdist bdist_wheel
+  - twine check dist/*
+
+  # Static analysis (style checks, missing imports, typos, code complexity):
+  - flake8
+
+  # Project specific tests:
+  - coverage run --source=src -m pytest tests
+
+  # Also build docs:
+  - cd docs
+  - make html
+
+after_success:
+  - coverage combine
+  - coveralls
+
+jobs:
+  include:
+    - stage: deploy
+      name: Upload release to PyPI
+      if: tag is present
+      script: twine upload dist/*.tar.gz dist/*.whl
+      env:
+        - TWINE_USERNAME=moml-deploy
+        # TWINE_PASSWORD:
+        - secure: "Use: `gem install travis; travis encrypt 'TWINE_PASSWORD=XXX'`"
