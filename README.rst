@@ -34,10 +34,6 @@ dependencies with::
 
     pip install -e .[dev]
 
-After making any changes to the cython module, the best way to recompile is::
-
-    python setup.py build_ext --inplace
-
 Other noteworthy tools for managing environments are
 
 - virtualenvwrapper_ (more low-level, can only create environments for
