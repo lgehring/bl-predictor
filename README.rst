@@ -29,6 +29,10 @@ activating python environments as easy as::
 
     conda activate foobar
 
+
+Installation
+============
+
 Once you've setup the environment, install the current package and its
 dependencies with::
 
@@ -44,6 +48,20 @@ Other noteworthy tools for managing environments are
 .. _miniconda:          https://docs.conda.io/en/latest/miniconda.html
 .. _virtualenvwrapper:  https://virtualenvwrapper.readthedocs.io/
 .. _Pipenv:             https://pipenv.kennethreitz.org/
+
+
+Usage
+=====
+
+Once the package and all dependencies are installed, you can execute the code
+that's contained in the ``teamproject/__main__.py`` by typing::
+
+    python -m teamproject
+
+If you have executed the ``pip install`` line above, you can also type for
+short::
+
+    teamproject
 
 
 Directory structure
