@@ -1,16 +1,9 @@
-# encoding: utf-8
-"""
-Setup script.
+# This script tells python how to install our project and create
+# redistributable package archives. It is best invoked indirectly
+# through pip:
+#
+#   pip install -e .[dev]
 
-Usage:
-    python setup.py sdist bdist_wheel
-
-This script is meant for creating the distributable package archives.
-Developers who wish to install this package locally should run instead:
-
-    pip install -e .[dev]
-"""
-
-# uses metadata from `setup.cfg`:
+# In the absence of parameters, this uses the values from `setup.cfg`:
 from setuptools import setup
 setup()

@@ -1,3 +1,6 @@
+# Here, you can list patterns for all files to be ignored by git (such as
+# most temporary files created by your tooling):
+
 # Python binaries
 *.py[cod]
 CHANGES

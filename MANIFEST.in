@@ -1,2 +1,4 @@
+# This file specifies which files should be added to an install archive on
+# top of the code files part of the installed package:
 include README.rst
 include tests/*.py
