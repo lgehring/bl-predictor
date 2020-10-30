@@ -12,7 +12,7 @@ To get started, follow these steps:
 - Invite your team members and us as collaborators in the settings tab
 - clone the repository to your machine: ``git clone git@github.com:<USERNAME>/swp-teamproject``
 - Look through the repository and try to understand its contents
-- remove what you don't need, adapt what you needs to be changed in your
+- remove what you don't need, adapt what needs to be changed in your
   project (e.g. author, project and package names)
 
 
@@ -21,7 +21,7 @@ Environment
 
 We recommend to setup a clean development environment for this project. This
 has several benefits such as preventing version conflicts with packages
-required by other projects and to makes it easier to keep track of
+required by other projects and to make it easier to keep track of
 dependencies (type ``pip list`` to get a list of installed packages).
 
 A good choice for managing environments is to use *conda* (specifically, we
