@@ -3,7 +3,7 @@ Add your GUI code here.
 """
 
 from teamproject.crawler import fetch_data
-from teamproject.models.nonsense import Model
+from teamproject.models import ExperienceAlwaysWins
 
 
 def main():
@@ -15,6 +15,6 @@ def main():
     # For demo purposes, this is how you could access methods from other
     # modules:
     data = fetch_data()
-    model = Model.fit(data)
-    results = model.predict(2)
-    print(results)
+    model = ExperienceAlwaysWins(data)
+    winner = model.predict_winner('Tübingen', 'Leverkusen')
+    print(winner)

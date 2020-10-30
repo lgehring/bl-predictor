@@ -84,13 +84,12 @@ The following is a short overview of how a python project could be structured::
     │   ├── __main__.py                 invoked on `python -m teamproject`
     │   ├── crawler.py                  web-crawler / queries
     │   ├── gui.py                      defines the gui code
-    │   └── models                      ML code for predictions
-    │       └── nonsense.py             nonsensical example
+    │   └── models.py                   ML code for predictions
     │
     └── tests
         ├── test_crawler.py             tests grouped by functionality
-        ├── test_gui.py
-        └── test_model_nonsense.py
+        ├── ....
+        └── test_models.py
 
 
 Development/Tooling

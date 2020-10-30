@@ -1,17 +1,15 @@
-# This contains some examples for what functionality might be tested, TODO…:
+# Use this file to test your crawler.
+
+from teamproject import crawler
+import pandas as pd
 
 
+# Example test:
 def test_fetch_data():
-    pass
-
-
-def test_convert_data_to_internal():
-    pass
-
-
-def test_save_cached_data():
-    pass
-
-
-def test_load_cached_data():
-    pass
+    data = crawler.fetch_data()
+    assert isinstance(data, pd.DataFrame)
+    assert data.home_score.dtype == 'int64'
+    assert data.guest_score.dtype == 'int64'
+    assert (data.home_score >= 0).all()
+    assert (data.guest_score >= 0).all()
+    assert (data.home_team != data.guest_team).all()
