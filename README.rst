@@ -71,7 +71,6 @@ The following is a short overview of how to structure your python project::
 
     .
     ├── README.rst                          arguably the most important file
-    ├── CHANGES.rst                         changelog, update between releases
     │
     ├── teamproject
     │   ├── __init__.py                     toplevel package variables
