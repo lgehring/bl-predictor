@@ -43,3 +43,6 @@ htmlcov
 .*~
 .*.swp
 _build
+
+#IDE sepcific files
+.idea
