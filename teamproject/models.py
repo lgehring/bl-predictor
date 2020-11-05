@@ -8,7 +8,7 @@ from collections import Counter
 class ExperienceAlwaysWins:
 
     """
-    An example model that predicts the winner predicts the winner
+    An example model that predicts the winner
     solely based on number of games played.
     """
 
