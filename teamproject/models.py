@@ -17,6 +17,7 @@ class ExperienceAlwaysWins:
         self.num_games = (
                 Counter(matches.home_team)
                 + Counter(matches.guest_team))
+        # test2
 
     def predict_winner(self, home_team, guest_team):
         """Cast prediction based on the "learned" parameters."""
