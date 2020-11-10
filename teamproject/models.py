@@ -6,7 +6,6 @@ from collections import Counter
 
 
 class ExperienceAlwaysWins:
-
     """
     An example model that predicts the winner predicts the winner
     solely based on number of games played.
@@ -16,8 +15,8 @@ class ExperienceAlwaysWins:
         # We just count the number of games played by all teams and ignore
         # the winner:
         self.num_games = (
-            Counter(matches.home_team) 
-			+ Counter(matches.guest_team))
+                Counter(matches.home_team)
+                + Counter(matches.guest_team))
 
     def predict_winner(self, home_team, guest_team):
         """Cast prediction based on the "learned" parameters."""
