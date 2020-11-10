@@ -21,6 +21,6 @@ class ExperienceAlwaysWins:
     def predict_winner(self, home_team, guest_team):
         """Cast prediction based on the "learned" parameters."""
         if self.num_games[home_team] <= self.num_games[guest_team]:
-            return guest_team
+            return guest_team + " wins"
         else:
-            return home_team
+            return home_team + " wins"
