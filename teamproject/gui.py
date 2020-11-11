@@ -17,4 +17,6 @@ def main():
     data = fetch_data()
     model = ExperienceAlwaysWins(data)
     winner = model.predict_winner('Tübingen', 'Leverkusen')
+    blub= model.result_of_scores('Tübingen')
     print(winner)
+    print ( blub)
