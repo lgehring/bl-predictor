@@ -15,6 +15,6 @@ def fetch_data():
     return pd.DataFrame([
         ['Bayern', 0, 7, 'Tübingen'],
         ['Tübingen', 3, 2, 'Borussia'],
-        ['Tübingen', 0, 0, 'Bremen'],
+        ['Tübingen', 1, 0, 'Leverkusen'],
         ['Bremen', 0, 1, 'Leverkusen'],
     ], columns=columns)
