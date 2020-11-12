@@ -11,16 +11,14 @@ class ExperienceAlwaysWins:
     solely based on number of games played.
     """
 
-    def __init__(self, matches):
-        # We just count the number of games played by all teams and ignore
-        # the winner:
+    def __init__(self, all_matches):
         self.num_games = (
-                Counter(matches.home_team)
-                + Counter(matches.guest_team))
-        self.home_team = matches.home_team.tolist()
-        self.home_score = matches.home_score.tolist()
-        self.guest_score = matches.guest_score.tolist()
-        self.guest_team = matches.guest_team.tolist()
+                Counter(all_matches.home_team)
+                + Counter(all_matches.guest_team))
+        self.home_team = all_matches.home_team.tolist()
+        self.home_score = all_matches.home_score.tolist()
+        self.guest_score = all_matches.guest_score.tolist()
+        self.guest_team = all_matches.guest_team.tolist()
 
     def predict_winner(self, home_team, guest_team):
         """Cast prediction based on the "learned" parameters."""
