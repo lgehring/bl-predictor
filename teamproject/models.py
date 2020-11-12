@@ -3,7 +3,6 @@ This module contains code for different prediction models.
 """
 
 import warnings
-from collections import Counter
 
 
 class FrequencyModel:
@@ -71,4 +70,3 @@ class FrequencyModel:
                 No prediction calculated.""")
             # prevents other modules from failing by casting no prediction/draw
             return None
-        
