@@ -3,7 +3,7 @@ Add your GUI code here.
 """
 
 from teamproject.crawler import fetch_data
-from teamproject.models import ExperienceAlwaysWins
+from teamproject.alt_models import FrequencyModel
 
 
 def main():
@@ -15,6 +15,7 @@ def main():
     # For demo purposes, this is how you could access methods from other
     # modules:
     data = fetch_data()
-    model = ExperienceAlwaysWins(data)
+    model = FrequencyModel(data)
+    # TODO: cover edge case: only one argument is given
     winner = model.predict_winner('Tübingen', 'Leverkusen')
     print(winner)
