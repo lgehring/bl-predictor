@@ -49,6 +49,7 @@ def crawlerClick():
     crawlerData = Label(root, data)
     crawlerData.pack()
     crawler_data = fetch_data()  # calls for crawler data with crawler class
+    print(crawler_data)
 
 
 actCrawlerButton = Button(root, text="Activate Crawler!", command=crawlerClick)
