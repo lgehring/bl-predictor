@@ -2,7 +2,6 @@
 Add your GUI code here.
 """
 # Importing tkinter module
-import sqlite3
 from tkinter import *
 
 import data as data
@@ -35,18 +34,21 @@ awayTeamMenu = Menu(mainMenu)
 mainMenu.add_cascade(label="Away Team", menu=awayTeamMenu)
 
 '''
-#create a database or connect to one
-#conn =sqlite3.connect(data)
 
-#create cursor
-#c = conn.cursor()
 
-#create table
-#c.exe
+# create a database or connect to one
+# conn =sqlite3.connect(data)
+
+# create cursor
+# c = conn.cursor()
+
+# create table
+# c.exe
 
 def crawlerClick():
     crawlerData = Label(root, data)
     crawlerData.pack()
+    crawler_data = fetch_data()  # calls for crawler data with crawler class
 
 
 actCrawlerButton = Button(root, text="Activate Crawler!", command=crawlerClick)
@@ -56,15 +58,15 @@ trainMLButton.pack()
 winProbButton = Button(root, text="Show win probability percent!")
 winProbButton.pack()
 
-#drop down lists for teams
+# drop down lists for teams
 
-#def listHomeTeam()
+# def listHomeTeam()
 
 
 root.mainloop()
 # For demo purposes, this is how you could access methods from other
 # modules:
-data = fetch_data()
+data = fetch_data()  # TODO: unnecessary : remove when implemented
 model = FrequencyModel(data)
 winner = model.predict_winner('Tübingen', 'Leverkusen')
 print(winner)
