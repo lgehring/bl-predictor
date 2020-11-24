@@ -47,9 +47,9 @@ actCrawlerButton = Button(root, text="Activate Crawler!", command=fetch_crawler_
 actCrawlerButton.pack()
 trainMLButton = Button(root, text="Start the Algorithm!", command=train_model)
 trainMLButton.pack()
-winProbButton = Button(root, text="Show win probability percent!",
-                       command=FrequencyModel.predict_winner(train_model(), selected_home_team, selected_guest_team))
-winProbButton.pack()
+#winProbButton = Button(root, text="Show win probability percent!",
+ #                      command=FrequencyModel.predict_winner(train_model(), selected_home_team, selected_guest_team))
+#winProbButton.pack()
 
 # def listHomeTeam()
 # drop down lists for teams
