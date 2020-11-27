@@ -9,30 +9,17 @@ import json
 
 from scrapy.crawler import CrawlerProcess
 
-
-def fetch_data():
-    """
-    Just for testing. Specifies required file format
-    """
-    # For now just return some example data in some example format:
-    columns = ['home_team', 'home_score', 'guest_score', 'guest_team']
-    return pd.DataFrame([
-        ['Bayern', 0, 7, 'Tübingen'],
-        ['Tübingen', 3, 2, 'Borussia'],
-        ['Tübingen', 1, 0, 'Leverkusen'],
-        ['Bremen', 0, 1, 'Leverkusen'],
-    ], columns=columns)
-
-
 # TODO: add possibility to choose what data should be scraped given by gui.py
 # TODO: adjust scraped data to required format defined above
-def fetch_data_new():
+def fetch_data():
     """
     Query data from "the internet" and return as pd.DataFrame.
     """
     process = CrawlerProcess()
     process.crawl(OpenLigaSpider)
     process.start()
+    gamedataframe = pd.DataFrame(data=process)
+    return gameframedata
 
 
 class OpenLigaSpider(scrapy.Spider):
