@@ -51,7 +51,14 @@ class OpenLigaSpider(scrapy.Spider):
     # noinspection PyMethodOverriding
     def parse(self, response):
         jsonresponse = json.loads(response.body)
-        print(jsonresponse)  # all available data
+        for game in range(9):
+            yield {
+                'Datum': jsonresponse[game]['matchDateTime'],
+                'Heimverein': jsonresponse[game]['team1']['teamName'],
+                'Gastverein': jsonresponse[game]['team2']['teamName'],
+                'Tore Heim': jsonresponse[game]['matchResults'][0]['pointsTeam1'],
+                'Tore Gast': jsonresponse[game]['matchResults'][0]['pointsTeam2'],
+            }
 
 # To scrape data call uncomment fetch_data_new()
 # fetch_data_new()
