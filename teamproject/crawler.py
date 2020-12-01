@@ -78,16 +78,13 @@ class OpenLigaSpider(scrapy.Spider):
             start_url = next(self.url)
         except StopIteration:
             pass
-        # scrapy.log.msg('START_REQUEST : start_url = %s' % start_url)
         request = scrapy.Request(start_url, dont_filter=True)
         yield request
-        # for url in urls:
-        #   yield scrapy.Request(url=url, callback=self.parse)
+
 
     # suppresses false warning: can be ignored
     # noinspection PyMethodOverriding
     def parse(self, response):
-        # scrapy.log.msg("SCRAPING '%S "% response.url)
 
         jsonresponse = json.loads(response.body)
         for game in range(9):
