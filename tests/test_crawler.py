@@ -13,3 +13,6 @@ def test_fetch_data():
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
     assert (data.home_team != data.guest_team).all()
+
+
+
