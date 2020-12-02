@@ -13,12 +13,10 @@ def fetch_data():
     """
     Query data from "the internet" and return as pd.DataFrame.
     """
-
     process = CrawlerProcess()
     process.crawl(OpenLigaSpider)
     process.start()
-    # gamedataframe = pd.DataFrame(data=process)
-    # return gamedataframe
+
 
 
 def incorrect_dates(starting_day, starting_season, ending_day,
@@ -68,6 +66,7 @@ def get_all_urls(starting_day, starting_season, ending_day,
             days[x] = list(range(1, 35))
         # adding last season we want to look at
         days[ending_season] = list(range(1, ending_day + 1))
+    # make url for each day
     for season in days:
         for day in days[season]:
             url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
@@ -76,20 +75,20 @@ def get_all_urls(starting_day, starting_season, ending_day,
     return urls
 
 
-def NextURL(list_of_dates):
+def NextURL(dates_list):
     """gets a list of the dates (first day, first season, last day, last season)
     :return: list of urls from all gamedays(in the timerange) as generator"""
-    urls = get_all_urls(list_of_dates[0], list_of_dates[1],
-                        list_of_dates[2], list_of_dates[3])
-    for next_url in urls:
+    all_urls = get_all_urls(dates_list[0], dates_list[1],
+                                       dates_list[2], dates_list[3])
+    for next_url in all_urls:
         yield next_url
 
 
 def get_dates_from_gui():
-    day1 = 0
-    season1 = 0
-    day2 = 0
-    season2 = 0
+    day1 = 1
+    season1 = 2014
+    day2 = 1
+    season2 = 2014
     return [day1, season1, day2, season2]
 
 
@@ -99,7 +98,7 @@ class OpenLigaSpider(scrapy.Spider):
     """
     name = "OpenLigaSpider"
     allowed_domains = []
-    url = NextURL(get_dates_from_gui)   # generator of all urls
+    url = NextURL(get_dates_from_gui())  # generator with all urls
     start_url = []
 
     def start_requests(self):
@@ -116,21 +115,27 @@ class OpenLigaSpider(scrapy.Spider):
 
         jsonresponse = json.loads(response.body)
         for game in range(9):
-            yield {
-                'Datum': jsonresponse[game]['matchDateTime'],
-                'Heimverein': jsonresponse[game]['team1']['teamName'],
-                'Gastverein': jsonresponse[game]['team2']['teamName'],
-                'Tore Heim': jsonresponse[game]['matchResults'][0][
-                    'pointsTeam1'],
-                'Tore Gast': jsonresponse[game]['matchResults'][0][
-                    'pointsTeam2'],
-            }
+            data = [
+                [jsonresponse[game]['matchDateTime'],
+                jsonresponse[game]['team1']['teamName'],
+                jsonresponse[game]['team2']['teamName'],
+                jsonresponse[game]['matchResults'][0]['pointsTeam1'],
+                jsonresponse[game]['matchResults'][0]['pointsTeam2']]
+            ]
+            df = pd.DataFrame(data, columns=['Datum', 'Heimverein',
+                                             'Gastverein', 'Tore Heim',
+                                             'Tore Gast'])
+            ## get the next URL to crawl
             try:
                 next_url = next(self.url)
                 yield scrapy.Request(next_url)
             except StopIteration:
                 pass
 
-# To scrape data call uncomment fetch_data_new()
-# fetch_data()
+            return df
 
+
+
+
+# To scrape data call uncomment fetch_data()
+fetch_data()
