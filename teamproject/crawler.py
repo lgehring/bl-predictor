@@ -1,95 +1,29 @@
 """
-This module contains code to fetch required data from the internet and
-convert it to a pd.DataFrame.
+This module contains code to fetch required data from the internet and convert
+it to a pd.DataFrame.
 """
+
+import json
 
 import pandas as pd
 import scrapy
-import json
 from scrapy.crawler import CrawlerProcess
+
+# Initialize matches dataframe that will be filled and returned
+columns = ['date_time', 'home_team', 'home_score', 'guest_score', 'guest_team']
+matches = pd.DataFrame([], columns=columns)  # empty df to fill
 
 
 def fetch_data():
     """
-    Query data from "the internet" and return as pd.DataFrame.
+    Query sample data from "the internet" and return as pd.DataFrame.
     """
+    # initialize and start crawling
     process = CrawlerProcess()
     process.crawl(OpenLigaSpider)
     process.start()
 
-
-
-def incorrect_dates(starting_day, starting_season, ending_day,
-                    ending_season):
-    """Were there a matches on those days?"""
-    days = [starting_day, ending_day]
-    seasons = [starting_season, ending_season]
-    Statement_d = False
-    Statement_s = False
-
-    for date in days:
-        Statement_d = 0 == date or date > 35 or Statement_d
-    for season in seasons:
-        Statement_s = 1963 > season or season > 2020 or Statement_s
-    return (Statement_d or Statement_s)
-
-
-def get_all_urls(starting_day, starting_season, ending_day,
-                 ending_season):
-    """
-    Expects a timeperiod. Gameday and season given seperately.
-
-    :param starting_day: int
-    :param starting_season: int
-    :param ending_day: int
-    :param ending_season: int
-    :return: List of urls of matches from each gameday in the given
-            time period
-    """
-    urls = []
-    seasons_timerange = ending_season - starting_season
-
-    # Dictionary with season as key combined with number of gamedays as
-    # list
-    if incorrect_dates(starting_day, starting_season, ending_day,
-                       ending_season):
-        raise ValueError("there has been no match on this day."
-                         "Matches are 34 days per season from 1963 to 2020")
-
-    if seasons_timerange == 0:
-        days = {
-            starting_season: list(range(starting_day, ending_day + 1))}
-    else:
-        days = {starting_season: list(range(starting_day, 35))}
-        # adding seasons between the dates
-        for x in range(starting_season + 1, ending_season):
-            days[x] = list(range(1, 35))
-        # adding last season we want to look at
-        days[ending_season] = list(range(1, ending_day + 1))
-    # make url for each day
-    for season in days:
-        for day in days[season]:
-            url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
-                  str(season) + '/' + str(day)
-            urls = urls + [url]
-    return urls
-
-
-def NextURL(dates_list):
-    """gets a list of the dates (first day, first season, last day, last season)
-    :return: list of urls from all gamedays(in the timerange) as generator"""
-    all_urls = get_all_urls(dates_list[0], dates_list[1],
-                                       dates_list[2], dates_list[3])
-    for next_url in all_urls:
-        yield next_url
-
-
-def get_dates_from_gui():
-    day1 = 1
-    season1 = 2014
-    day2 = 1
-    season2 = 2014
-    return [day1, season1, day2, season2]
+    return matches
 
 
 class OpenLigaSpider(scrapy.Spider):
@@ -97,45 +31,28 @@ class OpenLigaSpider(scrapy.Spider):
         Query sample match and print full json-string
     """
     name = "OpenLigaSpider"
-    allowed_domains = []
-    url = NextURL(get_dates_from_gui())  # generator with all urls
-    start_url = []
 
     def start_requests(self):
-        try:
-            start_url = next(self.url)
-            request = scrapy.Request(start_url, dont_filter=True)
-            yield request
-        except StopIteration:
-            pass
+        urls = ['https://api.openligadb.de/getmatchdata/bl1/2020/1']
+        for url in urls:
+            yield scrapy.Request(url=url, callback=self.parse)
 
     # suppresses false warning: can be ignored
     # noinspection PyMethodOverriding
     def parse(self, response):
+        """
+        Parses json-data into matches DataFrame.
 
+        Internal item order is sensitive to rearrangement!
+        """
         jsonresponse = json.loads(response.body)
-        for game in range(9):
-            data = [
-                [jsonresponse[game]['matchDateTime'],
-                jsonresponse[game]['team1']['teamName'],
-                jsonresponse[game]['team2']['teamName'],
-                jsonresponse[game]['matchResults'][0]['pointsTeam1'],
-                jsonresponse[game]['matchResults'][0]['pointsTeam2']]
+        for game in range(len(jsonresponse)):  # all matches in scrape
+            # appends response item-array to matches, !ORDER SENSITIVE!
+            matches_length = len(matches)
+            matches.loc[matches_length] = [
+                jsonresponse[game]['matchDateTime'],  # match_date_time
+                jsonresponse[game]['team1']['teamName'],  # home_t
+                jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h_s
+                jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g_s
+                jsonresponse[game]['team2']['teamName']  # guest_t]
             ]
-            df = pd.DataFrame(data, columns=['Datum', 'Heimverein',
-                                             'Gastverein', 'Tore Heim',
-                                             'Tore Gast'])
-            ## get the next URL to crawl
-            try:
-                next_url = next(self.url)
-                yield scrapy.Request(next_url)
-            except StopIteration:
-                pass
-
-            return df
-
-
-
-
-# To scrape data call uncomment fetch_data()
-fetch_data()
