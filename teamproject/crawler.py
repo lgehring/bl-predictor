@@ -109,7 +109,7 @@ class OpenLigaSpider(scrapy.Spider):
             matches.loc[matches_length] = [
                 jsonresponse[game]['matchDateTime'],  # match_date_time
                 jsonresponse[game]['team1']['teamName'],  # home_t
-                jsonresponse[game]['matchResults'][0]['pointsTeam1'],  #h
-                jsonresponse[game]['matchResults'][0]['pointsTeam2'],  #g
+                jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h
+                jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g
                 jsonresponse[game]['team2']['teamName']  # guest_t]
             ]
