@@ -2,105 +2,111 @@
 This module contains the GUI code.
 """
 
-from tkinter import *
-from tkinter import Button
-
-import pandas as pd
+import tkinter as tk
 
 from teamproject.crawler import fetch_data
 from teamproject.models import FrequencyModel
 
-# global variabels
-crawler_data = pd.DataFrame()
-trained_model = FrequencyModel(None)
-picked_guest_team = ""
-picked_home_team = ""
-winner = ""
-
-
-def fetch_crawler_data():
-    global crawler_data
-    crawler_data = fetch_data()
-
-
-def train_model():
-    global crawler_data
-    global trained_model
-    trained_model = FrequencyModel(crawler_data)
-
-
-def prediction():
-    global trained_model
-    global picked_home_team
-    global picked_guest_team
-    global winner
-    winner = FrequencyModel.predict_winner(trained_model, picked_home_team, picked_guest_team)
-    print(winner)
-
 
 def main():
-    global winner
     """
-Creates and shows the main window.
+    Creates and shows the main GUI window.
     """
-    # creating Tk window
-    root = Tk()
-    root.title("Football League Matches Predictor")
-    root.geometry("400x400")
-    # creating first two buttons
-    act_crawler_button = Button(root, text="Activate Crawler!", command=fetch_crawler_data)
-    act_crawler_button.pack()
-    train_ml_button = Button(root, text="Start the Algorithm!", command=train_model)
-    train_ml_button.pack()
+    crawler_data = fetch_data()
+    trained_model = FrequencyModel(crawler_data)
+    picked_guest_team = ""
+    picked_home_team = ""
+    winner = ""
 
-    # drop down lists for teams
-    # make option list
+    # Callbacks: Called when team in dropdown menu is changed
+    def pick_hometeam(*args):
+        nonlocal picked_home_team
+        picked_home_team = ht_variable.get()
+
+    def pick_guestteam(*args):
+        nonlocal picked_guest_team
+        picked_guest_team = gt_variable.get()
+
+    # Makes prediction based on selection and outputs it as label
+    def prediction():
+        nonlocal trained_model
+        nonlocal picked_home_team
+        nonlocal picked_guest_team
+        nonlocal winner
+        winner = FrequencyModel.predict_winner(trained_model, picked_home_team,
+                                               picked_guest_team)
+        win_prob_button.config(background='green')
+        tk.Label.configure(label_pred, text=winner)
+        label_pred.pack()
+
+    # GUI window
+    root = tk.Tk()  # initialize
+    root.title("bl-predictor GUI")  # set window title
+    root.geometry("400x400")  # set window size
+
+    # Methods activated on button press
+    def fetch_crawler_data():
+        nonlocal crawler_data
+        crawler_data = fetch_data()
+        act_crawler_button.config(background='green')
+
+    def train_model():
+        nonlocal crawler_data
+        nonlocal trained_model
+        trained_model = FrequencyModel(crawler_data)
+        train_ml_button.config(background='green')
+
+    # Crawler button
+    act_crawler_button = tk.Button(root, text="Activate Crawler!",
+                                   command=fetch_crawler_data)
+    act_crawler_button.pack()  # append button to GUI window
+
+    # Train button
+    train_ml_button = tk.Button(root, text="Start the Algorithm!",
+                                command=train_model)
+    train_ml_button.pack()  # append button to GUI window
+
+    # Create a list of all home and guest teams and drop duplicates
     option_list = fetch_data()['home_team']
-    # append list of hometeams with list of guestteam
     option_list = option_list.append(fetch_data()['guest_team'])
     option_list = option_list.drop_duplicates()
 
-    # methods to choose a team
-    def pick_hometeam(*args):
-        global picked_home_team
-        picked_home_team = var_home_team.get()
+    # Hometeam dropdown list
+    # Menu title shown above
+    ht_label = tk.Label(text="Home team:")
+    ht_label.pack()
+    # Initialize options
+    ht_variable = tk.StringVar(root)
+    ht_variable.set(option_list[0])
+    ht_opt = tk.OptionMenu(root, ht_variable, *option_list)
+    ht_opt.pack()
+    # "Listens" for selection and calls callback method
+    ht_variable.trace("w", pick_hometeam)
 
-    def pick_guestteam(*args):
-        global picked_guest_team
-        picked_guest_team = var_guest_team.get()
-        if picked_home_team == picked_home_team:
-            raise Exception("Sorry, you need to choose a different home- or guestteam")
+    # Guestteam dropdown list
+    # Menu title shown above
+    gt_label = tk.Label(text="Guest team:")
+    gt_label.pack()
+    # Initialize options
+    gt_variable = tk.StringVar(root)
+    gt_variable.set(option_list[0])
+    gt_opt = tk.OptionMenu(root, gt_variable, *option_list)
+    gt_opt.pack()
+    # "Listens" for selection and calls callback method
+    gt_variable.trace("w", pick_guestteam)
 
-    # make hometeam dropdown
-    var_home_team = StringVar(root)
-    var_home_team.set(option_list[0])
-    opt_ht = OptionMenu(root, var_home_team, *option_list)
-    opt_ht.config(width=10, font=('Helvetica', 12))
-    label_ht = Label(root, text="Home-team: ", font="Arial 12", anchor='w')
-    label_ht.pack(side="top", fill="y")
-    var_home_team.trace("w", pick_hometeam)
-    opt_ht.pack()
+    # Prediction button
+    win_prob_button: tk.Button = tk.Button(root,
+                                           text="Show win probability percent!",
+                                           command=prediction)
+    win_prob_button.pack()  # append button to GUI window
 
-    # make guestteam dropdown
-    var_guest_team = StringVar(root)
-    var_guest_team.set(option_list[0])
-    opt_gt = OptionMenu(root, var_guest_team, *option_list)
-    opt_gt.config(width=10, font=('Helvetica', 12))
-    label_ht = Label(root, text="Guest-team: ", font="Arial 12", anchor='w')
-    label_ht.pack(side="top", fill="y")
-    var_guest_team.trace("w", pick_guestteam)
-    opt_gt.pack()
+    # Label with predicted winner
+    label_winner = tk.Label(root, text="Predicted winner:")
+    label_winner.pack()  # append label to GUI window
 
-    # button to predict winner
-    win_prob_button: Button = Button(root, text="Show win probability percent!",
-                                     command=prediction)
-    win_prob_button.pack()
-
-    # label with predicted winner
-    label_winner = Label(root, text="the predicted winner is: ", font="Arial 12", anchor='w')
-    label_winner.pack(side="top", fill="y")
+    # Prediction label
+    label_pred = tk.Label(root, text="None")
+    label_pred.pack()  # append label to GUI window
 
     root.mainloop()
-
-
-main()
