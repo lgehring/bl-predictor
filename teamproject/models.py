@@ -81,9 +81,10 @@ class WholeDataFrequencies:
     """
 
     def __init__(self, trainset_df):
-        """Expects a pd.DataFrame with at least four columns
-        ['home_team', 'home_score', 'guest_score', 'guest_team']
-        in this order"""
+        """
+
+        @param trainset_df:
+        """
         self.all_matches_df = trainset_df
 
         self.home_team_wins = 0

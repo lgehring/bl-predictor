@@ -50,7 +50,7 @@ def main():
 
     # GUI window
     root = tk.Tk()  # initialize
-    root.title("bl-predictor GUI")  # set window title
+    root.title("teamproject GUI")  # set window title
     root.geometry("400x400")  # set window size
 
     # Methods activated on button press
