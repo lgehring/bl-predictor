@@ -66,7 +66,7 @@ class FrequencyModel:
                 return None
         except KeyError:
             warnings.warn(
-                """Column(s) missing in the given trainset. 
+                """Column(s) missing in the given trainset.
                 No prediction calculated.""")
             # prevents other modules from failing by casting no prediction/draw
             return None
@@ -98,7 +98,7 @@ class WholeDataFrequencies:
             self._count_average_goals_per_game()
         except KeyError:
             warnings.warn(
-                """Column(s) missing in the given trainset. 
+                """Column(s) missing in the given trainset.
                 No statistics calculated.""")
 
     def _count_outcome_frequencies(self):
