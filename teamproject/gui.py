@@ -12,11 +12,15 @@ def main():
     """
     Creates and shows the main GUI window.
     """
-    crawler_data = fetch_data()
+    # TODO: example, will be customizable in next issue
+    start = [1, 2000]
+    end = [1, 2010]
+
+    crawler_data = fetch_data(start, end)
     trained_model = FrequencyModel(crawler_data)
-    picked_guest_team = ""
-    picked_home_team = ""
-    winner = ""
+    picked_guest_team = None
+    picked_home_team = None
+    winner = None
 
     # Callbacks: Called when team in dropdown menu is changed
     def pick_hometeam(*args):
@@ -47,7 +51,9 @@ def main():
     # Methods activated on button press
     def fetch_crawler_data():
         nonlocal crawler_data
-        crawler_data = fetch_data()
+        # TODO: prevent double crawler instance from running
+        # data is automatically scraped at gui launch
+        # crawler_data = fetch_data(start, end)
         act_crawler_button.config(background='green')
 
     def train_model():
@@ -67,8 +73,8 @@ def main():
     train_ml_button.pack()  # append button to GUI window
 
     # Create a list of all home and guest teams and drop duplicates
-    option_list = fetch_data()['home_team']
-    option_list = option_list.append(fetch_data()['guest_team'])
+    option_list = crawler_data['home_team']
+    option_list = option_list.append(crawler_data['guest_team'])
     option_list = option_list.drop_duplicates()
 
     # Hometeam dropdown list
