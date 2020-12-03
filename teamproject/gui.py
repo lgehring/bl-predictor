@@ -1,11 +1,11 @@
 """
 This module contains the GUI code.
 """
-
+import inspect
 import tkinter as tk
 
+from teamproject import models
 from teamproject.crawler import fetch_data
-from teamproject.models import FrequencyModel
 
 
 def main():
@@ -17,9 +17,10 @@ def main():
     end = [1, 2010]
 
     crawler_data = fetch_data(start, end)
-    trained_model = FrequencyModel(crawler_data)
+    trained_model = None
     picked_guest_team = None
     picked_home_team = None
+    picked_model = None
     winner = None
 
     # Callbacks: Called when team in dropdown menu is changed
@@ -36,9 +37,12 @@ def main():
         nonlocal trained_model
         nonlocal picked_home_team
         nonlocal picked_guest_team
+        nonlocal picked_model
         nonlocal winner
-        winner = FrequencyModel.predict_winner(trained_model, picked_home_team,
-                                               picked_guest_team)
+        # disables warning for unknown reference before training model
+        # noinspection PyUnresolvedReferences
+        winner = trained_model.predict_winner(picked_home_team,
+                                              picked_guest_team)
         win_prob_button.config(background='green')
         tk.Label.configure(label_pred, text=winner)
         label_pred.pack()
@@ -59,13 +63,27 @@ def main():
     def train_model():
         nonlocal crawler_data
         nonlocal trained_model
-        trained_model = FrequencyModel(crawler_data)
+        trained_model = getattr(models, model_variable.get())(crawler_data)
         train_ml_button.config(background='green')
 
     # Crawler button
     act_crawler_button = tk.Button(root, text="Activate Crawler!",
                                    command=fetch_crawler_data)
     act_crawler_button.pack()  # append button to GUI window
+
+    # Create a list of all available models
+    model_list = [m[0] for m in inspect.getmembers(models, inspect.isclass)
+                  if m[1].__module__ == models.__name__]
+
+    # Models dropdown list
+    # Menu title shown above
+    model_label = tk.Label(text="Prediction model:")
+    model_label.pack()
+    # Initialize options
+    model_variable = tk.StringVar(root)
+    model_variable.set(model_list[0])
+    model_opt = tk.OptionMenu(root, model_variable, *model_list)
+    model_opt.pack()
 
     # Train button
     train_ml_button = tk.Button(root, text="Start the Algorithm!",
@@ -75,7 +93,7 @@ def main():
     # Create a list of all home and guest teams and drop duplicates
     option_list = crawler_data['home_team']
     option_list = option_list.append(crawler_data['guest_team'])
-    option_list = option_list.drop_duplicates()
+    option_list = sorted(option_list.drop_duplicates())
 
     # Hometeam dropdown list
     # Menu title shown above
@@ -103,7 +121,7 @@ def main():
 
     # Prediction button
     win_prob_button: tk.Button = tk.Button(root,
-                                           text="Show win probability percent!",
+                                           text="Show predicted winner!",
                                            command=prediction)
     win_prob_button.pack()  # append button to GUI window
 
