@@ -92,6 +92,21 @@ The following is a short overview of how a python project could be structured::
         └── test_models.py
 
 
+Docstring format
+================
+To ensure an easy documentation via sphinx, please use the following
+docstring format for inline function explanations.
+
+"""
+This is a reST style.
+
+:param param1: this is a first param
+:param param2: this is a second param
+:returns: this is a description of what is returned
+:raises keyError: raises an exception
+"""
+
+
 Development/Tooling
 ===================
 
