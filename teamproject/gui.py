@@ -1,6 +1,7 @@
 """
 This module contains the GUI code.
 """
+
 import inspect
 import tkinter as tk
 
@@ -20,14 +21,15 @@ def main():
     trained_model = None
     picked_guest_team = None
     picked_home_team = None
-    picked_model = None
     winner = None
 
     # Callbacks: Called when team in dropdown menu is changed
+    # noinspection PyUnusedLocal
     def pick_hometeam(*args):
         nonlocal picked_home_team
         picked_home_team = ht_variable.get()
 
+    # noinspection PyUnusedLocal
     def pick_guestteam(*args):
         nonlocal picked_guest_team
         picked_guest_team = gt_variable.get()
@@ -37,7 +39,6 @@ def main():
         nonlocal trained_model
         nonlocal picked_home_team
         nonlocal picked_guest_team
-        nonlocal picked_model
         nonlocal winner
         # disables warning for unknown reference before training model
         # noinspection PyUnresolvedReferences
