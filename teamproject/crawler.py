@@ -48,7 +48,7 @@ def incorrect_dates(start_date, end_date):
 
 def curate_urls(start_date, end_date):
     """
-    Expects a timeperiod. Gameday and season a an array, in that order.
+    Expects a timeperiod. Gameday and season as an array, in that order.
 
     :param start_date: [int]
     :param end_date: [int]
