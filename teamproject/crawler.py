@@ -6,6 +6,7 @@ it to a pd.DataFrame.
 import json
 
 import pandas as pd
+import datetime
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
@@ -41,7 +42,7 @@ def incorrect_dates(start_date, end_date):
         statement_d = 0 == date or date > 35 or statement_d
     for season in seasons:
         # first season was in 1963
-        statement_s = 1963 > season or season > 2020 or statement_s
+        statement_s = 1963 > season or season > datetime.datetime.now().year or statement_s
     return statement_d or statement_s
 
 
