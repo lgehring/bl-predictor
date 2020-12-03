@@ -126,8 +126,8 @@ def test_whole_data_frequencies_no_matchups():
     assert model.home_team_wins == 0
     assert model.guest_team_wins == 2
     assert model.draws == 1
-    assert model.home_team_avg_goals == 1/3
-    assert model.guest_team_avg_goals == 7 / 3
+    assert model.home_team_avg_goals == (1 / 3)
+    assert model.guest_team_avg_goals == (7 / 3)
 
 
 def test_whole_data_frequencies_too_many_columns():

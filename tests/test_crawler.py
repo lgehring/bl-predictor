@@ -7,7 +7,6 @@ import unittest
 
 class test_crawler(unittest.TestCase):
 
-
     def test_fetch_data(self):
         data = crawler.fetch_data([1, 2014], [1, 2014])
         assert isinstance(data, pd.DataFrame)
