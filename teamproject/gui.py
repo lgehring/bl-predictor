@@ -14,7 +14,7 @@ def main():
     """
     Creates and shows the main GUI window.
     """
-    # selction of data for option lists
+    # selection of data for option lists
     start = [20, 2019]
     end = [1, datetime.datetime.now().year]
 
@@ -59,7 +59,7 @@ def main():
         nonlocal crawler_data
         # TODO: prevent double crawler instance from running
         # data is automatically scraped at gui launch
-        #crawler_data = fetch_data(start, end)
+        # crawler_data = fetch_data(start, end)
         act_crawler_button.config(background='green')
 
     def train_model():
