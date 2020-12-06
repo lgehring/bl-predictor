@@ -2,205 +2,171 @@
 This module contains the GUI code.
 """
 
+import datetime
 import inspect
 import tkinter as tk
-import datetime
 
+import pandas as pd
+
+from gui_slider_widget import Slider
 from teamproject import models
 from teamproject.crawler import fetch_data
 
 
-def main():
+class main_window:
     """
-    Creates and shows the main GUI window.
+    Graphical User Interface for the bl-predictor project.
+
+    The GUI window can be shown with show_window()
     """
-    # selection of data for option lists
-    start = [20, 2019]
-    end = [1, datetime.datetime.now().year]
 
-    crawler_data = fetch_data(start, end)
-    trained_model = None
-    picked_guest_team = None
-    picked_home_team = None
-    winner = None
+    def __init__(self):
+        self.root = tk.Tk()
 
-    # Callbacks: Called when team in dropdown menu is changed
-    # noinspection PyUnusedLocal
-    def pick_hometeam(*args):
-        nonlocal picked_home_team
-        picked_home_team = ht_variable.get()
+        self.crawler_data = pd.DataFrame()
+        self.picked_home_team = None
+        self.picked_guest_team = None
 
-    # noinspection PyUnusedLocal
-    def pick_guestteam(*args):
-        nonlocal picked_guest_team
-        picked_guest_team = gt_variable.get()
+    def show_window(self):
+        """
+        Shows the bl-predictor GUI.
 
-    # Makes prediction based on selection and outputs it as label
-    def prediction():
-        nonlocal trained_model
-        nonlocal picked_home_team
-        nonlocal picked_guest_team
-        nonlocal winner
-        # disables warning for unknown reference before training model
-        # noinspection PyUnresolvedReferences
-        winner = trained_model.predict_winner(picked_home_team,
-                                              picked_guest_team)
-        win_prob_button.config(background='green')
-        tk.Label.configure(label_pred, text=winner)
-        label_pred.pack()
+        Options to choose
+        a timeframe for data-crawling,
+        a model to use,
+        two teams that will be compared
+        """
+        self.root.title("Bl-predictor GUI")
+        self.root.geometry("500x500")
 
-    # GUI window
-    root = tk.Tk()  # initialize
-    root.title("teamproject GUI")  # set window title
-    root.geometry("500x500")  # set window size
+        self._timeframe_slider()
+        self._activate_crawler()
 
-    # Methods activated on button press
-    def fetch_crawler_data():
-        nonlocal crawler_data
-        # TODO: prevent double crawler instance from running
-        # data is automatically scraped at gui launch
-        # crawler_data = fetch_data(start, end)
-        act_crawler_button.config(background='green')
+        self.root.mainloop()
 
-    def train_model():
-        nonlocal crawler_data
-        nonlocal trained_model
-        trained_model = getattr(models, model_variable.get())(crawler_data)
-        train_ml_button.config(background='green')
+    def _timeframe_slider(self):
+        date_label = tk.Label(text="Choose a period of time:")
+        date_label.pack()
 
-    def pick_day1(*args):
-        nonlocal start
-        start[0] = days1_variable.get()
+        first_recorded_bl_year = 1964
+        self.slider = Slider(self.root, width=400,
+                             height=60,
+                             min_val=first_recorded_bl_year,
+                             max_val=datetime.datetime.now().year,
+                             init_lis=[first_recorded_bl_year,
+                                       datetime.datetime.now().year],
+                             show_value=True)
+        self.slider.pack()
 
-    def pick_season1(*args):
-        nonlocal start
-        start[1] = seasons1_variable.get()
+    def _activate_crawler(self):
+        download_time_label = tk.Label(text="Downloading might take a while")
+        download_time_label.pack()
 
-    def pick_day2(*args):
-        nonlocal end
-        end[0] = days2_variable.get()
+        self.act_crawler_button = tk.Button(
+            self.root,
+            text="Download Data",
+            command=self._activate_crawler_helper)
+        self.act_crawler_button.pack()
 
-    def pick_season2(*args):
-        nonlocal end
-        end[1] = seasons1_variable.get()
+    def _activate_crawler_helper(self):
+        first_day_of_season = 1
+        last_day_of_season = 34
 
-    # data selection by dropdown lists
-    date_label = tk.Label(text="chose a period of time:")
-    date_label.pack()
-    date_label = tk.Label(text="from:")
-    date_label.pack()
-    # frame for first date
-    firstd_frame = tk.Frame(root)
-    firstd_frame.pack()
+        self.crawler_data = fetch_data([first_day_of_season,
+                                        int(self.slider.getValues()[0])],
+                                       [last_day_of_season,
+                                        int(self.slider.getValues()[1])])
+        self.act_crawler_button.config(text='Download complete',
+                                       background='green')
+        # Show model selection menu
+        self._choose_model()
 
-    date_label = tk.Label(text="until:")
-    date_label.pack()
-    # frame for second date
-    secondd_frame = tk.Frame(root)
-    secondd_frame.pack()
+    def _choose_model(self):
+        # Create a list of all available models
+        model_list = [m[0] for m in
+                      inspect.getmembers(models, inspect.isclass)
+                      if m[1].__module__ == models.__name__]
 
-    # data-selection drop downs
-    option_list_days = list(range(1, 35))
-    option_list_seasons = list(range(1964, datetime.datetime.now().year))
+        # Menu title shown above
+        model_label = tk.Label(text="Choose a prediction model:")
+        model_label.pack()
+        # Initialize options
+        self.model_variable = tk.StringVar(self.root)
+        self.model_variable.set(model_list[0])
+        model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
+        model_opt.pack()
 
-    # 2 drop down lists for first date
-    # drop down list for the day
-    days1_variable = tk.StringVar(root)
-    days1_variable.set(option_list_days[0])
-    days1_opt = tk.OptionMenu(firstd_frame, days1_variable, *option_list_days)
-    days1_opt.pack(side=tk.LEFT)
-    # drop down list for the season
-    seasons1_variable = tk.StringVar(root)
-    seasons1_variable.set(option_list_seasons[0])
-    seasons1_opt = tk.OptionMenu(firstd_frame, seasons1_variable,
-                                 *option_list_seasons)
-    seasons1_opt.pack(side=tk.LEFT)
+        # Show train model button
+        self._train_model()
 
-    # nother 2 drop down lists for second date
-    # 2 drop down lists for first date
-    # drop down list for the day
-    days2_variable = tk.StringVar(root)
-    days2_variable.set(option_list_days[0])
-    days2_opt = tk.OptionMenu(secondd_frame, days2_variable, *option_list_days)
-    days2_opt.pack(side=tk.LEFT)
-    # drop down list for the season
-    seasons2_variable = tk.StringVar(root)
-    seasons2_variable.set(option_list_seasons[0])
-    seasons2_opt = tk.OptionMenu(secondd_frame, seasons2_variable,
-                                 *option_list_seasons)
-    seasons2_opt.pack(side=tk.RIGHT)
+    def _train_model(self):
+        self.train_ml_button = tk.Button(
+            self.root,
+            text="Train prediction model",
+            command=self._train_model_helper)
+        self.train_ml_button.pack()
 
-    days1_variable.trace("w", pick_day1)
-    seasons1_variable.trace("w", pick_season1)
-    days2_variable.trace("w", pick_day2)
-    seasons2_variable.trace("w", pick_season2)
+    def _train_model_helper(self):
+        self.trained_model = getattr(models, self.model_variable.get())(
+            self.crawler_data)
+        self.train_ml_button.config(text='Model trained',
+                                    background='green')
 
-    # Crawler button
-    act_crawler_button = tk.Button(root, text="Activate Crawler!",
-                                   command=fetch_crawler_data)
-    act_crawler_button.pack()  # append button to GUI window
+        # Show team selection menu
+        self._choose_teams()
 
-    # Create a list of all available models
-    model_list = [m[0] for m in inspect.getmembers(models, inspect.isclass)
-                  if m[1].__module__ == models.__name__]
+    def _choose_teams(self):
+        # Create a list of all home and guest teams and drop duplicates
+        try:
+            option_list = self.crawler_data['home_team']
+            option_list = option_list.append(self.crawler_data['guest_team'])
+            option_list = sorted(option_list.drop_duplicates())
+        except KeyError:
+            option_list = ["Team1", "Team2"]
 
-    # Models dropdown list
-    # Menu title shown above
-    model_label = tk.Label(text="Prediction model:")
-    model_label.pack()
-    # Initialize options
-    model_variable = tk.StringVar(root)
-    model_variable.set(model_list[0])
-    model_opt = tk.OptionMenu(root, model_variable, *model_list)
-    model_opt.pack()
+        # Hometeam dropdown list
+        ht_label = tk.Label(self.root, text="Home team:")
+        ht_label.pack()
 
-    # Train button
-    train_ml_button = tk.Button(root, text="Start the Algorithm!",
-                                command=train_model)
-    train_ml_button.pack()  # append button to GUI window
+        self.ht_variable = tk.StringVar(self.root)
+        self.ht_variable.set(option_list[0])
+        ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
+        ht_opt.pack()
 
-    # Create a list of all home and guest teams and drop duplicates
-    option_list = crawler_data['home_team']
-    option_list = option_list.append(crawler_data['guest_team'])
-    option_list = sorted(option_list.drop_duplicates())
+        # Guestteam dropdown list
+        gt_label = tk.Label(self.root, text="Guest team:")
+        gt_label.pack()
 
-    # Hometeam dropdown list
-    # Menu title shown above
-    ht_label = tk.Label(text="Home team:")
-    ht_label.pack()
-    # Initialize options
-    ht_variable = tk.StringVar(root)
-    ht_variable.set(option_list[0])
-    ht_opt = tk.OptionMenu(root, ht_variable, *option_list)
-    ht_opt.pack()
-    # "Listens" for selection and calls callback method
-    ht_variable.trace("w", pick_hometeam)
+        self.gt_variable = tk.StringVar(self.root)
+        self.gt_variable.set(option_list[0])
+        gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
+        gt_opt.pack()
 
-    # Guestteam dropdown list
-    # Menu title shown above
-    gt_label = tk.Label(text="Guest team:")
-    gt_label.pack()
+        # Show prediction button
+        self._make_prediction()
 
-    # Initialize options
-    gt_variable = tk.StringVar(root)
-    gt_variable.set(option_list[0])
-    gt_opt = tk.OptionMenu(root, gt_variable, *option_list)
-    gt_opt.pack()
-    # "Listens" for selection and calls callback method
-    gt_variable.trace("w", pick_guestteam)
+    def _make_prediction(self):
+        self.prediction_button = tk.Button(
+            self.root,
+            text="Show predicted winner!",
+            command=self._make_prediction_helper)
+        self.prediction_button.pack()
 
-    # Prediction button
-    win_prob_button: tk.Button = tk.Button(root,
-                                           text="Show predicted winner!",
-                                           command=prediction)
-    win_prob_button.pack()  # append button to GUI window
+    def _make_prediction_helper(self):
+        self.winner = self.trained_model.predict_winner(
+            self.ht_variable.get(),
+            self.gt_variable.get())
+        self.prediction_button.config(text='Winner predicted',
+                                      background='green')
 
-    # Label with predicted winner
-    label_winner = tk.Label(root, text="Predicted winner:")
-    label_winner.pack()  # append label to GUI window
+        if self.winner is None:
+            # No matches in data
+            self.winner = "Not enough data"
 
-    # Prediction label
-    label_pred = tk.Label(root, text="None")
-    label_pred.pack()  # append label to GUI window
+        self.prediction = tk.Label(self.root, text="Not calculated")
+        self.prediction.pack()
 
-    root.mainloop()
+        self.prediction.configure(text=(self.ht_variable.get() + " vs " +
+                                        self.gt_variable.get() +
+                                        ": " +
+                                        self.winner))
