@@ -73,22 +73,22 @@ class Slider(Frame):
 
         self.canv = Canvas(self, height=self.canv_H, width=self.canv_W)
         self.canv.pack()
-        self.canv.bind("<Motion>", self._mouseMotion)
-        self.canv.bind("<B1-Motion>", self._moveBar)
+        self.canv.bind("<Motion>", self._mouse_motion)
+        self.canv.bind("<B1-Motion>", self._move_bar)
 
-        self.__addTrack(self.slider_x, self.slider_y,
-                        self.canv_W - self.slider_x, self.slider_y)
+        self.__add_track(self.slider_x, self.slider_y,
+                         self.canv_W - self.slider_x, self.slider_y)
         for bar in self.bars:
-            bar["Ids"] = self.__addBar(bar["Pos"])
+            bar["Ids"] = self.__add_bar(bar["Pos"])
 
-    def getValues(self):
+    def get_values(self):
         values = [bar["Value"] for bar in self.bars]
         return sorted(values)
 
-    def _mouseMotion(self, event):
+    def _mouse_motion(self, event):
         x = event.x
         y = event.y
-        selection = self.__checkSelection(x, y)
+        selection = self.__check_selection(x, y)
         if selection[0]:
             self.canv.config(cursor="hand2")
             self.selected_idx = selection[1]
@@ -96,21 +96,21 @@ class Slider(Frame):
             self.canv.config(cursor="")
             self.selected_idx = None
 
-    def _moveBar(self, event):
+    def _move_bar(self, event):
         x = event.x
         if self.selected_idx is None:
             return False
-        pos = self.__calcPos(x)
+        pos = self.__calc_pos(x)
         idx = self.selected_idx
-        self.__moveBar(idx, pos)
+        self.__move_bar(idx, pos)
 
-    def __addTrack(self, startx, starty, endx, endy):
+    def __add_track(self, startx, starty, endx, endy):
         ident = self.canv.create_line(startx, starty, endx, endy,
                                       fill=Slider.LINE_COLOR,
                                       width=Slider.LINE_WIDTH)
         return ident
 
-    def __addBar(self, pos):
+    def __add_bar(self, pos):
         """@ pos: position of the bar, ranged from (0,1)"""
         if pos < 0 or pos > 1:
             raise Exception("Pos error - Pos: " + str(pos))
@@ -137,16 +137,16 @@ class Slider(Frame):
         else:
             return [id_outer, id_inner]
 
-    def __moveBar(self, idx, pos):
+    def __move_bar(self, idx, pos):
         ids = self.bars[idx]["Ids"]
         for idents in ids:
             self.canv.delete(idents)
-        self.bars[idx]["Ids"] = self.__addBar(pos)
+        self.bars[idx]["Ids"] = self.__add_bar(pos)
         self.bars[idx]["Pos"] = pos
         self.bars[idx]["Value"] = (pos * (self.max_val - self.min_val) +
                                    self.min_val)
 
-    def __calcPos(self, x):
+    def __calc_pos(self, x):
         """calculate position from x coordinate"""
         pos = (x - self.slider_x) / (self.canv_W - 2 * self.slider_x)
         if pos < 0:
@@ -156,15 +156,15 @@ class Slider(Frame):
         else:
             return pos
 
-    def __getValue(self, idx):
+    def __get_value(self, idx):
         """#######Not used function#####"""
         bar = self.bars[idx]
         ids = bar["Ids"]
         x = self.canv.coords(ids[0])[0] + Slider.BAR_RADIUS
-        pos = self.__calcPos(x)
+        pos = self.__calc_pos(x)
         return pos * (self.max_val - self.min_val) + self.min_val
 
-    def __checkSelection(self, x, y):
+    def __check_selection(self, x, y):
         """
         To check if the position is inside the bounding rectangle of a Bar
         Return [True, bar_index] or [False, None]
