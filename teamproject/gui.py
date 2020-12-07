@@ -8,12 +8,12 @@ import tkinter as tk
 
 import pandas as pd
 
-from gui_slider_widget import Slider
+from teamproject.gui_slider_widget import Slider
 from teamproject import models
 from teamproject.crawler import fetch_data
 
 
-class main_window:
+class MainWindow:
     """
     Graphical User Interface for the bl-predictor project.
 
@@ -73,9 +73,9 @@ class main_window:
         last_day_of_season = 34
 
         self.crawler_data = fetch_data([first_day_of_season,
-                                        int(self.slider.getValues()[0])],
+                                        int(self.slider.get_values()[0])],
                                        [last_day_of_season,
-                                        int(self.slider.getValues()[1])])
+                                        int(self.slider.get_values()[1])])
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # Show model selection menu
