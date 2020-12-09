@@ -4,29 +4,115 @@ This module contains code for different prediction models.
 
 import warnings
 
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from scipy.stats import poisson
+
 
 class PoissonModel:
+    # no line-break in the link is intentional and compliant to PEP8 guidelines
     """
-    A model that ...
+    A model that predicts the winning team out of two given teams,
+    based on a poisson regression model.
+
+    Caution: The model is sensitive to the order of given teams,
+    because the home_team scores better on average!
+
+    `This model is heavily based on a guideline from David Sheehan.
+    <https://dashee87.github.io/football/python/predicting-football-results-with-statistical-modelling/>`_
     """
 
     def __init__(self, trainset_df):
         """
-        Expects a pd.DataFrame with at least four columns
-        ['home_team', 'home_score', 'guest_score', 'guest_team']
-        in this order
-        """
-        self.all_matches_df = trainset_df
-        self.matchups_df = None
+        Trains the poisson model.
 
-    def predict_winner(self, home_team, guest_team):
+        :param trainset_df:
+         pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
         """
-        ...
-        @param home_team:
-        @param guest_team:
-        @return:
+        self.poisson_model = None
+        self._train_model(trainset_df)
+
+    def _train_model(self, trainset):
         """
-        pass
+        Train a poisson regression model (generalized linear model)
+        to predict "goals" from the parameters home, team and opponent
+
+        :param trainset:
+         pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
+        :return: None
+        """
+        try:
+            # Builds two DataFrames with added column "home"
+            # where one has "home"=1 for all rows, and one with "home"=0,
+            # rename their columns according to this new configuration
+            # and concatenate them.
+            goal_model_data = pd.concat([
+                trainset[['home_team',
+                          'guest_team',
+                          'home_score']].assign(home=1).rename(
+                    columns={'home_team': 'team',
+                             'guest_team': 'opponent',
+                             'home_score': 'goals'}),
+                trainset[['guest_team',
+                          'home_team',
+                          'guest_score']].assign(home=0).rename(
+                    columns={'guest_team': 'team',
+                             'home_team': 'opponent',
+                             'guest_score': 'goals'})])
+
+            # train glm poisson model on "goals"
+            self.poisson_model = smf.glm(
+                formula="goals ~ home + team + opponent",
+                data=goal_model_data,
+                family=sm.families.Poisson()).fit()
+        except KeyError:
+            raise KeyError("Column(s) missing in the given trainset."
+                           "No model trained.")
+
+    def simulate_match(self, home_team: str, guest_team: str):
+        """
+        Calculates a combined probability matrix
+        for scoring an exact number of goals for both teams.
+
+        :return: 'pd.DataFrame' Goals probability matrix
+        """
+        home_goals_avg = self.poisson_model.predict(pd.DataFrame(
+            data={'team': home_team,
+                  'opponent': guest_team,
+                  'home': 1},
+            index=[1])).values[0]
+        away_goals_avg = self.poisson_model.predict(pd.DataFrame(
+            data={'team': guest_team,
+                  'opponent': home_team,
+                  'home': 0},
+            index=[1])).values[0]
+        max_goals = 10  # this number is just a guess by eye so far
+        team_pred = [[poisson.pmf(i, team_avg)
+                      for i in range(0, max_goals + 1)]
+                     for team_avg in [home_goals_avg, away_goals_avg]]
+        return np.outer(np.array(team_pred[0]), np.array(team_pred[1]))
+
+    def predict_winner(self, home_team: str, guest_team: str):
+        """
+        Determines the winning team based on a simulated match.
+
+        :return: `str` Predicted winner and corresponding probability
+        """
+        sim_match = self.simulate_match(home_team, guest_team)
+
+        # sum up lower triangle, upper triangle and diagonal probabilities
+        home_team_win_prob = np.sum(np.tril(sim_match, -1))
+        guest_team_win_prob = np.sum(np.triu(sim_match, 1))
+        draw_prob = np.sum(np.diag(sim_match))
+
+        if home_team_win_prob > guest_team_win_prob:
+            return home_team + ": " + "{:.1%}".format(home_team_win_prob)
+        elif home_team_win_prob < guest_team_win_prob:
+            return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
+        else:
+            return "Draw" + ": " + "{:.1%}".format(draw_prob)
 
 
 class FrequencyModel:
@@ -71,13 +157,13 @@ class FrequencyModel:
 
     def predict_winner(self, home_team, guest_team):
         """Casts a prediction based on the calculated probabilities and
-        returns the names of the winning team or None
+        returns the names of the winning team or "Draw"
         if neither has a higher probability"""
         try:
             self.matchups_df = self._matchups(home_team,
                                               guest_team)  # instantiate df
             if len(self.matchups_df.index) == 0:
-                return None
+                return "Not enough data"
             home_team_win_prob = self._wins(home_team) / len(
                 self.matchups_df.index)
             guest_team_win_prob = self._wins(guest_team) / len(
@@ -87,15 +173,13 @@ class FrequencyModel:
             elif home_team_win_prob < guest_team_win_prob:
                 return guest_team
             else:
-                return None
+                return "Draw"
         except KeyError:
-            warnings.warn(
-                """Column(s) missing in the given trainset.
-                No prediction calculated.""")
             # prevents other modules from failing by casting no prediction/draw
-            return None
+            return "Column(s) missing.No prediction calculated. "
 
 
+# Gets ignored by GUI
 class WholeDataFrequencies:
     """
     Not a model! But:
