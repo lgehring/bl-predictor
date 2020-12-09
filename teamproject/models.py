@@ -5,6 +5,30 @@ This module contains code for different prediction models.
 import warnings
 
 
+class PoissonModel:
+    """
+    A model that ...
+    """
+
+    def __init__(self, trainset_df):
+        """
+        Expects a pd.DataFrame with at least four columns
+        ['home_team', 'home_score', 'guest_score', 'guest_team']
+        in this order
+        """
+        self.all_matches_df = trainset_df
+        self.matchups_df = None
+
+    def predict_winner(self, home_team, guest_team):
+        """
+        ...
+        @param home_team:
+        @param guest_team:
+        @return:
+        """
+        pass
+
+
 class FrequencyModel:
     """
     A model that uses all results of the last seasons to predict a winner
