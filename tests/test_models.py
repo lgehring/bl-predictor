@@ -38,10 +38,10 @@ too_many_columns = pd.DataFrame([
     'home_team', 'home_score', 'random_score', 'guest_score', 'guest_team'])
 
 missing_column = pd.DataFrame([
-    ['A', 0, 1],
-    ['B', 0, 0],
-    ['A', 3, 1],
-], columns=['home_team', 'home_score', 'guest_team'])
+    [0, 'A'],
+    [0, 'B'],
+    [3, 'A'],
+], columns=['home_score', 'guest_team'])
 
 
 # FrequencyModel testset
@@ -50,31 +50,31 @@ def test_frequency_model_norm():
     winner = model.predict_winner
     assert winner('A', 'B') == winner('B', 'A') == 'B'
     assert winner('C', 'A') == winner('A', 'C') == 'C'
-    assert winner('B', 'C') == winner('C', 'B') is None
-    assert winner('A', 'D') == winner('D', 'A') is None
-    assert winner('A', 'E') == winner('E', 'A') is None
+    assert winner('B', 'C') == winner('C', 'B') == 'Not enough data'
+    assert winner('A', 'D') == winner('D', 'A') == 'Not enough data'
+    assert winner('A', 'E') == winner('E', 'A') == 'Not enough data'
 
 
 def test_frequency_model_nonsense():
     model = models.FrequencyModel(nonsense_matches)
     winner = model.predict_winner
     assert winner('A', 'B') == winner('B', 'A') == 'A'
-    assert winner('C', 'A') == winner('A', 'C') is None
     assert winner('B', 'C') == winner('C', 'B') == 'C'
+    assert winner('C', 'A') == winner('A', 'C') == 'Not enough data'
 
 
 def test_frequency_model_empty():
     model = models.FrequencyModel(empty_data)
     winner = model.predict_winner
-    assert winner('A', 'B') == winner('B', 'A') is None
-    assert winner('C', 'A') == winner('A', 'C') is None
-    assert winner('B', 'C') == winner('C', 'B') is None
+    assert winner('A', 'B') == winner('B', 'A') == 'Not enough data'
+    assert winner('C', 'A') == winner('A', 'C') == 'Not enough data'
+    assert winner('B', 'C') == winner('C', 'B') == 'Not enough data'
 
 
 def test_frequency_model_no_matchups():
     model = models.FrequencyModel(no_matchups)
     winner = model.predict_winner
-    assert winner('A', 'B') == winner('B', 'A') is None
+    assert winner('A', 'B') == winner('B', 'A') == 'Not enough data'
 
 
 def test_frequency_model_too_many_columns():
@@ -88,9 +88,12 @@ def test_frequency_model_too_many_columns():
 def test_frequency_model_missing_column():
     model = models.FrequencyModel(missing_column)
     winner = model.predict_winner
-    assert winner('A', 'B') == winner('B', 'A') is None
-    assert winner('C', 'A') == winner('A', 'C') is None
-    assert winner('B', 'C') == winner('C', 'B') is None
+    assert winner('A', 'B') == winner('B', 'A') == 'Column(s) missing.No ' \
+                                                   'prediction calculated.'
+    assert winner('C', 'A') == winner('A', 'C') == 'Column(s) missing.No ' \
+                                                   'prediction calculated.'
+    assert winner('B', 'C') == winner('C', 'B') == 'Column(s) missing.No ' \
+                                                   'prediction calculated.'
 
 
 # WholeDataFrequencies testset

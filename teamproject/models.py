@@ -176,7 +176,7 @@ class FrequencyModel:
                 return "Draw"
         except KeyError:
             # prevents other modules from failing by casting no prediction/draw
-            return "Column(s) missing.No prediction calculated. "
+            return "Column(s) missing.No prediction calculated."
 
 
 # Gets ignored by GUI
