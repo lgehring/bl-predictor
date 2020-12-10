@@ -1,6 +1,9 @@
+# never add 'teamproject' as a requirement!
+# this would break the github tests
 pandas~=1.1.4
 setuptools~=50.3.0
 scrapy~=2.4.0
 statsmodels~=0.12.1
 numpy~=1.19.3
 scipy~=1.5.2
+pytest~=6.1.2
