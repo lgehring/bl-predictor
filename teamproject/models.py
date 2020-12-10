@@ -32,7 +32,14 @@ class PoissonModel:
          pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
         """
         self.poisson_model = None
-        self._train_model(trainset_df)
+
+        # In case of corrupt trainset_df:
+        # Catch internal errors occurring in the smf.glm function
+        # The problem is passed here but will be handled by predict_winner
+        try:
+            self._train_model(trainset_df)
+        except (ValueError, KeyError):
+            pass
 
     def _train_model(self, trainset):
         """
@@ -43,35 +50,31 @@ class PoissonModel:
          pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
         :return: None
         """
-        try:
-            # Builds two DataFrames with added column "home"
-            # where one has "home"=1 for all rows, and one with "home"=0,
-            # rename their columns according to this new configuration
-            # and concatenate them.
-            goal_model_data = pd.concat([
-                trainset[['home_team',
-                          'guest_team',
-                          'home_score']].assign(home=1).rename(
-                    columns={'home_team': 'team',
-                             'guest_team': 'opponent',
-                             'home_score': 'goals'}),
-                trainset[['guest_team',
-                          'home_team',
-                          'guest_score']].assign(home=0).rename(
-                    columns={'guest_team': 'team',
-                             'home_team': 'opponent',
-                             'guest_score': 'goals'})])
+        # Builds two DataFrames with added column "home"
+        # where one has "home"=1 for all rows, and one with "home"=0,
+        # rename their columns according to this new configuration
+        # and concatenate them.
+        goal_model_data = pd.concat([
+            trainset[['home_team',
+                      'guest_team',
+                      'home_score']].assign(home=1).rename(
+                columns={'home_team': 'team',
+                         'guest_team': 'opponent',
+                         'home_score': 'goals'}),
+            trainset[['guest_team',
+                      'home_team',
+                      'guest_score']].assign(home=0).rename(
+                columns={'guest_team': 'team',
+                         'home_team': 'opponent',
+                         'guest_score': 'goals'})])
 
-            # train glm poisson model on "goals"
-            self.poisson_model = smf.glm(
-                formula="goals ~ home + team + opponent",
-                data=goal_model_data,
-                family=sm.families.Poisson()).fit()
-        except KeyError:
-            raise KeyError("Column(s) missing in the given trainset."
-                           "No model trained.")
+        # train glm poisson model on "goals"
+        self.poisson_model = smf.glm(
+            formula="goals ~ home + team + opponent",
+            data=goal_model_data,
+            family=sm.families.Poisson()).fit()
 
-    def simulate_match(self, home_team: str, guest_team: str):
+    def _simulate_match(self, home_team: str, guest_team: str):
         """
         Calculates a combined probability matrix
         for scoring an exact number of goals for both teams.
@@ -100,19 +103,22 @@ class PoissonModel:
 
         :return: `str` Predicted winner and corresponding probability
         """
-        sim_match = self.simulate_match(home_team, guest_team)
+        try:
+            sim_match = self._simulate_match(home_team, guest_team)
 
-        # sum up lower triangle, upper triangle and diagonal probabilities
-        home_team_win_prob = np.sum(np.tril(sim_match, -1))
-        guest_team_win_prob = np.sum(np.triu(sim_match, 1))
-        draw_prob = np.sum(np.diag(sim_match))
+            # sum up lower triangle, upper triangle and diagonal probabilities
+            home_team_win_prob = np.sum(np.tril(sim_match, -1))
+            guest_team_win_prob = np.sum(np.triu(sim_match, 1))
+            draw_prob = np.sum(np.diag(sim_match))
 
-        if home_team_win_prob > guest_team_win_prob:
-            return home_team + ": " + "{:.1%}".format(home_team_win_prob)
-        elif home_team_win_prob < guest_team_win_prob:
-            return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
-        else:
-            return "Draw" + ": " + "{:.1%}".format(draw_prob)
+            if home_team_win_prob > guest_team_win_prob:
+                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
+            elif home_team_win_prob < guest_team_win_prob:
+                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
+            else:
+                return "Draw" + ": " + "{:.1%}".format(draw_prob)
+        except AttributeError:
+            return 'Prediction failed. Check training DataFrame for errors'
 
 
 class FrequencyModel:
@@ -176,10 +182,10 @@ class FrequencyModel:
                 return "Draw"
         except KeyError:
             # prevents other modules from failing by casting no prediction/draw
-            return "Column(s) missing.No prediction calculated."
+            return "Prediction failed. Check training DataFrame for errors"
 
 
-# Gets ignored by GUI
+# Ignored by GUI
 class WholeDataFrequencies:
     """
     Not a model! But:
@@ -205,9 +211,8 @@ class WholeDataFrequencies:
             self._count_outcome_frequencies()
             self._count_average_goals_per_game()
         except KeyError:
-            warnings.warn(
-                """Column(s) missing in the given trainset.
-                No statistics calculated.""")
+            warnings.warn("Prediction failed. Check training DataFrame for "
+                          "errors")
 
     def _count_outcome_frequencies(self):
         """Builds DataFrames of only rows where

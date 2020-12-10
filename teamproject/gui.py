@@ -8,9 +8,9 @@ import tkinter as tk
 
 import pandas as pd
 
-from teamproject.gui_slider_widget import Slider
 from teamproject import models
 from teamproject.crawler import fetch_data
+from teamproject.gui_slider_widget import Slider
 
 
 class MainWindow:
@@ -169,7 +169,7 @@ class MainWindow:
         self.prediction = tk.Label(self.root, text="Not calculated")
         self.prediction.pack()
 
-        self.prediction.configure(text=(self.ht_variable.get() + " vs " +
-                                        self.gt_variable.get() +
-                                        ": " +
-                                        self.winner))
+        self.prediction.configure(text=(self.ht_variable.get() + " vs "
+                                        + self.gt_variable.get()
+                                        + ": "
+                                        + self.winner))
