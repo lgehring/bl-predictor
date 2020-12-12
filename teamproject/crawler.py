@@ -7,15 +7,14 @@ import datetime
 import json
 
 import pandas as pd
-import scrapy
-from scrapy.crawler import CrawlerProcess
+import requests
+
 
 # Initialize matches dataframe that will be filled and returned
 columns = ['date_time', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
 urls = []
-
 
 def fetch_data(start_date, end_date):
     """
@@ -24,9 +23,10 @@ def fetch_data(start_date, end_date):
     global urls
     curate_urls(start_date, end_date)
     # initialize and start crawling
-    process = CrawlerProcess()
-    process.crawl(OpenLigaSpider)
-    process.start()
+
+    # hier kommt der Aufruf zum Crawler
+    crawl_openligadb(urls)
+
     urls = []
 
     # covert DataFrame columns from object to int
@@ -36,7 +36,6 @@ def fetch_data(start_date, end_date):
     matches['guest_team'] = matches['guest_team'].astype('str')
     matches['date_time'] = matches['date_time'].astype('datetime64')
     return matches
-
 
 def incorrect_dates(start_date, end_date):
     """Were any matches on those days?"""
@@ -53,7 +52,6 @@ def incorrect_dates(start_date, end_date):
                        or season > datetime.datetime.now().year
                        or statement_s)
     return statement_d or statement_s
-
 
 def curate_urls(start_date, end_date):
     """
@@ -90,28 +88,15 @@ def curate_urls(start_date, end_date):
                   str(season) + '/' + str(day)
             urls = urls + [url]
 
+def crawl_openligadb(url):
+    to_crawl = url
 
-class OpenLigaSpider(scrapy.Spider):
-    """
-        Query sample match and print full json-string
-    """
-    name = "OpenLigaSpider"
+    while to_crawl:
+        current_url = to_crawl.pop(0)
+        r = requests.get(current_url)
+        jsonresponse = r.content
+        jsonresponse = json.loads(jsonresponse)
 
-    def start_requests(self):
-        print(urls)
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
-
-    # suppresses false warning: can be ignored
-    # noinspection PyMethodOverriding
-    def parse(self, response):
-        """
-        Parses json-data into matches DataFrame.
-
-        Internal item order is sensitive to rearrangement!
-        """
-
-        jsonresponse = json.loads(response.body)
         for game in range(len(jsonresponse)):  # all matches in scrape
             # appends response item-array to matches, !ORDER SENSITIVE!
             matches_length = len(matches)
