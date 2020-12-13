@@ -9,12 +9,13 @@ import json
 import pandas as pd
 import requests
 
-
 # Initialize matches dataframe that will be filled and returned
 columns = ['date_time', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
+unfinished_matches = pd.DataFrame([], columns=columns)
 urls = []
+
 
 def fetch_data(start_date, end_date):
     """
@@ -23,18 +24,27 @@ def fetch_data(start_date, end_date):
     global urls
     curate_urls(start_date, end_date)
     # initialize and start crawling
-           
+
     crawl_openligadb(urls)
 
     urls = []
 
     # covert DataFrame columns from object to int
-    matches['home_score'] = matches['home_score'].astype('int')
-    matches['guest_score'] = matches['guest_score'].astype('int')
-    matches['home_team'] = matches['home_team'].astype('str')
-    matches['guest_team'] = matches['guest_team'].astype('str')
-    matches['date_time'] = matches['date_time'].astype('datetime64')
-    return matches
+    if start_date[1] == end_date[1]:
+        convertdf(unfinished_matches)
+        return unfinished_matches
+    else:
+        convertdf(matches)
+        return matches
+
+
+def convertdf(dataframe):
+    dataframe['home_score'] = dataframe['home_score'].astype('int')
+    dataframe['guest_score'] = dataframe['guest_score'].astype('int')
+    dataframe['home_team'] = dataframe['home_team'].astype('str')
+    dataframe['guest_team'] = dataframe['guest_team'].astype('str')
+    dataframe['date_time'] = dataframe['date_time'].astype('datetime64')
+
 
 def incorrect_dates(start_date, end_date):
     """Were any matches on those days?"""
@@ -51,6 +61,7 @@ def incorrect_dates(start_date, end_date):
                        or season > datetime.datetime.now().year
                        or statement_s)
     return statement_d or statement_s
+
 
 def curate_urls(start_date, end_date):
     """
@@ -87,6 +98,7 @@ def curate_urls(start_date, end_date):
                   str(season) + '/' + str(day)
             urls = urls + [url]
 
+
 def crawl_openligadb(url):
     to_crawl = url
 
@@ -98,11 +110,21 @@ def crawl_openligadb(url):
 
         for game in range(len(jsonresponse)):  # all matches in scrape
             # appends response item-array to matches, !ORDER SENSITIVE!
-            matches_length = len(matches)
-            matches.loc[matches_length] = [
-                jsonresponse[game]['matchDateTime'],  # match_date_time
-                jsonresponse[game]['team1']['teamName'],  # home_t
-                jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h
-                jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g
-                jsonresponse[game]['team2']['teamName']  # guest_t]
-            ]
+            if jsonresponse[game]['matchIsFinished']:
+                matches_length = len(matches)
+                matches.loc[matches_length] = [
+                    jsonresponse[game]['matchDateTime'],  # match_date_time
+                    jsonresponse[game]['team1']['teamName'],  # home_t
+                    jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h
+                    jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g
+                    jsonresponse[game]['team2']['teamName']  # guest_t]
+                ]
+            else:
+                unfinished_matches_length = len(unfinished_matches)
+                unfinished_matches.loc[unfinished_matches_length] = [
+                    jsonresponse[game]['matchDateTime'],  # match_date_time
+                    jsonresponse[game]['team1']['teamName'],  # home_t
+                    -1,  # h
+                    -1,  # g
+                    jsonresponse[game]['team2']['teamName']  # guest_t]
+]
