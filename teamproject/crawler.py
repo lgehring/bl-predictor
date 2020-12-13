@@ -23,8 +23,7 @@ def fetch_data(start_date, end_date):
     global urls
     curate_urls(start_date, end_date)
     # initialize and start crawling
-
-    # hier kommt der Aufruf zum Crawler
+           
     crawl_openligadb(urls)
 
     urls = []
