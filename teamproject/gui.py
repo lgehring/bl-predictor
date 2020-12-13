@@ -3,6 +3,7 @@ This module contains the GUI code.
 """
 
 import datetime
+from datetime import date
 import inspect
 import tkinter as tk
 
@@ -39,10 +40,28 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("500x500")
 
+        self._coming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
 
         self.root.mainloop()
+
+    def _coming_matchday(self):
+        now = date.today()
+        date_label = tk.Label(text=now)
+        date_label.pack()
+        current_year = now.year
+
+        matchday_label = tk.Label(text="Upcoming Matches: ")
+        matchday_label.pack()
+
+        first_day_of_season = 1
+        last_day_of_season = 34
+
+        current_season = fetch_data([first_day_of_season, current_year], [last_day_of_season, current_year])
+        matchday = current_season.head(9)
+        season_label = tk.Label(text=matchday['home_team'] + " gegen " + matchday['guest_team'])
+        season_label.pack()
 
     def _timeframe_slider(self):
         date_label = tk.Label(text="Choose a period of time:")
