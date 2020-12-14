@@ -40,26 +40,38 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("500x500")
 
-        self._coming_matchday()
+        self._upcoming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
 
         self.root.mainloop()
 
-    def _coming_matchday(self):
+    def _upcoming_matchday(self):
         now = date.today()
         date_label = tk.Label(text=now)
         date_label.pack()
-        current_year = now.year
 
-        matchday_label = tk.Label(text="Upcoming Matches: ")
-        matchday_label.pack()
+        current_year = now.year
 
         first_day_of_season = 1
         last_day_of_season = 34
 
         current_season = fetch_data([first_day_of_season, current_year], [last_day_of_season, current_year])
-        matchday = current_season.head(9)
+
+        count = 0
+        for i in range(9):
+            if current_season['matchday'][i] != current_season['matchday'][i + 1]:
+                if i == 8:
+                    matchday = current_season.head(9)
+                else:
+                    matchday = current_season.loc[i:i+8]
+        upcoming_matchday = current_season['matchday'][0]
+
+        matchday_label = tk.Label(text="Upcoming Matchday: Matchday " + str(upcoming_matchday))
+        matchday_label.pack()
+
+        matchdaygames_label = tk.Label(text="Upcoming Matches: ")
+        matchdaygames_label.pack()
 
         for i in range(9):
             season_label = tk.Label(text=matchday['home_team'][i] + " gegen " + matchday['guest_team'][i])
