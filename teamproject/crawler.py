@@ -10,7 +10,7 @@ import pandas as pd
 import requests
 
 # Initialize matches dataframe that will be filled and returned
-columns = ['date_time', 'home_team', 'home_score', 'guest_score',
+columns = ['date_time', 'matchday', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
@@ -40,6 +40,7 @@ def fetch_data(start_date, end_date):
 
 def convertdf(dataframe):
     dataframe['home_score'] = dataframe['home_score'].astype('int')
+    dataframe['matchday'] = dataframe['matchday'].astype('int')
     dataframe['guest_score'] = dataframe['guest_score'].astype('int')
     dataframe['home_team'] = dataframe['home_team'].astype('str')
     dataframe['guest_team'] = dataframe['guest_team'].astype('str')
@@ -114,6 +115,7 @@ def crawl_openligadb(url):
                 matches_length = len(matches)
                 matches.loc[matches_length] = [
                     jsonresponse[game]['matchDateTime'],  # match_date_time
+                    jsonresponse[game]['group']["groupOrderID"],  # matchday
                     jsonresponse[game]['team1']['teamName'],  # home_t
                     jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h
                     jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g
@@ -123,6 +125,7 @@ def crawl_openligadb(url):
                 unfinished_matches_length = len(unfinished_matches)
                 unfinished_matches.loc[unfinished_matches_length] = [
                     jsonresponse[game]['matchDateTime'],  # match_date_time
+                    jsonresponse[game]['group']["groupOrderID"],  # matchday
                     jsonresponse[game]['team1']['teamName'],  # home_t
                     -1,  # h
                     -1,  # g
