@@ -60,8 +60,10 @@ class MainWindow:
 
         current_season = fetch_data([first_day_of_season, current_year], [last_day_of_season, current_year])
         matchday = current_season.head(9)
-        season_label = tk.Label(text=matchday['home_team'] + " gegen " + matchday['guest_team'])
-        season_label.pack()
+
+        for i in range(9):
+            season_label = tk.Label(text=matchday['home_team'][i] + " gegen " + matchday['guest_team'][i])
+            season_label.pack()
 
     def _timeframe_slider(self):
         date_label = tk.Label(text="Choose a period of time:")
