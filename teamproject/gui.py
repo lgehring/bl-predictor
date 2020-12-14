@@ -38,7 +38,7 @@ class MainWindow:
         two teams that will be compared
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("500x500")
+        self.root.geometry("500x700")
 
         self._upcoming_matchday()
         self._timeframe_slider()
