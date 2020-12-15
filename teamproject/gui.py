@@ -83,7 +83,10 @@ class MainWindow:
             # shows match
             season_label = \
                 tk.Label(
-                    text=matchday['home_team'][i] + " vs " + matchday['guest_team'][i])
+                    text=
+                    matchday['home_team'][i]
+                    + " vs " + matchday['guest_team'][i]
+                )
             season_label.pack()
 
     def _timeframe_slider(self):
