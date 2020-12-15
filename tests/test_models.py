@@ -52,7 +52,7 @@ missing_column = pd.DataFrame([
     [3, 'A'],
 ], columns=['home_score', 'guest_team'])
 
-test_crawler_data = crawler.fetch_data([1, 2002], [1, 2004])
+test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
 
 
 # Models testsuite
@@ -75,7 +75,14 @@ test_crawler_data = crawler.fetch_data([1, 2002], [1, 2004])
         ("FrequencyModel", missing_column, 'C', 'B', 'Prediction failed. '
                                                      'Check training '
                                                      'DataFrame for errors'),
-        # TODO: add crawler tests
+        ("FrequencyModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
+         'Draw'),
+        ("FrequencyModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
+         'Draw'),
+        ("FrequencyModel", test_crawler_data, 'BV Borussia Dortmund 09',
+         'Hertha BSC', 'Draw'),
+        ("FrequencyModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
+         'FC Schalke 04'),
         # PoissonModel tests
         ("PoissonModel", norm_train, 'A', 'B', 'A: 57.6%'),
         ("PoissonModel", norm_train, 'B', 'A', 'B: 80.3%'),
@@ -98,13 +105,13 @@ test_crawler_data = crawler.fetch_data([1, 2002], [1, 2004])
                                                    'training DataFrame for '
                                                    'errors'),
         ("PoissonModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
-         'Hannover 96: 72.8%'),
+         'Hamburger SV: 38.2%'),
         ("PoissonModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
-         'Hamburger SV: 46.3%'),
+         'Hannover 96: 53.3%'),
         ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09',
-         'Hertha BSC', 'Hertha BSC: 41.8%'),
+         'Hertha BSC', 'BV Borussia Dortmund 09: 77.1%'),
         ("PoissonModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
-         'Werder Bremen: 70.4%'),
+         'FC Schalke 04: 64.0%'),
     ])
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
@@ -126,8 +133,9 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
         (empty_data, 0, 0, 0, None, None),
         (no_matchups, 0, 2, 1, 1 / 3, 7 / 3),
         (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
-        (missing_column, 0, 0, 0, None, None)
-        # TODO: add crawler test
+        (missing_column, 0, 0, 0, None, None),
+        (test_crawler_data, 704, 465, 370, 1.6426250812215724,
+         1.2735542560103963)
     ])
 def test_stats(trainset,
                expected_home_team_wins,

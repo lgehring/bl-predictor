@@ -14,20 +14,17 @@ columns = ['date_time', 'matchday', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
-urls = []
 
 
 def fetch_data(start_date, end_date):
     """
     Query sample data from "the internet" and return as pd.DataFrame.
     """
-    global urls
     curate_urls(start_date, end_date)
     # initialize and start crawling
 
-    crawl_openligadb(urls)
-
-    urls = []
+    wanted_urls = curate_urls(start_date, end_date)
+    crawl_openligadb(wanted_urls)
 
     # covert DataFrame columns from object to int
     if start_date[1] == end_date[1]:
@@ -73,7 +70,7 @@ def curate_urls(start_date, end_date):
     :return: List of urls of matches from each gameday in the given
             time period
     """
-    global urls
+    urls = []
     seasons_time_range = end_date[1] - start_date[1]
 
     if incorrect_dates(start_date, end_date):
@@ -92,12 +89,14 @@ def curate_urls(start_date, end_date):
             days[x] = list(range(1, 35))
         # adding last season we want to look at
         days[end_date[1]] = list(range(1, end_date[0] + 1))
+
     # make url for each day
     for season in days:
         for day in days[season]:
             url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
                   str(season) + '/' + str(day)
-            urls = urls + [url]
+            urls += [url]
+    return urls
 
 
 def crawl_openligadb(url):
@@ -129,5 +128,4 @@ def crawl_openligadb(url):
                     jsonresponse[game]['team1']['teamName'],  # home_t
                     -1,  # h
                     -1,  # g
-                    jsonresponse[game]['team2']['teamName']  # guest_t]
-                ]
+                    jsonresponse[game]['team2']['teamName']]  # guest_t]
