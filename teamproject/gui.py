@@ -69,8 +69,8 @@ class MainWindow:
         upcoming_matchday = current_season['matchday'][0]
 
         matchday_label = \
-            tk.Label(text="Upcoming Matchday: Matchday " +
-                          str(upcoming_matchday))
+            tk.Label(
+                text="Upcoming Matchday: Matchday " + str(upcoming_matchday))
         matchday_label.pack()
 
         matchdaygames_label = tk.Label(text="Upcoming Matches: ")
@@ -82,8 +82,8 @@ class MainWindow:
             day_label.pack()
             # shows match
             season_label = \
-                tk.Label(text=matchday['home_team'][i] +
-                              " vs " + matchday['guest_team'][i])
+                tk.Label(
+                    text=matchday['home_team'][i] + " vs " + matchday['guest_team'][i])
             season_label.pack()
 
     def _timeframe_slider(self):
