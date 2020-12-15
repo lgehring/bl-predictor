@@ -53,6 +53,7 @@ missing_column = pd.DataFrame([
 
 test_crawler_data = crawler.fetch_data([1, 2002], [1, 2003])
 
+
 # Models testsuite
 @pytest.mark.parametrize(
     "model,trainset,home_team,guest_team,expected",
@@ -98,12 +99,11 @@ test_crawler_data = crawler.fetch_data([1, 2002], [1, 2003])
          'Hannover 96: 60.6%'),
         ("PoissonModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
          'Draw: 0.0%'),
-        ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09', 'Hertha BSC',
-          'BV Borussia Dortmund 09: 39.6%'),
+        ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09',
+         'Hertha BSC', 'BV Borussia Dortmund 09: 39.6%'),
         ("PoissonModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
          'FC Schalke 04: 42.9%'),
     ])
-
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
     winner = trained_model.predict_winner
