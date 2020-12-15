@@ -4,6 +4,7 @@ This file is used for testing models in a variety of cases
 
 import pandas as pd
 import pytest
+
 from teamproject import crawler
 from teamproject import models
 
@@ -51,7 +52,7 @@ missing_column = pd.DataFrame([
     [3, 'A'],
 ], columns=['home_score', 'guest_team'])
 
-test_crawler_data = crawler.fetch_data([1, 2002], [1, 2003])
+test_crawler_data = crawler.fetch_data([1, 2002], [1, 2004])
 
 
 # Models testsuite
@@ -74,6 +75,7 @@ test_crawler_data = crawler.fetch_data([1, 2002], [1, 2003])
         ("FrequencyModel", missing_column, 'C', 'B', 'Prediction failed. '
                                                      'Check training '
                                                      'DataFrame for errors'),
+        # TODO: add crawler tests
         # PoissonModel tests
         ("PoissonModel", norm_train, 'A', 'B', 'A: 57.6%'),
         ("PoissonModel", norm_train, 'B', 'A', 'B: 80.3%'),
@@ -96,13 +98,13 @@ test_crawler_data = crawler.fetch_data([1, 2002], [1, 2003])
                                                    'training DataFrame for '
                                                    'errors'),
         ("PoissonModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
-         'Hannover 96: 60.6%'),
+         'Hannover 96: 72.8%'),
         ("PoissonModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
-         'Draw: 0.0%'),
+         'Hamburger SV: 46.3%'),
         ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09',
-         'Hertha BSC', 'BV Borussia Dortmund 09: 39.6%'),
+         'Hertha BSC', 'Hertha BSC: 41.8%'),
         ("PoissonModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
-         'FC Schalke 04: 42.9%'),
+         'Werder Bremen: 70.4%'),
     ])
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
@@ -125,6 +127,7 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
         (no_matchups, 0, 2, 1, 1 / 3, 7 / 3),
         (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
         (missing_column, 0, 0, 0, None, None)
+        # TODO: add crawler test
     ])
 def test_stats(trainset,
                expected_home_team_wins,

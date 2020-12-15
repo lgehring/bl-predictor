@@ -1,16 +1,22 @@
 # Use this file to test your crawler.
 
-from teamproject import crawler
 import pandas as pd
+import pandas.api.types as ptypes
 import pytest
+
+from teamproject import crawler
 
 
 def test_fetch_data():
-    data = crawler.fetch_data([1, 2014], [1, 2014])
+    data = crawler.fetch_data([1, 2010], [12, 2015])
     assert isinstance(data, pd.DataFrame)
+    assert all(ptypes.is_numeric_dtype(data[col])
+               for col in ['home_score', 'guest_score'])
+    assert all(ptypes.is_string_dtype(data[col])
+               for col in ['home_team', 'guest_team'])
+    assert ptypes.is_datetime64_any_dtype(data['date_time'])
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
-    assert (data.home_team != data.guest_team).all()
 
 
 @pytest.mark.parametrize(
@@ -34,4 +40,4 @@ def test_test_curate_urls(start_date, end_date, index, expected):
         assert crawler.urls[index] == expected
     else:
         assert crawler.urls == expected
-    crawler.urls = []
+    crawler.urls = []  # delete to crawl urls
