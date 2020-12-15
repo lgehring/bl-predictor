@@ -143,8 +143,8 @@ class Slider(Frame):
             self.canv.delete(idents)
         self.bars[idx]["Ids"] = self.__add_bar(pos)
         self.bars[idx]["Pos"] = pos
-        self.bars[idx]["Value"] = (pos * (self.max_val - self.min_val) +
-                                   self.min_val)
+        self.bars[idx]["Value"] = (pos * (self.max_val - self.min_val)
+                                   + self.min_val)
 
     def __calc_pos(self, x):
         """calculate position from x coordinate"""

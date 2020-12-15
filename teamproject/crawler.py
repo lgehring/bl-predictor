@@ -28,6 +28,13 @@ def fetch_data(start_date, end_date):
     process.crawl(OpenLigaSpider)
     process.start()
     urls = []
+
+    # covert DataFrame columns from object to int
+    matches['home_score'] = matches['home_score'].astype('int')
+    matches['guest_score'] = matches['guest_score'].astype('int')
+    matches['home_team'] = matches['home_team'].astype('str')
+    matches['guest_team'] = matches['guest_team'].astype('str')
+    matches['date_time'] = matches['date_time'].astype('datetime64')
     return matches
 
 
