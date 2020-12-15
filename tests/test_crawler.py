@@ -9,6 +9,7 @@ from teamproject import crawler
 
 def test_fetch_data():
     data = crawler.fetch_data([1, 2010], [12, 2015])
+    crawler.urls = []
     assert isinstance(data, pd.DataFrame)
     assert all(ptypes.is_numeric_dtype(data[col])
                for col in ['home_score', 'guest_score'])
@@ -36,8 +37,8 @@ def test_fetch_data():
     ])
 def test_test_curate_urls(start_date, end_date, index, expected):
     crawler.curate_urls(start_date, end_date)
+    crawler.urls = []
     if index is not None:
         assert crawler.urls[index] == expected
     else:
         assert crawler.urls == expected
-    crawler.urls = []  # delete to crawl urls
