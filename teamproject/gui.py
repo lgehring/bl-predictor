@@ -56,29 +56,32 @@ class MainWindow:
         first_day_of_season = 1
         last_day_of_season = 34
 
-        current_season = fetch_data([first_day_of_season, current_year], [last_day_of_season, current_year])
+        current_season = fetch_data([first_day_of_season, current_year],
+                                    [last_day_of_season, current_year])
 
-        count = 0
         for i in range(9):
-            if current_season['matchday'][i] != current_season['matchday'][i + 1]:
+            if current_season['matchday'][i] \
+                    != current_season['matchday'][i + 1]:
                 if i == 8:
                     matchday = current_season.head(9)
                 else:
-                    matchday = current_season.loc[i:i+8]
+                    matchday = current_season.loc[i:i + 8]
         upcoming_matchday = current_season['matchday'][0]
 
-        matchday_label = tk.Label(text="Upcoming Matchday: Matchday " + str(upcoming_matchday))
+        matchday_label = tk.Label(text=
+                                  "Upcoming Matchday: Matchday " + str(upcoming_matchday))
         matchday_label.pack()
 
         matchdaygames_label = tk.Label(text="Upcoming Matches: ")
         matchdaygames_label.pack()
 
         for i in range(9):
-            #shows date and time of each match
+            # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
-            #shows match
-            season_label = tk.Label(text=matchday['home_team'][i] + " vs " + matchday['guest_team'][i])
+            # shows match
+            season_label = tk.Label(text=
+                                    matchday['home_team'][i] + " vs " + matchday['guest_team'][i])
             season_label.pack()
 
     def _timeframe_slider(self):

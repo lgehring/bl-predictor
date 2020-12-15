@@ -47,7 +47,6 @@ def convertdf(dataframe):
     dataframe['date_time'] = dataframe['date_time'].astype('datetime64')
 
 
-
 def incorrect_dates(start_date, end_date):
     """Were any matches on those days?"""
     days = [start_date[0], end_date[0]]
@@ -131,4 +130,4 @@ def crawl_openligadb(url):
                     -1,  # h
                     -1,  # g
                     jsonresponse[game]['team2']['teamName']  # guest_t]
-]
+                ]
