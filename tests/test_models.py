@@ -4,7 +4,7 @@ This file is used for testing models in a variety of cases
 
 import pandas as pd
 import pytest
-
+from teamproject import crawler
 from teamproject import models
 
 norm_train = pd.DataFrame([
@@ -51,6 +51,7 @@ missing_column = pd.DataFrame([
     [3, 'A'],
 ], columns=['home_score', 'guest_team'])
 
+test_crawler_data = crawler.fetch_data([1, 2002], [1, 2003])
 
 # Models testsuite
 @pytest.mark.parametrize(
@@ -92,8 +93,17 @@ missing_column = pd.DataFrame([
                                                'errors'),
         ("PoissonModel", missing_column, 'C', 'B', 'Prediction failed. Check '
                                                    'training DataFrame for '
-                                                   'errors')
+                                                   'errors'),
+        ("PoissonModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
+         'Hannover 96: 60.6%'),
+        ("PoissonModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
+         'Draw: 0.0%'),
+        ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09', 'Hertha BSC',
+          'BV Borussia Dortmund 09: 39.6%'),
+        ("PoissonModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
+         'FC Schalke 04: 42.9%'),
     ])
+
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
     winner = trained_model.predict_winner
