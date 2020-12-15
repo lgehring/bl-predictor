@@ -33,5 +33,5 @@ def test_test_curate_urls(start_date, end_date, index, expected):
     if index is not None:
         assert crawler.urls[index] == expected
     else:
-        crawler.urls == expected
+        assert crawler.urls == expected
     crawler.urls = []
