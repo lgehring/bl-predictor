@@ -74,7 +74,11 @@ class MainWindow:
         matchdaygames_label.pack()
 
         for i in range(9):
-            season_label = tk.Label(text=matchday['home_team'][i] + " gegen " + matchday['guest_team'][i])
+            #shows date and time of each match
+            day_label = tk.Label(text=matchday['date_time'][i])
+            day_label.pack()
+            #shows match
+            season_label = tk.Label(text=matchday['home_team'][i] + " vs " + matchday['guest_team'][i])
             season_label.pack()
 
     def _timeframe_slider(self):
