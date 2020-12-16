@@ -15,16 +15,15 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2.0.1
         with:
           python-version: 3.8
+          auto-update-conda: true
 
       - name: Install dependencies
         run: |
-          pip install flake8
-          python -m pip install --upgrade pip
-          pip install flake8 pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          conda install flake8
+          if [ -f requirements.txt ]; then conda install --file requirements.txt; fi
       
       - name: Install teamproject package
-        run: pip install -e .[teamproject]
+        run: conda install -e .[teamproject]
 
       - name: Run linters
         uses: wearerequired/lint-action@v1
