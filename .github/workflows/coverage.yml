@@ -3,7 +3,7 @@
 
 name: Calculate coverage
 
-on: [pull_request]
+on: [push]
 
 jobs:
   build:
