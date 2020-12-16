@@ -11,11 +11,22 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
-      # Install your linters here
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          pip install flake8
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run linters
         uses: wearerequired/lint-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Enable your linters here
+          # Enable linters
           flake8: true
+          flake8_args: "--ignore W503"
