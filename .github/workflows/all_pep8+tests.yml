@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  pytest and flake8:
+  pytest&flake8:
     runs-on: ubuntu-latest
 
     steps:
