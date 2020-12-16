@@ -1,0 +1,35 @@
+name: Lint with flake8
+
+on: push
+
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          pip install flake8
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Install teamproject package
+        run: pip install -e .[teamproject]
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Enable linters
+          flake8: true
+          flake8_args: "--ignore W503"
