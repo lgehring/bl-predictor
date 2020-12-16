@@ -11,8 +11,8 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v1
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2.0.1
         with:
           python-version: 3.8
 
