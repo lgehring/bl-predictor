@@ -15,11 +15,10 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2.0.1
         with:
           python-version: 3.8
+          auto-update-conda: true
 
       - name: Install dependencies
         run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          $CONDA/bin/conda env update --file environment.yml --name base
           conda install flake8
           if [ -f requirements.txt ]; then conda install -r requirements.txt; fi
       
