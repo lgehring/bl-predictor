@@ -22,6 +22,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Install teamproject package
+        run: pip install -e .[teamproject]
 
       - name: Run linters
         uses: wearerequired/lint-action@v1
