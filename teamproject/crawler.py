@@ -26,6 +26,8 @@ def fetch_data(start_date, end_date):
     start_date, end_date : 'list' ['int']
         The first element of the list is the match day and
         the second element of the list is the year.
+        You can get the unfinished matches of the current season by entering 0
+        for both start_date and end_date.
 
     Returns
     _______
@@ -34,7 +36,12 @@ def fetch_data(start_date, end_date):
         start_date and end_date.
     """
     global urls
-    curate_urls(start_date, end_date)
+
+    if start_date[1] == 0 & end_date[1] == 0:
+        current = datetime.date.today().year
+        curate_urls([1, current], [34, current])
+    else:
+        curate_urls(start_date, end_date)
     # initialize and start crawling
 
     crawl_openligadb(urls)
@@ -42,7 +49,7 @@ def fetch_data(start_date, end_date):
     urls = []
 
     # covert DataFrame columns from object to int
-    if start_date[1] == end_date[1]:
+    if start_date[1] == 0 & end_date[1] == 0:
         convertdf(unfinished_matches)
         return unfinished_matches
     else:
