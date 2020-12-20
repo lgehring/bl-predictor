@@ -56,16 +56,15 @@ class MainWindow:
         first_day_of_season = 1
         last_day_of_season = 34
 
-        current_season = fetch_data([first_day_of_season, current_year],
-                                    [last_day_of_season, current_year])
+        current_season = fetch_data([first_day_of_season, 0],
+                                    [last_day_of_season, 0])
 
         for i in range(9):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
-                if i == 8:
-                    matchday = current_season.head(9)
-                else:
-                    matchday = current_season.loc[i:i + 8]
+                first_game = i+1
+                matchday = current_season.loc[i+1:i + 9]
+
         upcoming_matchday = current_season['matchday'][0]
 
         matchday_label = \
@@ -76,7 +75,7 @@ class MainWindow:
         matchdaygames_label = tk.Label(text="Upcoming Matches: ")
         matchdaygames_label.pack()
 
-        for i in range(9):
+        for i in range(first_game, first_game + 8):
             # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
