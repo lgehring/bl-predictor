@@ -51,8 +51,6 @@ class MainWindow:
         date_label = tk.Label(text=now)
         date_label.pack()
 
-        current_year = now.year
-
         first_day_of_season = 1
         last_day_of_season = 34
 
@@ -62,8 +60,8 @@ class MainWindow:
         for i in range(9):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
-                first_game = i+1
-                matchday = current_season.loc[i+1:i + 9]
+                first_game = i + 1
+                matchday = current_season.loc[i + 1:i + 9]
 
         upcoming_matchday = current_season['matchday'][0]
 
