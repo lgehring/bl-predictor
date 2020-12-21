@@ -5,6 +5,7 @@ it to a pd.DataFrame.
 
 import concurrent.futures
 import datetime
+import json
 
 import pandas as pd
 import requests
@@ -99,52 +100,44 @@ def curate_urls(start_date, end_date):
     return urls
 
 
-def crawl_openligadb(wanted_urls):
-    max_threads = 34
-    threads = min(max_threads, len(wanted_urls))
+def crawl_openligadb(url):
+    """Crawls through the given urls
+    and safes the useful data in the dataframe 'matches'.
+    Parameters
+    __________
+    url : 'list' ['str']
+        List with URLs to scrape.
+    """
+    to_crawl = url
 
-    with concurrent.futures.ThreadPoolExecutor(
-            max_workers=threads) as executor:
-        executor.map(download_url, wanted_urls)
+    while to_crawl:
+        current_url = to_crawl.pop(0)
+        r = requests.get(current_url)
+        jsonresponse = r.content
+        jsonresponse = json.loads(jsonresponse)
 
-
-def download_url(url):
-    with open('crawled_data', "wb") as fh:
-        fh.write(requests.get(url).content)
-
-
-def parse():
-    pass
-    # TODO read json file
-    # with open('crawled_data') as json_file:
-    #     data = json.load(json_file)
-    #     for p in data['people']:
-    #         print('Name: ' + p['name'])
-    #         print('Website: ' + p['website'])
-    #         print('From: ' + p['from'])
-    #         print('')
-
-    # for game in range(len(jsonresponse)):  # all matches in scrape
-    #     # appends response item-array to matches, !ORDER SENSITIVE!
-    #     if jsonresponse[game]['matchIsFinished']:
-    #         matches_length = len(matches)
-    #         matches.loc[matches_length] = [
-    #             jsonresponse[game]['matchDateTime'],  # match_date_time
-    #             jsonresponse[game]['group']["groupOrderID"],  # matchday
-    #             jsonresponse[game]['team1']['teamName'],  # home_t
-    #             jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h
-    #             jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g
-    #             jsonresponse[game]['team2']['teamName']]  # guest_t]
-    #     else:
-    #         unfinished_matches_length = len(unfinished_matches)
-    #         unfinished_matches.loc[unfinished_matches_length] = [
-    #             jsonresponse[game]['matchDateTime'],  # match_date_time
-    #             jsonresponse[game]['group']["groupOrderID"],  # matchday
-    #             jsonresponse[game]['team1']['teamName'],  # home_t
-    #             -1,  # h
-    #             -1,  # g
-    #             jsonresponse[game]['team2']['teamName']]  # guest_t
+        for game in range(len(jsonresponse)):  # all matches in scrape
+            # appends response item-array to matches, !ORDER SENSITIVE!
+            if jsonresponse[game]['matchIsFinished']:
+                matches_length = len(matches)
+                matches.loc[matches_length] = [
+                    jsonresponse[game]['matchDateTime'],  # match_date_time
+                    jsonresponse[game]['group']["groupOrderID"],  # matchday
+                    jsonresponse[game]['team1']['teamName'],  # home_t
+                    jsonresponse[game]['matchResults'][0]['pointsTeam1'],  # h
+                    jsonresponse[game]['matchResults'][0]['pointsTeam2'],  # g
+                    jsonresponse[game]['team2']['teamName']  # guest_t]
+                ]
+            else:
+                unfinished_matches_length = len(unfinished_matches)
+                unfinished_matches.loc[unfinished_matches_length] = [
+                    jsonresponse[game]['matchDateTime'],  # match_date_time
+                    jsonresponse[game]['group']["groupOrderID"],  # matchday
+                    jsonresponse[game]['team1']['teamName'],  # home_t
+                    -1,  # h
+                    -1,  # g
+                    jsonresponse[game]['team2']['teamName']  # guest_t]
+                ]
 
 
-# print(fetch_data([1, 2014], [34, 2017]))
-parse()
+
