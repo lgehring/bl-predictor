@@ -3,7 +3,6 @@ This module contains code to fetch required data from the internet and convert
 it to a pd.DataFrame.
 """
 
-import concurrent.futures
 import datetime
 import json
 
@@ -138,6 +137,3 @@ def crawl_openligadb(url):
                     -1,  # g
                     jsonresponse[game]['team2']['teamName']  # guest_t]
                 ]
-
-
-
