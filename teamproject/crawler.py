@@ -2,10 +2,8 @@
 This module contains code to fetch required data from the internet and convert
 it to a pd.DataFrame.
 """
-
 import datetime
 import json
-
 import pandas as pd
 import requests
 
@@ -14,21 +12,20 @@ columns = ['date_time', 'matchday', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
-urls = []
 
 
 def fetch_data(start_date, end_date):
     """
-    global urls
+    Query sample data from "the internet" and return as pd.DataFrame.
+    """
 
     # initialize and start crawling
 
-    crawl_openligadb(urls)
-
-    urls = []
+    wanted_urls = curate_urls(start_date, end_date)
+    crawl_openligadb(wanted_urls)
 
     # covert DataFrame columns from object to int
-    if start_date[1] == 0 & end_date[1] == 0:
+    if start_date == end_date == (0, 0):
         convertdf(unfinished_matches)
         return unfinished_matches
     else:
