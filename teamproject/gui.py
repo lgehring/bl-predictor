@@ -57,7 +57,6 @@ class MainWindow:
         current_season = fetch_data([first_day_of_season, 0],
                                     [last_day_of_season, 0])
 
-
         for i in range(9):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
