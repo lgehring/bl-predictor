@@ -2,10 +2,8 @@
 This module contains code to fetch required data from the internet and convert
 it to a pd.DataFrame.
 """
-
 import datetime
 import json
-
 import pandas as pd
 import requests
 
@@ -63,15 +61,11 @@ def incorrect_dates(start_date, end_date):
 
 def dict_of_gamedays(game_days, start_season, start_day, end_season, end_day):
     """
-    :param game_days: {}
-    :param start_season: int
-    :param start_day: int
-    :param end_season: int
-    :param end_day: int
-    :return: dictionary of seasons and gamedays
+    :param game_days: {} :param start_season: int :param start_day: int
+    :param end_season: int :param end_day: int :return: dictionary,seasons
+    as key, combined with their gamedays. Empty list of days means full season
     """
-    seasons_between_dates = end_season - start_season
-    if seasons_between_dates == 0:
+    if end_season == start_season:
         game_days = {
             start_season: list(range(start_day, end_day + 1))}
     else:
@@ -93,7 +87,6 @@ def dict_of_gamedays(game_days, start_season, start_day, end_season, end_day):
 def curate_urls(start_date, end_date):
     """
     Expects a timeperiod. Gameday and season as an array, in that order.
-
     :param start_date: [int]
     :param end_date: [int]
     :return: List of urls of matches from each gameday in the given

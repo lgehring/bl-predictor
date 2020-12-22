@@ -1,11 +1,12 @@
 # Use this file to test your crawler.
 
-
+import pandas as pd
+import pandas.api.types as ptypes
 import pytest
 
 from teamproject import crawler
 
-'''
+
 def test_fetch_data():
     data = crawler.fetch_data([1, 2010], [12, 2015])
     assert isinstance(data, pd.DataFrame)
@@ -16,7 +17,6 @@ def test_fetch_data():
     assert ptypes.is_datetime64_any_dtype(data['date_time'])
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
-'''
 
 
 @pytest.mark.parametrize(
