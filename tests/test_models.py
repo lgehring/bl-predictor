@@ -1,11 +1,10 @@
 """
 This file is used for testing models in a variety of cases
 """
-# test
+
 import pandas as pd
 import pytest
 
-from teamproject import crawler
 from teamproject import models
 
 norm_train = pd.DataFrame([
@@ -52,8 +51,6 @@ missing_column = pd.DataFrame([
     [3, 'A'],
 ], columns=['home_score', 'guest_team'])
 
-test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
-
 
 # Models testsuite
 @pytest.mark.parametrize(
@@ -75,14 +72,6 @@ test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
         ("FrequencyModel", missing_column, 'C', 'B', 'Prediction failed. '
                                                      'Check training '
                                                      'DataFrame for errors'),
-        ("FrequencyModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
-         'Draw'),
-        ("FrequencyModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
-         'Draw'),
-        ("FrequencyModel", test_crawler_data, 'BV Borussia Dortmund 09',
-         'Hertha BSC', 'Draw'),
-        ("FrequencyModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
-         'FC Schalke 04'),
         # PoissonModel tests
         ("PoissonModel", norm_train, 'A', 'B', 'A: 57.6%'),
         ("PoissonModel", norm_train, 'B', 'A', 'B: 80.3%'),
@@ -103,15 +92,7 @@ test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
                                                'errors'),
         ("PoissonModel", missing_column, 'C', 'B', 'Prediction failed. Check '
                                                    'training DataFrame for '
-                                                   'errors'),
-        ("PoissonModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
-         'Hamburger SV: 38.2%'),
-        ("PoissonModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
-         'Hannover 96: 53.3%'),
-        ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09',
-         'Hertha BSC', 'BV Borussia Dortmund 09: 77.1%'),
-        ("PoissonModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
-         'FC Schalke 04: 64.0%'),
+                                                   'errors')
     ])
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
@@ -133,9 +114,7 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
         (empty_data, 0, 0, 0, None, None),
         (no_matchups, 0, 2, 1, 1 / 3, 7 / 3),
         (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
-        (missing_column, 0, 0, 0, None, None),
-        (test_crawler_data, 704, 465, 370, 1.6426250812215724,
-         1.2735542560103963)
+        (missing_column, 0, 0, 0, None, None)
     ])
 def test_stats(trainset,
                expected_home_team_wins,
