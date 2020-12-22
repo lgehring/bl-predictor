@@ -14,7 +14,6 @@ matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
 
 
-
 def fetch_data(start_date, end_date):
     """Query sample data from "the internet"
     and return as pd.DataFrame.
@@ -33,9 +32,6 @@ def fetch_data(start_date, end_date):
         Dataframe, that contains all the matches between
         start_date and end_date.
     """
-
-
-
     if start_date[1] == 0 & end_date[1] == 0:
         current = datetime.date.today().year
         curate_urls([1, current], [34, current])
@@ -44,8 +40,6 @@ def fetch_data(start_date, end_date):
     # initialize and start crawling
     urls = curate_urls(start_date, end_date)
     crawl_openligadb(urls)
-
-
 
     # covert DataFrame columns from object to int
     if start_date[1] == 0 & end_date[1] == 0:
@@ -67,7 +61,6 @@ def convertdf(dataframe):
     The dataframe that gets its elements converted.
 
     """
-
     dataframe['home_score'] = dataframe['home_score'].astype('int')
     dataframe['matchday'] = dataframe['matchday'].astype('int')
     dataframe['guest_score'] = dataframe['guest_score'].astype('int')
@@ -169,8 +162,6 @@ def curate_urls(start_date, end_date):
                   str(season)
             urls += [url]
     return urls
-
-
 
 
 def crawl_openligadb(url):
