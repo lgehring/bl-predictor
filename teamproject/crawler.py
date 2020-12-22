@@ -59,10 +59,13 @@ def incorrect_dates(start_date, end_date):
     return statement_day or statement_season
 
 
-def dict_of_gamedays(game_days, start_season, start_day, end_season, end_day):
+def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
     """
-    :param game_days: {} :param start_season: int :param start_day: int
-    :param end_season: int :param end_day: int :return: dictionary,seasons
+    :param game_days: {}
+    :param start_season: int
+    :param start_day: int
+    :param end_season: int
+    :param end_day: int :return: dictionary,seasons
     as key, combined with their gamedays. Empty list of days means full season
     """
     if end_season == start_season:
@@ -103,8 +106,8 @@ def curate_urls(start_date, end_date):
                          "2020")
     # Dictionary with season as key combined with number of gamedays as
     # list
-    game_days = dict_of_gamedays({}, start_season, start_day, end_season,
-                                 end_day)
+    game_days = dict_of_game_days({}, start_season, start_day, end_season,
+                                  end_day)
     # make list of urls for seasons and days
     for season in game_days:
         if game_days[season]:
