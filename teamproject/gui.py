@@ -51,7 +51,6 @@ class MainWindow:
         date_label = tk.Label(text=now)
         date_label.pack()
 
-
         first_day_of_season = 1
         last_day_of_season = 34
 
@@ -66,7 +65,6 @@ class MainWindow:
                 first_game = i + 1
                 matchday = current_season.loc[i + 1:i + 9]
 
-
         upcoming_matchday = current_season['matchday'][0]
 
         matchday_label = \
@@ -77,9 +75,7 @@ class MainWindow:
         matchdaygames_label = tk.Label(text="Upcoming Matches: ")
         matchdaygames_label.pack()
 
-
         for i in range(first_game, first_game + 8):
-
             # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
