@@ -60,6 +60,7 @@ class MainWindow:
         for i in range(9):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
+
                 first_game = i + 1
                 matchday = current_season.loc[i + 1:i + 9]
 
