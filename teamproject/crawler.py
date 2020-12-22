@@ -2,8 +2,10 @@
 This module contains code to fetch required data from the internet and convert
 it to a pd.DataFrame.
 """
+
 import datetime
 import json
+
 import pandas as pd
 import requests
 
@@ -12,20 +14,40 @@ columns = ['date_time', 'matchday', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
+urls = []
 
 
 def fetch_data(start_date, end_date):
+    """Query sample data from "the internet"
+    and return as pd.DataFrame.
+    Parameters
+    __________
+    start_date, end_date : 'list' ['int']
+        The first element of the list is the match day and
+        the second element of the list is the year.
+        You can get the unfinished matches of the current season by entering 0
+        for both start_date and end_date.
+    Returns
+    _______
+    matches : 'Dataframe'
+        Dataframe, that contains all the matches between
+        start_date and end_date.
     """
-    Query sample data from "the internet" and return as pd.DataFrame.
-    """
+    global urls
 
+    if start_date[1] == 0 & end_date[1] == 0:
+        current = datetime.date.today().year
+        curate_urls([1, current], [34, current])
+    else:
+        curate_urls(start_date, end_date)
     # initialize and start crawling
 
-    wanted_urls = curate_urls(start_date, end_date)
-    crawl_openligadb(wanted_urls)
+    crawl_openligadb(urls)
+
+    urls = []
 
     # covert DataFrame columns from object to int
-    if start_date == end_date == (0, 0):
+    if start_date[1] == 0 & end_date[1] == 0:
         convertdf(unfinished_matches)
         return unfinished_matches
     else:
@@ -34,6 +56,13 @@ def fetch_data(start_date, end_date):
 
 
 def convertdf(dataframe):
+    """Takes a dataframe and converts the elements into types
+    that can be more useful.
+    Parameters
+    __________
+    dataframe : 'dataframe'
+    The dataframe that gets its elements converted.
+    """
     dataframe['home_score'] = dataframe['home_score'].astype('int')
     dataframe['matchday'] = dataframe['matchday'].astype('int')
     dataframe['guest_score'] = dataframe['guest_score'].astype('int')
