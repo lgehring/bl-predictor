@@ -2,10 +2,8 @@
 This module contains code to fetch required data from the internet and convert
 it to a pd.DataFrame.
 """
-
 import datetime
 import json
-
 import pandas as pd
 import requests
 
@@ -14,7 +12,6 @@ columns = ['date_time', 'matchday', 'home_team', 'home_score', 'guest_score',
            'guest_team']
 matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
-urls = []
 
 
 def fetch_data(start_date, end_date):
@@ -35,18 +32,14 @@ def fetch_data(start_date, end_date):
         Dataframe, that contains all the matches between
         start_date and end_date.
     """
-    global urls
-
     if start_date[1] == 0 & end_date[1] == 0:
         current = datetime.date.today().year
         curate_urls([1, current], [34, current])
     else:
         curate_urls(start_date, end_date)
     # initialize and start crawling
-
+    urls = curate_urls(start_date, end_date)
     crawl_openligadb(urls)
-
-    urls = []
 
     # covert DataFrame columns from object to int
     if start_date[1] == 0 & end_date[1] == 0:
@@ -58,6 +51,7 @@ def fetch_data(start_date, end_date):
 
 
 def convertdf(dataframe):
+
     """Takes a dataframe and converts the elements into types
     that can be more useful.
 
@@ -92,54 +86,82 @@ def incorrect_dates(start_date, end_date):
     """
     days = [start_date[0], end_date[0]]
     seasons = [start_date[1], end_date[1]]
-    statement_d = False
-    statement_s = False
+    statement_day = False
+    statement_season = False
     for date in days:
         # each season has 35 gamedays
-        statement_d = 0 == date or date > 35 or statement_d
+        statement_day = 0 == date or date > 35 or statement_day
     for season in seasons:
         # first season was in 1963
-        statement_s = (1963 > season
-                       or season > datetime.datetime.now().year
-                       or statement_s)
-    return statement_d or statement_s
+        statement_season = (1963 > season
+                            or season > datetime.datetime.now().year
+                            or statement_season)
+    return statement_day or statement_season
+
+
+def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
+    """
+    :param game_days: {}
+    :param start_season: int
+    :param start_day: int
+    :param end_season: int
+    :param end_day: int :return: dictionary,seasons
+    as key, combined with their gamedays. Empty list of days means full season
+    """
+    if end_season == start_season:
+        game_days = {
+            start_season: list(range(start_day, end_day + 1))}
+    else:
+        if start_day != 1:
+            game_days = {start_season: list(range(start_day, 35))}
+        else:
+            game_days[start_season] = []
+        # adding seasons between the dates
+        for seasons in range(start_season + 1, end_season):
+            game_days[seasons] = []
+        # adding last season we want to look at
+        if end_day != 34:
+            game_days[end_season] = list(range(1, end_day + 1))
+        else:
+            game_days[end_season] = []
+    return game_days
 
 
 def curate_urls(start_date, end_date):
-    """Gathers the URLs for scraping and saves it
-    in the global variable 'urls'.
 
-    Parameters
-    __________
-    start_date, end_date : 'list' ['int']
-        The first element of the list is the match day and
-        the second element of the list is the year.
     """
-    global urls
-    seasons_time_range = end_date[1] - start_date[1]
+    Expects a timeperiod. Gameday and season as an array, in that order.
+    :param start_date: [int]
+    :param end_date: [int]
+    :return: List of urls of matches from each gameday in the given
+            time period
 
+    """
+    start_season = start_date[1]
+    end_season = end_date[1]
+    end_day = end_date[0]
+    start_day = start_date[0]
+    urls = []
     if incorrect_dates(start_date, end_date):
         raise ValueError("there has been no match on this day."
                          "Matches are 34 days per season from 1963 to "
                          "2020")
     # Dictionary with season as key combined with number of gamedays as
     # list
-    if seasons_time_range == 0:
-        days = {
-            start_date[1]: list(range(start_date[0], end_date[0] + 1))}
-    else:
-        days = {start_date[1]: list(range(start_date[0], 35))}
-        # adding seasons between the dates
-        for x in range(start_date[1] + 1, end_date[1]):
-            days[x] = list(range(1, 35))
-        # adding last season we want to look at
-        days[end_date[1]] = list(range(1, end_date[0] + 1))
-    # make url for each day
-    for season in days:
-        for day in days[season]:
+    game_days = dict_of_game_days({}, start_season, start_day, end_season,
+                                  end_day)
+    # make list of urls for seasons and days
+    for season in game_days:
+        if game_days[season]:
+            for day in game_days[season]:
+                url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
+                      str(season) + '/' + str(day)
+                urls += [url]
+        else:
             url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
-                  str(season) + '/' + str(day)
-            urls = urls + [url]
+                  str(season)
+            urls += [url]
+    return urls
 
 
 def crawl_openligadb(url):
