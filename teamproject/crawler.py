@@ -14,18 +14,41 @@ matches = pd.DataFrame([], columns=columns)  # empty df to fill
 unfinished_matches = pd.DataFrame([], columns=columns)
 
 
+
 def fetch_data(start_date, end_date):
-    """
-    Query sample data from "the internet" and return as pd.DataFrame.
+    """Query sample data from "the internet"
+    and return as pd.DataFrame.
+
+    Parameters
+    __________
+    start_date, end_date : 'list' ['int']
+        The first element of the list is the match day and
+        the second element of the list is the year.
+        You can get the unfinished matches of the current season by entering 0
+        for both start_date and end_date.
+
+    Returns
+    _______
+    matches : 'Dataframe'
+        Dataframe, that contains all the matches between
+        start_date and end_date.
     """
 
+    global urls
+
+    if start_date[1] == 0 & end_date[1] == 0:
+        current = datetime.date.today().year
+        curate_urls([1, current], [34, current])
+    else:
+        curate_urls(start_date, end_date)
     # initialize and start crawling
 
-    wanted_urls = curate_urls(start_date, end_date)
-    crawl_openligadb(wanted_urls)
+    crawl_openligadb(urls)
+
+    urls = []
 
     # covert DataFrame columns from object to int
-    if start_date == end_date == (0, 0):
+    if start_date[1] == 0 & end_date[1] == 0:
         convertdf(unfinished_matches)
         return unfinished_matches
     else:
@@ -34,6 +57,17 @@ def fetch_data(start_date, end_date):
 
 
 def convertdf(dataframe):
+
+    """Takes a dataframe and converts the elements into types
+    that can be more useful.
+
+    Parameters
+    __________
+    dataframe : 'dataframe'
+    The dataframe that gets its elements converted.
+
+    """
+
     dataframe['home_score'] = dataframe['home_score'].astype('int')
     dataframe['matchday'] = dataframe['matchday'].astype('int')
     dataframe['guest_score'] = dataframe['guest_score'].astype('int')
@@ -43,7 +77,20 @@ def convertdf(dataframe):
 
 
 def incorrect_dates(start_date, end_date):
-    """Were any matches on those days?"""
+    """Checks if the submitted dates are correct.
+
+    Parameters
+    __________
+    start_date, end_date : 'list' ['int']
+        The first element of the list is the match day and
+        the second element of the list is the year.
+
+    Returns
+    _______
+        valid : 'boolean'
+            Result for checking start_date and end_date
+
+    """
     days = [start_date[0], end_date[0]]
     seasons = [start_date[1], end_date[1]]
     statement_day = False
@@ -88,12 +135,14 @@ def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
 
 
 def curate_urls(start_date, end_date):
+
     """
     Expects a timeperiod. Gameday and season as an array, in that order.
     :param start_date: [int]
     :param end_date: [int]
     :return: List of urls of matches from each gameday in the given
             time period
+
     """
     start_season = start_date[1]
     end_season = end_date[1]
@@ -122,9 +171,12 @@ def curate_urls(start_date, end_date):
     return urls
 
 
+
+
 def crawl_openligadb(url):
     """Crawls through the given urls
     and safes the useful data in the dataframe 'matches'.
+
     Parameters
     __________
     url : 'list' ['str']
