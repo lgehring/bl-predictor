@@ -18,28 +18,9 @@ urls = []
 
 
 def fetch_data(start_date, end_date):
-    """Query sample data from "the internet"
-    and return as pd.DataFrame.
-    Parameters
-    __________
-    start_date, end_date : 'list' ['int']
-        The first element of the list is the match day and
-        the second element of the list is the year.
-        You can get the unfinished matches of the current season by entering 0
-        for both start_date and end_date.
-    Returns
-    _______
-    matches : 'Dataframe'
-        Dataframe, that contains all the matches between
-        start_date and end_date.
     """
     global urls
 
-    if start_date[1] == 0 & end_date[1] == 0:
-        current = datetime.date.today().year
-        curate_urls([1, current], [34, current])
-    else:
-        curate_urls(start_date, end_date)
     # initialize and start crawling
 
     crawl_openligadb(urls)
@@ -56,13 +37,6 @@ def fetch_data(start_date, end_date):
 
 
 def convertdf(dataframe):
-    """Takes a dataframe and converts the elements into types
-    that can be more useful.
-    Parameters
-    __________
-    dataframe : 'dataframe'
-    The dataframe that gets its elements converted.
-    """
     dataframe['home_score'] = dataframe['home_score'].astype('int')
     dataframe['matchday'] = dataframe['matchday'].astype('int')
     dataframe['guest_score'] = dataframe['guest_score'].astype('int')
