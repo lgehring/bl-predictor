@@ -34,7 +34,7 @@ def fetch_data(start_date, end_date):
         start_date and end_date.
     """
 
-    global urls
+
 
     if start_date[1] == 0 & end_date[1] == 0:
         current = datetime.date.today().year
@@ -42,10 +42,10 @@ def fetch_data(start_date, end_date):
     else:
         curate_urls(start_date, end_date)
     # initialize and start crawling
-
+    urls = curate_urls(start_date, end_date)
     crawl_openligadb(urls)
 
-    urls = []
+
 
     # covert DataFrame columns from object to int
     if start_date[1] == 0 & end_date[1] == 0:
