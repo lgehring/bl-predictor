@@ -1,7 +1,6 @@
 """
 This file is used for testing models in a variety of cases
 """
-
 import pandas as pd
 import pytest
 
@@ -92,7 +91,7 @@ missing_column = pd.DataFrame([
                                                'errors'),
         ("PoissonModel", missing_column, 'C', 'B', 'Prediction failed. Check '
                                                    'training DataFrame for '
-                                                   'errors')
+                                                   'errors'),
     ])
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
@@ -114,7 +113,7 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
         (empty_data, 0, 0, 0, None, None),
         (no_matchups, 0, 2, 1, 1 / 3, 7 / 3),
         (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
-        (missing_column, 0, 0, 0, None, None)
+        (missing_column, 0, 0, 0, None, None),
     ])
 def test_stats(trainset,
                expected_home_team_wins,
