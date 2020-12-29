@@ -4,6 +4,7 @@ it to a pd.DataFrame.
 """
 import datetime
 import json
+
 import pandas as pd
 import requests
 
@@ -32,13 +33,13 @@ def fetch_data(start_date, end_date):
         Dataframe, that contains all the matches between
         start_date and end_date.
     """
-    if start_date[1] == 0 & end_date[1] == 0:
-        current = datetime.date.today().year
-        curate_urls([1, current], [34, current])
+    if start_date == [0, 0] == end_date:
+        current_year = datetime.date.today().year
+        urls = curate_urls([1, current_year], [34, current_year])
     else:
         curate_urls(start_date, end_date)
+        urls = curate_urls(start_date, end_date)
     # initialize and start crawling
-    urls = curate_urls(start_date, end_date)
     crawl_openligadb(urls)
 
     # covert DataFrame columns from object to int
