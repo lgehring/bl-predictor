@@ -20,7 +20,7 @@ def test_fetch_data():
 
 
 @pytest.mark.parametrize(
-    "start_date, end_date, index, expected",
+    "start_date, end_date, index_of_url, expected",
     [  # curate urls tests
         ([1, 2014], [2, 2014], None, [
             'https://api.openligadb.de/getmatchdata/bl1/2014/1',
@@ -30,13 +30,13 @@ def test_fetch_data():
         ([1, 2014], [8, 2016], -1,
          "https://api.openligadb.de/getmatchdata/bl1/2016/8"),
         ([1, 2014], [8, 2016], 0,
-         "https://api.openligadb.de/getmatchdata/bl1/2014/1"),
-        ([1, 2014], [8, 2016], 35,
-         "https://api.openligadb.de/getmatchdata/bl1/2015/2")
+         "https://api.openligadb.de/getmatchdata/bl1/2014"),
+        ([1, 2014], [8, 2016], 1,
+         "https://api.openligadb.de/getmatchdata/bl1/2015")
     ])
-def test_test_curate_urls(start_date, end_date, index, expected):
+def test_test_curate_urls(start_date, end_date, index_of_url, expected):
     urls = crawler.curate_urls(start_date, end_date)
-    if index is not None:
-        assert urls[index] == expected
+    if index_of_url is not None:
+        assert urls[index_of_url] == expected
     else:
         assert urls == expected
