@@ -3,9 +3,9 @@ This module contains the GUI code.
 """
 
 import datetime
-from datetime import date
 import inspect
 import tkinter as tk
+from datetime import date
 
 import pandas as pd
 
@@ -38,7 +38,7 @@ class MainWindow:
         two teams that will be compared
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("500x700")
+        self.root.geometry("500x800")
 
         self._upcoming_matchday()
         self._timeframe_slider()
@@ -51,16 +51,12 @@ class MainWindow:
         date_label = tk.Label(text=now)
         date_label.pack()
 
-        first_day_of_season = 1
-        last_day_of_season = 34
-
-        current_season = fetch_data([first_day_of_season, 0],
-                                    [last_day_of_season, 0])
+        # signals crawler to crawl unfinished matches
+        current_season = fetch_data([0, 0], [0, 0])
 
         for i in range(9):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
-
                 first_game = i + 1
                 matchday = current_season.loc[i + 1:i + 9]
 
