@@ -34,13 +34,18 @@ def fetch_data(start_date, end_date):
         start_date and end_date.
     """
     if start_date == [0, 0] == end_date:
-        # TODO: fix: 2021 breaks unfinished_matches dataframe
-        # problem: matchplan for 2021 is not yet determined
-        # but current season ends in May 2021
-        # solution: only ask for unfinished matches up to
-        # last matchday of current season and ignore the upcoming season
+        # getting data from last match, therefore possible unfinished matches.
+        # fetch_data checks whether or not there is any data.
+        # If not it takes the data from one year before. This can also
+        # be unfinished matches (exp. 2020 matches are until may).
         current_year = datetime.date.today().year
-        urls = curate_urls([1, current_year], [34, current_year])
+        current_year_has_no_data = False or crawl_openligadb(
+            curate_urls([1, current_year], [1, current_year]))
+        if current_year_has_no_data:
+            last_data_year = datetime.date.today().year - 1
+            urls = curate_urls([1, last_data_year], [34, last_data_year])
+        else:
+            urls = curate_urls([1, current_year], [34, current_year])
     else:
         curate_urls(start_date, end_date)
         urls = curate_urls(start_date, end_date)
@@ -57,7 +62,6 @@ def fetch_data(start_date, end_date):
 
 
 def convertdf(dataframe):
-
     """Takes a dataframe and converts the elements into types
     that can be more useful.
 
@@ -134,7 +138,6 @@ def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
 
 
 def curate_urls(start_date, end_date):
-
     """
     Expects a timeperiod. Gameday and season as an array, in that order.
     :param start_date: [int]
@@ -186,6 +189,10 @@ def crawl_openligadb(urls):
         r = requests.get(current_url)
         jsonresponse = r.content
         jsonresponse = json.loads(jsonresponse)
+        # checks if there is any data yet for this/these day/s
+        # important for fetch_data
+        if not jsonresponse:
+            return True
 
         for game in range(len(jsonresponse)):  # all matches in scrape
             # appends response item-array to matches, !ORDER SENSITIVE!
