@@ -53,7 +53,6 @@ class MainWindow:
 
         # signals crawler to crawl unfinished matches
         current_season = fetch_data([0, 0], [0, 0])
-
         for i in range(9):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:

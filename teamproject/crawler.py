@@ -34,6 +34,11 @@ def fetch_data(start_date, end_date):
         start_date and end_date.
     """
     if start_date == [0, 0] == end_date:
+        # TODO: fix: 2021 breaks unfinished_matches dataframe
+        # problem: matchplan for 2021 is not yet determined
+        # but current season ends in May 2021
+        # solution: only ask for unfinished matches up to
+        # last matchday of current season and ignore the upcoming season
         current_year = datetime.date.today().year
         urls = curate_urls([1, current_year], [34, current_year])
     else:
@@ -165,7 +170,7 @@ def curate_urls(start_date, end_date):
     return urls
 
 
-def crawl_openligadb(url):
+def crawl_openligadb(urls):
     """Crawls through the given urls
     and safes the useful data in the dataframe 'matches'.
 
@@ -174,7 +179,7 @@ def crawl_openligadb(url):
     url : 'list' ['str']
         List with URLs to scrape.
     """
-    to_crawl = url
+    to_crawl = urls
 
     while to_crawl:
         current_url = to_crawl.pop(0)
