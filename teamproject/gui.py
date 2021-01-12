@@ -5,7 +5,9 @@ This module contains the GUI code.
 import datetime
 import inspect
 import tkinter as tk
+from tkinter import *
 from datetime import date
+from PIL import ImageTk, Image
 
 import pandas as pd
 
@@ -47,6 +49,7 @@ class MainWindow:
         self.root.mainloop()
 
     def _upcoming_matchday(self):
+
         now = date.today()
         date_label = tk.Label(text=now)
         date_label.pack()
@@ -70,6 +73,18 @@ class MainWindow:
         matchdaygames_label.pack()
 
         for i in range(first_game, first_game + 8):
+            #loads the logos into gui
+            self.image1 = Image.open("Logos\\" + matchday['home_team'][i] + ".png")
+            self.image2 = Image.open("Logos\\" + matchday['guest_team'][i] + ".png")
+            self.image1 = self.image1.resize((20, 20), Image.ANTIALIAS)
+            self.image2 = self.image2.resize((20, 20), Image.ANTIALIAS)
+            self.img1 = ImageTk.PhotoImage(self.image1)
+            self.img2 = ImageTk.PhotoImage(self.image2)
+            self.panel1 = tk.Label(self.root, image=self.img1)
+            self.panel2 = tk.Label(self.root, image=self.img2)
+            self.panel1.photo = self.img1
+            self.panel2.photo = self.img2
+
             # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
@@ -79,7 +94,9 @@ class MainWindow:
                     text=matchday['home_team'][i]
                     + " vs " + matchday['guest_team'][i]
                 )
+            self.panel1.pack()
             season_label.pack()
+            self.panel2.pack()
 
     def _timeframe_slider(self):
         date_label = tk.Label(text="Choose a period of time:")
