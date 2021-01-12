@@ -5,7 +5,6 @@ This module contains the GUI code.
 import datetime
 import inspect
 import tkinter as tk
-from tkinter import *
 from datetime import date
 from PIL import ImageTk, Image
 
@@ -73,9 +72,11 @@ class MainWindow:
         matchdaygames_label.pack()
 
         for i in range(first_game, first_game + 8):
-            #loads the logos into gui
-            self.image1 = Image.open("Logos\\" + matchday['home_team'][i] + ".png")
-            self.image2 = Image.open("Logos\\" + matchday['guest_team'][i] + ".png")
+            # loads the logos into gui
+            self.image1 = Image.open(
+                "Logos\\" + matchday['home_team'][i] + ".png")
+            self.image2 = Image.open(
+                "Logos\\" + matchday['guest_team'][i] + ".png")
             self.image1 = self.image1.resize((20, 20), Image.ANTIALIAS)
             self.image2 = self.image2.resize((20, 20), Image.ANTIALIAS)
             self.img1 = ImageTk.PhotoImage(self.image1)
