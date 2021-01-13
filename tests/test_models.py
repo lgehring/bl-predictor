@@ -78,7 +78,6 @@ missing_column = pd.DataFrame([
         ("PoissonModel", norm_train, 'C', 'A', 'C: 95.9%'),
         ("PoissonModel", norm_train, 'B', 'C', 'C: 64.0%'),
         ("PoissonModel", norm_train, 'C', 'B', 'C: 96.2%'),
-        ("PoissonModel", no_matchups, 'A', 'B', 'A: 72.3%'),
         ("PoissonModel", too_many_columns, 'A', 'B', 'B: 51.7%'),
         ("PoissonModel", nonsense_matches, 'B', 'C', 'Prediction failed. '
                                                      'Check training '
