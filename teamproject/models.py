@@ -107,9 +107,11 @@ class PoissonModel:
             sim_match = self._simulate_match(home_team, guest_team)
 
             # sum up lower triangle, upper triangle and diagonal probabilities
-            home_team_win_prob = np.sum(np.tril(sim_match, -1))
-            guest_team_win_prob = np.sum(np.triu(sim_match, 1))
-            draw_prob = np.sum(np.diag(sim_match))
+            home_team_win_prob = np.round(np.sum(np.tril(sim_match, -1)), 5)
+            guest_team_win_prob = np.round(np.sum(np.triu(sim_match, 1)), 5)
+            draw_prob = np.round(np.sum(np.diag(sim_match)), 5)
+
+            print(home_team_win_prob, guest_team_win_prob, draw_prob)
 
             if draw_prob >= home_team_win_prob and \
                     draw_prob >= guest_team_win_prob:
@@ -279,3 +281,13 @@ class WholeDataFrequencies:
         else:
             self.guest_team_avg_goals = (sum_of_guest_team_goals
                                          / num_of_guest_team_games)
+
+
+no_matchups = pd.DataFrame([
+    ['A', 0, 0, 'C'],
+    ['C', 1, 4, 'A'],
+    ['B', 0, 3, 'C'],
+], columns=[
+    'home_team', 'home_score', 'guest_score', 'guest_team'])
+
+print(PoissonModel(no_matchups).predict_winner('A', 'B'))
