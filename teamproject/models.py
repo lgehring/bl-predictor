@@ -111,12 +111,14 @@ class PoissonModel:
             guest_team_win_prob = np.sum(np.triu(sim_match, 1))
             draw_prob = np.sum(np.diag(sim_match))
 
-            if home_team_win_prob > guest_team_win_prob:
-                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
-            elif home_team_win_prob < guest_team_win_prob:
-                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
-            else:
+            if draw_prob >= home_team_win_prob and \
+                    draw_prob >= guest_team_win_prob:
                 return "Draw" + ": " + "{:.1%}".format(draw_prob)
+            elif home_team_win_prob > guest_team_win_prob:
+                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
+            else:
+                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
+
         except AttributeError:
             return 'Prediction failed. Check training DataFrame for errors'
 
