@@ -85,12 +85,12 @@ class MainWindow:
         date_label = tk.Label(text="Choose a period of time:")
         date_label.pack()
 
-        first_recorded_bl_year = 1964
+        first_recorded_bl_year = 2003  # 1964 openliga has only new matches
         self.slider = Slider(self.root, width=400,
                              height=60,
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year,
-                             init_lis=[first_recorded_bl_year,
+                             init_lis=[first_recorded_bl_year + 0.4,  # padding
                                        datetime.datetime.now().year],
                              show_value=True)
         self.slider.pack()

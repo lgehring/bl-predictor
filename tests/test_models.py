@@ -27,13 +27,6 @@ empty_data = pd.DataFrame([
 ], columns=[
     'home_team', 'home_score', 'guest_score', 'guest_team'])
 
-no_matchups = pd.DataFrame([
-    ['A', 0, 0, 'C'],
-    ['C', 1, 4, 'A'],
-    ['B', 0, 3, 'C'],
-], columns=[
-    'home_team', 'home_score', 'guest_score', 'guest_team'])
-
 too_many_columns = pd.DataFrame([
     ['A', 0, 0, 3, 'B'],
     ['A', 1, 1, 3, 'C'],
@@ -65,7 +58,6 @@ missing_column = pd.DataFrame([
         ("FrequencyModel", nonsense_matches, 'C', 'A', 'Not enough data'),
         ("FrequencyModel", empty_data, 'C', 'A', 'Not enough data'),
         ("FrequencyModel", empty_data, 'B', 'C', 'Not enough data'),
-        ("FrequencyModel", no_matchups, 'A', 'B', 'Not enough data'),
         ("FrequencyModel", empty_data, 'C', 'A', 'Not enough data'),
         ("FrequencyModel", too_many_columns, 'A', 'B', 'Draw'),
         ("FrequencyModel", missing_column, 'C', 'B', 'Prediction failed. '
@@ -78,7 +70,6 @@ missing_column = pd.DataFrame([
         ("PoissonModel", norm_train, 'C', 'A', 'C: 95.9%'),
         ("PoissonModel", norm_train, 'B', 'C', 'C: 64.0%'),
         ("PoissonModel", norm_train, 'C', 'B', 'C: 96.2%'),
-        ("PoissonModel", no_matchups, 'A', 'B', 'A: 72.3%'),
         ("PoissonModel", too_many_columns, 'A', 'B', 'B: 51.7%'),
         ("PoissonModel", nonsense_matches, 'B', 'C', 'Prediction failed. '
                                                      'Check training '
@@ -111,7 +102,6 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
         (norm_train, 2, 2, 2, 5 / 3, 4 / 3),
         (nonsense_matches, 2, 1, 0, 4 / 3, 333),
         (empty_data, 0, 0, 0, None, None),
-        (no_matchups, 0, 2, 1, 1 / 3, 7 / 3),
         (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
         (missing_column, 0, 0, 0, None, None),
     ])

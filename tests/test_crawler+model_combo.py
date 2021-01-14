@@ -17,8 +17,8 @@ test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
          'Draw'),
         ("FrequencyModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
          'Draw'),
-        ("FrequencyModel", test_crawler_data, 'BV Borussia Dortmund 09',
-         'Hertha BSC', 'Draw'),
+        ("FrequencyModel", test_crawler_data, 'VfB Stuttgart',
+         'FC Bayern München', 'FC Bayern München'),
         ("FrequencyModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
          'FC Schalke 04'),
         # PoissonModel tests
