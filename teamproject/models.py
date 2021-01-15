@@ -26,18 +26,21 @@ class PoissonModel:
 
     def __init__(self, trainset_df):
         """
-        Builds the poisson model.
+        Builds the poisson model and calculates a team ranking based on
+        the coefficients obtained from training.
 
         :param trainset_df:
          pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
         """
         self.poisson_model = None
+        self.team_ranking_df = None
 
         # In case of corrupt trainset_df:
         # Catch internal errors occurring in the smf.glm function
         # The problem is passed here but will be handled by predict_winner
         try:
             self._train_model(trainset_df)
+            self.team_ranking_df = self._calc_team_ranking()
         except (ValueError, KeyError):
             pass
 
@@ -107,18 +110,63 @@ class PoissonModel:
             sim_match = self._simulate_match(home_team, guest_team)
 
             # sum up lower triangle, upper triangle and diagonal probabilities
-            home_team_win_prob = np.sum(np.tril(sim_match, -1))
-            guest_team_win_prob = np.sum(np.triu(sim_match, 1))
-            draw_prob = np.sum(np.diag(sim_match))
+            home_team_win_prob = np.round(np.sum(np.tril(sim_match, -1)), 5)
+            guest_team_win_prob = np.round(np.sum(np.triu(sim_match, 1)), 5)
+            draw_prob = np.round(np.sum(np.diag(sim_match)), 5)
 
-            if home_team_win_prob > guest_team_win_prob:
-                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
-            elif home_team_win_prob < guest_team_win_prob:
-                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
-            else:
+            if draw_prob >= home_team_win_prob and \
+                    draw_prob >= guest_team_win_prob:
                 return "Draw" + ": " + "{:.1%}".format(draw_prob)
+            elif home_team_win_prob > guest_team_win_prob:
+                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
+            else:
+                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
+
         except AttributeError:
             return 'Prediction failed. Check training DataFrame for errors'
+
+    def _calc_team_ranking(self):
+        """
+        Uses the the trained coefficients of the model to rank all teams
+        when playing as hometeam and guestteam
+
+        The coefficients of the guest team column are negative values
+        because the model tries to determine the impact of the coefficient
+        to the winning probabilities of the hometeam.
+        They may be interpreted as positive values in this case.
+
+        :return: pd.DataFrame['home_ranking', 'guest_ranking']
+        """
+        # extract model summary as DataFrame and sort by coef value
+        summary_df = pd.read_html(self.poisson_model.summary().tables[1].
+                                  as_html(), header=0, index_col=0)[0]
+        summary_df = summary_df.sort_values('coef', ascending=False)
+
+        # export hometeam and guestteam entries as DataFrames
+        home_ranking_df = summary_df[
+            ['team' in s for s in summary_df.index]].sort_values(
+            'coef', ascending=False)['coef'].to_frame()
+        guest_ranking_df = summary_df[
+            ['opponent' in s for s in summary_df.index]].sort_values(
+            'coef', ascending=True)['coef'].to_frame()
+        home_ranking_df.reset_index(inplace=True)
+        home_ranking_df = home_ranking_df.rename(
+            columns={'index': 'hometeam_ranking', 'coef': 'home_coef'})
+        # reorder columns for better readability
+        home_ranking_df = home_ranking_df[['home_coef', 'hometeam_ranking']]
+        guest_ranking_df.reset_index(inplace=True)
+        guest_ranking_df = guest_ranking_df.rename(
+            columns={'index': 'guestteam_ranking', 'coef': 'guest_coef'})
+
+        # combine both DataFrames and remove prefix and suffix from entries
+        team_ranking_df = home_ranking_df.join(guest_ranking_df)
+        team_ranking_df['hometeam_ranking'] = \
+            team_ranking_df['hometeam_ranking'].apply(
+                lambda s: s.replace('team[T.', '').replace(']', ''))
+        team_ranking_df['guestteam_ranking'] = \
+            team_ranking_df['guestteam_ranking'].apply(
+                lambda s: s.replace('opponent[T.', '').replace(']', ''))
+        return team_ranking_df
 
 
 class FrequencyModel:

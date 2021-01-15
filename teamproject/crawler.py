@@ -53,7 +53,7 @@ def fetch_data(start_date, end_date):
     crawl_openligadb(urls)
 
     # covert DataFrame columns from object to int
-    if start_date[1] == 0 & end_date[1] == 0:
+    if start_date == [0, 0] == end_date:
         convertdf(unfinished_matches)
         return unfinished_matches
     else:
@@ -102,8 +102,8 @@ def incorrect_dates(start_date, end_date):
         # each season has 35 gamedays
         statement_day = 0 == date or date > 35 or statement_day
     for season in seasons:
-        # first season was in 1963
-        statement_season = (1963 > season
+        first_recorded_bl_year = 2003  # 1964 openliga has only new matches
+        statement_season = (first_recorded_bl_year > season
                             or season > datetime.datetime.now().year
                             or statement_season)
     return statement_day or statement_season
