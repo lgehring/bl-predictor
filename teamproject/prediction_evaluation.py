@@ -155,7 +155,7 @@ class ModelEvaluator:
 
         print(Color.PURPLE + 'Detailed prediction results' + Color.END)
         self.overview_df.index += 1  # adjust index for printing
-        print(self.overview_df.to_markdown())
+        print(self.overview_df.to_string())
         print("")
 
         if self.modelname == 'PoissonModel':
@@ -165,7 +165,7 @@ class ModelEvaluator:
                   "of the PoissonModel training")
             print("and do NOT represent actual wins or true rankings")
             self.model.team_ranking_df.index += 1  # adjust index for printing
-            print(self.model.team_ranking_df.to_markdown())
+            print(self.model.team_ranking_df.to_string())
 
 # # Test: Hinrunde 2020 prediction, 15.01.2021
 # import crawler
