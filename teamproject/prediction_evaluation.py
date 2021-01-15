@@ -9,7 +9,9 @@ import models
 
 class ModelEvaluator:
     """
-    A class that evaluates a given model with given data.
+    A class that evaluates a given model with the given data.
+
+    To print the report use: ModelEvaluator(args).print_results()
     """
 
     def __init__(self, modelname, data_df, testset_size):
@@ -25,10 +27,11 @@ class ModelEvaluator:
         self.data_df = data_df
         self.testset_size = testset_size
         self.trainset_df, self.testset_df = self._build_train_testset()
-        self.predicted_winner_df = self.predict_testset()
-        self.true_winner_df = self.determine_winner()
-        self.overview = self.testset_df.join(
-            self.true_winner_df).join(self.predicted_winner_df)
+        self.predicted_result_df, self.model = self._predict_testset()
+        self.true_winner_df = self._determine_winner()
+        self.prediction_accuracy, self.success_df = \
+            self._calc_prediction_accuracy()
+        self.overview_df = self.success_df.join(self.testset_df)
 
     def _build_train_testset(self):
         """
@@ -43,7 +46,7 @@ class ModelEvaluator:
             drop=True)
         return trainset_df, testset_df
 
-    def determine_winner(self):
+    def _determine_winner(self):
         """
         Uses the given data to determine the true winner (or draw)
         of each match in the testset using only the number of goals
@@ -64,18 +67,19 @@ class ModelEvaluator:
                 true_winner_df.loc[len(true_winner_df)] = "Draw"
         return true_winner_df
 
-    def predict_testset(self):
+    def _predict_testset(self):
         """
         Uses the given data and a given testset_size to train a model
         on all data except the testset and uses the model to
         predict the testset matches.
 
-        :return: prediction_df:
+        :return: tuple- prediction_df:
          pd.DataFrame['predicted_winner']
+         trained_model: model trained on the trainset
         """
-        predicted_winner_df = pd.DataFrame([],
+        predicted_result_df = pd.DataFrame([],
                                            dtype="string",
-                                           columns=['predicted_winner'])
+                                           columns=['predicted_result'])
 
         trainset_df, testset_df = self._build_train_testset()
         # Get actual model using modelname from models
@@ -84,6 +88,86 @@ class ModelEvaluator:
         for index, row in self.testset_df.iterrows():
             predicted_winner = trained_model.predict_winner(row['home_team'],
                                                             row['guest_team'])
-            predicted_winner_df.loc[
-                len(predicted_winner_df)] = predicted_winner
-        return predicted_winner_df
+            predicted_result_df.loc[
+                len(predicted_result_df)] = predicted_winner
+        return predicted_result_df, trained_model
+
+    def _calc_prediction_accuracy(self):
+        """
+        Uses the true_winner_df and predicted_result_df and calculates
+        what percentage of matches in the testset was correctly predicted
+
+        :return: tuple - percentage of correctly predicted matches,
+            pd.DataFrame['prediction_correct?']
+        """
+        success_df = self.true_winner_df.join(self.predicted_result_df)
+        success_df['prediction_correct?'] = bool
+        # rearrange DF to display correctness of prediction in first column
+        success_df = success_df[['prediction_correct?',
+                                 'predicted_result',
+                                 'true_winner']]
+
+        for index, row in success_df.iterrows():
+            # some models return more data than just the teamname
+            if row['true_winner'] in row['predicted_result']:
+                success_df.loc[index, 'prediction_correct?'] = True
+            else:
+                success_df.loc[index, 'prediction_correct?'] = False
+        try:
+            good_pred = success_df['prediction_correct?'].value_counts(
+            ).loc[True]
+        except KeyError:
+            # happens when no match is correctly predicted
+            good_pred = 0
+
+        percent_corr_pred = "{:.1%}".format(good_pred / len(success_df))
+        return percent_corr_pred, success_df
+
+    def print_results(self):
+        """
+        Pretty prints all evaluation results in the console
+        """
+
+        class Color:
+            PURPLE = '\033[95m'
+            CYAN = '\033[96m'
+            DARKCYAN = '\033[36m'
+            BLUE = '\033[94m'
+            GREEN = '\033[92m'
+            YELLOW = '\033[93m'
+            RED = '\033[91m'
+            BOLD = '\033[1m'
+            UNDERLINE = '\033[4m'
+            END = '\033[0m'
+
+        print(Color.UNDERLINE + Color.BOLD + Color.DARKCYAN
+              + 'Evaluation Results' + Color.END)
+        print("Model: " + self.modelname)
+        print("Accuracy (proportion of correct testset predictions): "
+              + Color.GREEN + self.prediction_accuracy + Color.END)
+        print("Size of: Trainset: " + str(len(self.trainset_df.index))
+              + " ({:.1%}".format(len(self.trainset_df.index)
+                                  / len(self.data_df.index)) + ")")
+        print("         Testset:  " + str(len(self.testset_df.index))
+              + "   ({:.1%}".format(len(self.testset_df.index)
+                                    / len(self.data_df.index)) + ")")
+        print("")
+
+        print(Color.PURPLE + 'Detailed prediction results' + Color.END)
+        self.overview_df.index += 1  # adjust index for printing
+        print(self.overview_df.to_markdown())
+        print("")
+
+        if self.modelname == 'PoissonModel':
+            # only the PoissonModel has this functionality
+            print(Color.YELLOW + 'Team Ranking' + Color.END)
+            print("The given coefficients are an unaltered result "
+                  "of the PoissonModel training")
+            print("and do NOT represent actual wins or true rankings")
+            self.model.team_ranking_df.index += 1  # adjust index for printing
+            print(self.model.team_ranking_df.to_markdown())
+
+# # Test: Hinrunde 2020 prediction, 15.01.2021
+# import crawler
+# test_crawler_data = crawler.fetch_data([1, 2004], [34, 2020])
+# ModelEvaluator("PoissonModel", test_crawler_data, 135).print_results()
