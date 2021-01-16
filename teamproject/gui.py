@@ -33,7 +33,7 @@ class MainWindow:
         """
         Shows the bl-predictor GUI.
 
-        Options to choose
+        Options to choose from,
         a timeframe for data-crawling,
         a model to use,
         two teams that will be compared
@@ -48,14 +48,15 @@ class MainWindow:
         self.root.mainloop()
 
     def _upcoming_matchday(self):
-
         now = date.today()
         date_label = tk.Label(text=now)
         date_label.pack()
 
         # signals crawler to crawl unfinished matches
         current_season = fetch_data([0, 0], [0, 0])
-        for i in range(9):
+        num_games_a_day = 9
+
+        for i in range(num_games_a_day):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
                 first_game = i + 1
@@ -71,7 +72,8 @@ class MainWindow:
         matchdaygames_label = tk.Label(text="Upcoming Matches: ")
         matchdaygames_label.pack()
 
-        for i in range(first_game, first_game + 8):
+        last_game = first_game + 8
+        for i in range(first_game, last_game):
             # loads the logos into gui
             self.image1 = Image.open(
                 "Logos\\" + matchday['home_team'][i] + ".png")
@@ -100,10 +102,13 @@ class MainWindow:
             self.panel2.pack()
 
     def _timeframe_slider(self):
+        """
+        Builds a slider
+        """
         date_label = tk.Label(text="Choose a period of time:")
         date_label.pack()
 
-        first_recorded_bl_year = 2003  # 1964 openliga has only new matches
+        first_recorded_bl_year = 2003  # 1964, openliga has only new matches
         self.slider = Slider(self.root, width=400,
                              height=60,
                              min_val=first_recorded_bl_year,
