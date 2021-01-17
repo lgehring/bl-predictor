@@ -1,12 +1,7 @@
-name: coverage
+name: pytest
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   pytest:
@@ -29,17 +24,10 @@ jobs:
         pip3 install lxml
         pip install coveralls
         pip install pytest
-        pip install coverage
         pip install pytest-github-actions-annotate-failures
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -e .[teamproject]
     
-    - name: Coverage
-      run: coverage run -m pytest
-    
-    - name: Upload coverage data to coveralls.io
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COVERALLS_SERVICE_NAME: github
-      run: coveralls --service=github
+    - name: pytest
+      run: pytest

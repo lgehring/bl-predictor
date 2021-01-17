@@ -1,10 +1,10 @@
-name: pytest and flake8
+name: pep8
 
 on:
   push:
 
 jobs:
-  pytest_flake8:
+  pep8:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,21 +22,10 @@ jobs:
     - name: Install dependencies
       run: |
         pip3 install lxml
-        pip install flake8 pytest
-        pip install pytest-github-actions-annotate-failures
+        pip install flake8
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -e .[teamproject]
-
-    - name: Install plugin
-      run: pip install pytest-github-actions-annotate-failures
     
     - name: flake8
-      uses: wearerequired/lint-action@v1
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        flake8: true
-        flake8_args: "--ignore W503"
-    
-    - name: pytest
-      run: pytest
+      run: flake8 --ignore W503
