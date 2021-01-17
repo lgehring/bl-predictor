@@ -43,8 +43,8 @@ class MainWindow:
     def show_window(self):
         """
         Shows the bl-predictor GUI.
-        The function constructs a window with matches of the upcoming matchday, a timeframe
-        slider and activates the crawler.
+        The function constructs a window with matches of the upcoming matchday,
+        a timeframe slider and activates the crawler.
 
         """
         self.root.title("Bl-predictor GUI")
@@ -115,7 +115,7 @@ class MainWindow:
             season_label = \
                 tk.Label(
                     text=matchday['home_team'][i]
-                         + " vs " + matchday['guest_team'][i]
+                    + " vs " + matchday['guest_team'][i]
                 )
             self.panel1.pack()
             season_label.pack()

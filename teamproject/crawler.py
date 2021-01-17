@@ -93,8 +93,8 @@ def incorrect_dates(start_date, end_date):
 
 def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
     """
-    Constructs a Dictionary with all seasons and their matchdays in the timerange
-    we need
+    Constructs a Dictionary with all seasons and their matchdays in the
+    timerange we need
 
     :param dict game_days: empty dictionary
     :param int start_season: starting season
