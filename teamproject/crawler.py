@@ -16,7 +16,8 @@ unfinished_matches = pd.DataFrame([], columns=columns)
 
 
 def fetch_data(start_date, end_date):
-    """Query sample data from "the internet"
+    """
+    Query sample data from "the internet"
     and return as pd.DataFrame.
     You can get the unfinished matches of the current season by entering 0
     for both start_date and end_date.
@@ -55,7 +56,8 @@ def fetch_data(start_date, end_date):
 
 
 def convertdf(dataframe):
-    """Takes a dataframe and converts the elements into types
+    """
+    Takes a dataframe and converts the elements into types
     that can be more useful.
 
     :param DataFrame dataframe: DataFrame
@@ -70,11 +72,12 @@ def convertdf(dataframe):
 
 
 def incorrect_dates(start_date, end_date):
-    """Checks if the submitted dates are correct.
+    """
+    Checks if the submitted dates are correct.
 
     :param list [int] start_date: [matchday, year]
     :param list [int] end_date: [matchday, year]
-    :returns: Result wether or not the dates are incorrect as type boolean
+    :returns: Result whether or not the dates are incorrect as type boolean
     """
     days = [start_date[0], end_date[0]]
     seasons = [start_date[1], end_date[1]]
@@ -93,16 +96,17 @@ def incorrect_dates(start_date, end_date):
 
 def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
     """
-    Constructs a Dictionary with all seasons and their matchdays in the
-    timerange we need
+    Constructs a dictionary with all seasons and their matchdays in the
+    timerange we need.
 
     :param dict game_days: empty dictionary
     :param int start_season: starting season
     :param int start_day: starting matchday
-    :param int end_season: ending season :param int end_day:  ending matchday
+    :param int end_season: ending season
+    :param int end_day:  ending matchday
     :return: filled dictionary, with seasons and days in given timerange.
-    The keys are the seasons. These are combined with their matchdays as list.
-    An empty list is a full season.
+     The keys are the seasons. These are combined with their matchdays as list.
+     An empty list is a full season.
     """
     if end_season == start_season:
         game_days = {
@@ -130,7 +134,7 @@ def curate_urls(start_date, end_date):
     :param list [int] start_date: [matchday, year]
     :param list [int] end_date: [matchday, year]
     :return: List of urls of matches from each gameday in the given
-            time period
+     time period
     """
     start_season = start_date[1]
     end_season = end_date[1]
@@ -160,9 +164,10 @@ def curate_urls(start_date, end_date):
 
 
 def crawl_openligadb(urls):
-    """Crawls through the given urls
+    """
+    Crawls through the given urls
     and safes the useful data in the dataframe 'matches'. The Data of an
-    unfinished season is safed in 'unfinished_matches'.
+    unfinished season is saved in 'unfinished_matches'.
 
     :param list[str] urls: List with urls from matches and seasons in our
      timerange.

@@ -4,16 +4,16 @@ This module contains the GUI code.
 
 import datetime
 import inspect
+import os
 import tkinter as tk
 from datetime import date
-from PIL import ImageTk, Image
 
 import pandas as pd
+from PIL import ImageTk, Image
 
+from teamproject import crawler
 from teamproject import models
-from teamproject.crawler import fetch_data
 from teamproject.gui_slider_widget import Slider
-import os
 
 
 class MainWindow:
@@ -32,8 +32,7 @@ class MainWindow:
         Stores the home- and guest-team.
 
         :type self:
-
-             """
+        """
         self.root = tk.Tk()
 
         self.crawler_data = pd.DataFrame()
@@ -45,7 +44,6 @@ class MainWindow:
         Shows the bl-predictor GUI.
         The function constructs a window with matches of the upcoming matchday,
         a timeframe slider and activates the crawler.
-
         """
         self.root.title("Bl-predictor GUI")
         self.root.geometry("500x800")
@@ -67,7 +65,7 @@ class MainWindow:
         date_label.pack()
 
         # signals crawler to crawl unfinished matches
-        current_season = fetch_data([0, 0], [0, 0])
+        current_season = crawler.fetch_data([0, 0], [0, 0])
         num_games_a_day = 9
 
         # checking if first 9 games of current season are on the same day
@@ -96,7 +94,6 @@ class MainWindow:
             # loads the logos into gui
             self.image1 = Image.open(
                 dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
-            # bl-predictor/teamproject/Logos/Borussia Mönchengladbach.png
             self.image2 = Image.open(
                 dir_path + "/Logos/" + matchday['guest_team'][i] + ".png")
             self.image1 = self.image1.resize((20, 20), Image.ANTIALIAS)
@@ -113,17 +110,15 @@ class MainWindow:
             day_label.pack()
             # shows match
             season_label = \
-                tk.Label(
-                    text=matchday['home_team'][i]
-                    + " vs " + matchday['guest_team'][i]
-                )
+                tk.Label(text=matchday['home_team'][i]
+                              + " vs " + matchday['guest_team'][i])
             self.panel1.pack()
             season_label.pack()
             self.panel2.pack()
 
     def _timeframe_slider(self):
         """
-        Builds a slider
+        Builds a slider ro adjust the to crawl period.
         """
         date_label = tk.Label(text="Choose a period of time:")
         date_label.pack()
@@ -141,7 +136,7 @@ class MainWindow:
     def _activate_crawler(self):
         """
         Builds Download button. When used _activate_crawler_helper is
-        activated, to crawl the data in selceted timerange.
+        activated, to crawl the data in selected timerange.
         """
         download_time_label = tk.Label(text="Downloading might take a while")
         download_time_label.pack()
@@ -154,7 +149,7 @@ class MainWindow:
 
     def _activate_crawler_helper(self):
         """
-        Takes Values from slider and fetches the data between these seasons
+        Takes values from slider and fetches the data between these seasons
         Begins on 1. matchday of first value until last matchday of the second
         value.
         After completion the button signal this and _choose_model is activated,
@@ -163,10 +158,9 @@ class MainWindow:
         first_day_of_season = 1
         last_day_of_season = 34
 
-        self.crawler_data = fetch_data([first_day_of_season,
-                                        int(self.slider.get_values()[0])],
-                                       [last_day_of_season,
-                                        int(self.slider.get_values()[1])])
+        self.crawler_data = crawler.fetch_data(
+            [first_day_of_season, int(self.slider.get_values()[0])],
+            [last_day_of_season, int(self.slider.get_values()[1])])
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # Show model selection menu
@@ -198,8 +192,7 @@ class MainWindow:
 
     def _train_model(self):
         """
-        Biulds button to train the model. It activates _train_model_helper.
-
+        Builds button to train the model. It activates _train_model_helper.
         """
         self.train_ml_button = tk.Button(
             self.root,
@@ -209,7 +202,7 @@ class MainWindow:
 
     def _train_model_helper(self):
         """
-        Trains Model. When completed titel and colour of the button signals it
+        Trains Model. When completed title and color of the button signals it
         is finished.
         """
         self.trained_model = getattr(models, self.model_variable.get())(
@@ -255,7 +248,9 @@ class MainWindow:
         self._make_prediction()
 
     def _make_prediction(self):
-        """ Button to activate prediction of the winner."""
+        """
+        Button to activate prediction of the winner.
+        """
         self.prediction_button = tk.Button(
             self.root,
             text="Show predicted winner!",
@@ -263,7 +258,8 @@ class MainWindow:
         self.prediction_button.pack()
 
     def _make_prediction_helper(self):
-        """ Predicts the winner of the two selcted teams. Button signals when
+        """
+        Predicts the winner of the two selected teams. Button signals when
         it's finished. A label will let you know if there is not enough data
         for the prediction.
         """

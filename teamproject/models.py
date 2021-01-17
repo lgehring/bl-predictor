@@ -82,7 +82,7 @@ class PoissonModel:
         Calculates a combined probability matrix
         for scoring an exact number of goals for both teams.
 
-        :return: 'pd.DataFrame' Goals probability matrix
+        :return: pd.DataFrame Goals probability matrix
         """
         home_goals_avg = self.poisson_model.predict(pd.DataFrame(
             data={'team': home_team,
@@ -104,7 +104,7 @@ class PoissonModel:
         """
         Determines the winning team based on a simulated match.
 
-        :return: `str` Predicted winner and corresponding probability
+        :return: str Predicted winner and corresponding probability
         """
         try:
             sim_match = self._simulate_match(home_team, guest_team)
@@ -190,7 +190,7 @@ class FrequencyModel:
         Builds a DataFrame of only rows where there are
         matches between home_team and guest_team
 
-        :return: 'pd.DataFrame' All matches between given teams
+        :return: pd.DataFrame All matches between given teams
         """
         matchups_frame = \
             self.all_matches_df[
@@ -208,7 +208,7 @@ class FrequencyModel:
         Builds a DataFrame of only rows where
         the given team won the match and returns it's length
 
-        :return: 'int' Number of matches the given team wins
+        :return: int Number of matches the given team wins
         """
         wins_frame = \
             self.matchups_df[(self.matchups_df['home_team'] == team)
@@ -226,7 +226,7 @@ class FrequencyModel:
         returns the names of the winning team or "Draw"
         if neither has a higher probability
 
-        :return: `str` One of: home_team, guest_team, "Draw"
+        :return: str One of: home_team, guest_team, "Draw"
         """
         try:
             self.matchups_df = self._matchups(home_team,

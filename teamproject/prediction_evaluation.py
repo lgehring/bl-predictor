@@ -18,10 +18,10 @@ class ModelEvaluator:
         """
         Holds the basic evaluation parameters and initiates the evaluation.
 
-        :param string - modelname: name of the model to evaluate
+        :param str modelname: name of the model to evaluate
         :param data_df:
          pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
-        :param int - testset_size: number of last rows to assign to testset
+        :param int testset_size: number of last rows to assign to testset
         """
         self.modelname = modelname
         self.data_df = data_df
@@ -39,7 +39,7 @@ class ModelEvaluator:
         the last given number of rows and
         a testset pd.DataFrame that contains those last rows
 
-        :return: tuple - trainset_df, testset_df
+        :return: tuple trainset_df, testset_df
         """
         trainset_df = self.data_df.iloc[:-self.testset_size]
         testset_df = self.data_df.iloc[-self.testset_size:].reset_index(
@@ -73,7 +73,7 @@ class ModelEvaluator:
         on all data except the testset and uses the model to
         predict the testset matches.
 
-        :return: tuple- prediction_df:
+        :return: tuple prediction_df:
          pd.DataFrame['predicted_winner']
          trained_model: model trained on the trainset
         """
@@ -97,7 +97,7 @@ class ModelEvaluator:
         Uses the true_winner_df and predicted_result_df and calculates
         what percentage of matches in the testset was correctly predicted
 
-        :return: tuple - percentage of correctly predicted matches,
+        :return: tuple percentage of correctly predicted matches,
             pd.DataFrame['prediction_correct?']
         """
         success_df = self.true_winner_df.join(self.predicted_result_df)
