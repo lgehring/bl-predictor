@@ -109,9 +109,9 @@ class MainWindow:
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
             # shows match
-            season_label = \
-                tk.Label(text=matchday['home_team'][i]
-                              + " vs " + matchday['guest_team'][i])
+            season_label = tk.Label(
+                text=matchday['home_team'][i] + " vs " + matchday[
+                    'guest_team'][i])
             self.panel1.pack()
             season_label.pack()
             self.panel2.pack()
