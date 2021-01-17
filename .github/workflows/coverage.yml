@@ -1,0 +1,45 @@
+name: Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pytest_flake8:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    
+    - name: Setup timezone
+      uses: zcong1993/setup-timezone@master
+      with:
+        timezone: Europe/Berlin
+
+    - name: Install dependencies
+      run: |
+        pip3 install lxml
+        pip install pytest
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .[teamproject]
+
+    - name: Install badge dependencies
+      run: |
+        pip install coverage
+        pip install coverage-badge
+
+    
+    - name: Run coverage and create badge
+      run: |
+        coverage run -m pytest
+        coverage html
+        coverage-badge -o badges/coverage.svg
