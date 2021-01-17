@@ -18,19 +18,12 @@ unfinished_matches = pd.DataFrame([], columns=columns)
 def fetch_data(start_date, end_date):
     """Query sample data from "the internet"
     and return as pd.DataFrame.
+    You can get the unfinished matches of the current season by entering 0
+    for both start_date and end_date.
 
-    Parameters
-    __________
-    start_date, end_date : 'list' ['int']
-        The first element of the list is the match day and
-        the second element of the list is the year.
-        You can get the unfinished matches of the current season by entering 0
-        for both start_date and end_date.
-
-    Returns
-    _______
-    matches : 'Dataframe'
-        Dataframe, that contains all the matches between
+    :param list [int] start_date: [matchday, year]
+    :param list [int] end_date: [matchday, year]
+    :return: Dataframe that contains all the matches between
         start_date and end_date.
     """
     if start_date == [0, 0] == end_date:
@@ -65,11 +58,8 @@ def convertdf(dataframe):
     """Takes a dataframe and converts the elements into types
     that can be more useful.
 
-    Parameters
-    __________
-    dataframe : 'dataframe'
-    The dataframe that gets its elements converted.
-
+    :param DataFrame dataframe: DataFrame
+    :return: The dataframe with converted elements
     """
     dataframe['home_score'] = dataframe['home_score'].astype('int')
     dataframe['matchday'] = dataframe['matchday'].astype('int')
@@ -82,17 +72,9 @@ def convertdf(dataframe):
 def incorrect_dates(start_date, end_date):
     """Checks if the submitted dates are correct.
 
-    Parameters
-    __________
-    start_date, end_date : 'list' ['int']
-        The first element of the list is the match day and
-        the second element of the list is the year.
-
-    Returns
-    _______
-        valid : 'boolean'
-            Result for checking start_date and end_date
-
+    :param list [int] start_date: [matchday, year]
+    :param list [int] end_date: [matchday, year]
+    :returns: Result wether or not the dates are incorrect as type boolean
     """
     days = [start_date[0], end_date[0]]
     seasons = [start_date[1], end_date[1]]
@@ -111,12 +93,16 @@ def incorrect_dates(start_date, end_date):
 
 def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
     """
-    :param game_days: {}
-    :param start_season: int
-    :param start_day: int
-    :param end_season: int
-    :param end_day: int :return: dictionary,seasons
-    as key, combined with their gamedays. Empty list of days means full season
+    Constructs a Dictionary with all seasons and their matchdays in the timerange
+    we need
+
+    :param dict game_days: empty dictionary
+    :param int start_season: starting season
+    :param int start_day: starting matchday
+    :param int end_season: ending season :param int end_day:  ending matchday
+    :return: filled dictionary, with seasons and days in given timerange.
+    The keys are the seasons. These are combined with their matchdays as list.
+    An empty list is a full season.
     """
     if end_season == start_season:
         game_days = {
@@ -139,12 +125,12 @@ def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
 
 def curate_urls(start_date, end_date):
     """
-    Expects a timeperiod. Gameday and season as an array, in that order.
-    :param start_date: [int]
-    :param end_date: [int]
+    A function that curates the urls for the data in the given timerange.
+
+    :param list [int] start_date: [matchday, year]
+    :param list [int] end_date: [matchday, year]
     :return: List of urls of matches from each gameday in the given
             time period
-
     """
     start_season = start_date[1]
     end_season = end_date[1]
@@ -175,12 +161,11 @@ def curate_urls(start_date, end_date):
 
 def crawl_openligadb(urls):
     """Crawls through the given urls
-    and safes the useful data in the dataframe 'matches'.
+    and safes the useful data in the dataframe 'matches'. The Data of an
+    unfinished season is safed in 'unfinished_matches'.
 
-    Parameters
-    __________
-    url : 'list' ['str']
-        List with URLs to scrape.
+    :param list[str] urls: List with urls from matches and seasons in our
+     timerange.
     """
     to_crawl = urls
 
