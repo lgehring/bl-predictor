@@ -23,7 +23,7 @@ test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
          'FC Schalke 04'),
         # PoissonModel tests
         ("PoissonModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
-         'Hamburger SV: 38.2%'),
+         'Draw: 25.2%'),
         ("PoissonModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
          'Hannover 96: 53.3%'),
         ("PoissonModel", test_crawler_data, 'BV Borussia Dortmund 09',

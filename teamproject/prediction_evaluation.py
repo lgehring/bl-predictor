@@ -81,7 +81,7 @@ class ModelEvaluator:
                                            dtype="string",
                                            columns=['predicted_result'])
 
-        trainset_df, testset_df = self._build_train_testset()
+        trainset_df = self._build_train_testset()[0]
         # Get actual model using modelname from models
         trained_model = getattr(models, self.modelname)(trainset_df)
 
@@ -128,23 +128,19 @@ class ModelEvaluator:
         Pretty prints all evaluation results in the console
         """
 
-        class Color:
-            PURPLE = '\033[95m'
-            CYAN = '\033[96m'
-            DARKCYAN = '\033[36m'
-            BLUE = '\033[94m'
-            GREEN = '\033[92m'
-            YELLOW = '\033[93m'
-            RED = '\033[91m'
-            BOLD = '\033[1m'
-            UNDERLINE = '\033[4m'
-            END = '\033[0m'
+        purple = '\033[95m'
+        darkcyan = '\033[36m'
+        green = '\033[92m'
+        yellow = '\033[93m'
+        bold = '\033[1m'
+        underline = '\033[4m'
+        end = '\033[0m'
 
-        print(Color.UNDERLINE + Color.BOLD + Color.DARKCYAN
-              + 'Evaluation Results' + Color.END)
+        print(underline + bold + darkcyan
+              + 'Evaluation Results' + end)
         print("Model: " + self.modelname)
         print("Accuracy (proportion of correct testset predictions): "
-              + Color.GREEN + self.prediction_accuracy + Color.END)
+              + green + self.prediction_accuracy + end)
         print("Size of: Trainset: " + str(len(self.trainset_df.index))
               + " ({:.1%}".format(len(self.trainset_df.index)
                                   / len(self.data_df.index)) + ")")
@@ -153,21 +149,22 @@ class ModelEvaluator:
                                     / len(self.data_df.index)) + ")")
         print("")
 
-        print(Color.PURPLE + 'Detailed prediction results' + Color.END)
+        print(purple + 'Detailed prediction results' + end)
         self.overview_df.index += 1  # adjust index for printing
         print(self.overview_df.to_markdown())
         print("")
 
         if self.modelname == 'PoissonModel':
             # only the PoissonModel has this functionality
-            print(Color.YELLOW + 'Team Ranking' + Color.END)
+            print(yellow + 'Team Ranking' + end)
             print("The given coefficients are an unaltered result "
                   "of the PoissonModel training")
             print("and do NOT represent actual wins or true rankings")
             self.model.team_ranking_df.index += 1  # adjust index for printing
             print(self.model.team_ranking_df.to_markdown())
 
-# # Test: Hinrunde 2020 prediction, 15.01.2021
+
+# # Test: Hinrunde 2020 prediction, from 15.01.2021
 # import crawler
 # test_crawler_data = crawler.fetch_data([1, 2004], [34, 2020])
 # ModelEvaluator("PoissonModel", test_crawler_data, 135).print_results()

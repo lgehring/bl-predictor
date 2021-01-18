@@ -104,6 +104,12 @@ class PoissonModel:
         """
         Determines the winning team based on a simulated match.
 
+        The calculated winning probability of one team must be at least by
+        threshold-percent higher than the other teams, or else "Draw" will be
+        returned.
+        (Draw percentage may be below any teams personal winning probability)
+        The threshold was determined empirically to yield the best result.
+
         :return: str Predicted winner and corresponding probability
         """
         try:
@@ -114,14 +120,18 @@ class PoissonModel:
             guest_team_win_prob = np.round(np.sum(np.triu(sim_match, 1)), 5)
             draw_prob = np.round(np.sum(np.diag(sim_match)), 5)
 
-            if draw_prob >= home_team_win_prob and \
-                    draw_prob >= guest_team_win_prob:
-                return "Draw" + ": " + "{:.1%}".format(draw_prob)
-            elif home_team_win_prob > guest_team_win_prob:
+            # TODO: determine threshold experimentally
+            significance_threshold = 0.1  # chance (home win, guest win, draw)
+            if home_team_win_prob > guest_team_win_prob and \
+                    (home_team_win_prob
+                     - guest_team_win_prob) > significance_threshold:
                 return home_team + ": " + "{:.1%}".format(home_team_win_prob)
-            else:
+            elif guest_team_win_prob > home_team_win_prob and \
+                    (guest_team_win_prob
+                     - home_team_win_prob) > significance_threshold:
                 return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
-
+            else:
+                return "Draw" + ": " + "{:.1%}".format(draw_prob)
         except AttributeError:
             return 'Prediction failed. Check training DataFrame for errors'
 
@@ -311,7 +321,7 @@ class WholeDataFrequencies:
         num_of_home_team_games = len(home_team_goals_df.index)
 
         if num_of_home_team_games == 0:  # prevent div by 0
-            return 0
+            self.home_team_avg_goals = None
         else:
             self.home_team_avg_goals = (sum_of_home_team_goals
                                         / num_of_home_team_games)
@@ -321,7 +331,7 @@ class WholeDataFrequencies:
         num_of_guest_team_games = len(guest_team_goals_df.index)
 
         if num_of_guest_team_games == 0:  # prevent div by 0
-            return 0
+            self.guest_team_avg_goals = None
         else:
             self.guest_team_avg_goals = (sum_of_guest_team_goals
                                          / num_of_guest_team_games)
