@@ -43,6 +43,14 @@ missing_column = pd.DataFrame([
     [3, 'A'],
 ], columns=['home_score', 'guest_team'])
 
+draw_train = pd.DataFrame([
+    ['B', 1, 1, 'A'],
+    ['B', 1, 1, 'A'],
+    ['A', 3, 3, 'B'],
+    ['A', 2, 2, 'B'],
+], columns=[
+    'home_team', 'home_score', 'guest_score', 'guest_team'])
+
 
 # Models testsuite
 @pytest.mark.parametrize(
@@ -71,6 +79,7 @@ missing_column = pd.DataFrame([
         ("PoissonModel", norm_train, 'B', 'C', 'C: 64.0%'),
         ("PoissonModel", norm_train, 'C', 'B', 'C: 96.2%'),
         ("PoissonModel", too_many_columns, 'A', 'B', 'B: 51.7%'),
+        ("PoissonModel", draw_train, 'B', 'A', 'Draw: 22.3%'),
         ("PoissonModel", nonsense_matches, 'B', 'C', 'Prediction failed. '
                                                      'Check training '
                                                      'DataFrame for errors'),
@@ -82,7 +91,7 @@ missing_column = pd.DataFrame([
                                                'errors'),
         ("PoissonModel", missing_column, 'C', 'B', 'Prediction failed. Check '
                                                    'training DataFrame for '
-                                                   'errors'),
+                                                   'errors')
     ])
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
@@ -103,7 +112,7 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
         (nonsense_matches, 2, 1, 0, 4 / 3, 333),
         (empty_data, 0, 0, 0, None, None),
         (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
-        (missing_column, 0, 0, 0, None, None),
+        (missing_column, 0, 0, 0, None, None)
     ])
 def test_stats(trainset,
                expected_home_team_wins,
