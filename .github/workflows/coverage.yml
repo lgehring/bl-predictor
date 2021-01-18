@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  pytest:
+  coverage:
     runs-on: ubuntu-latest
 
     steps:
