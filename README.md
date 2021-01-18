@@ -5,4 +5,4 @@
 [![Coverage status](https://coveralls.io/repos/github/lgehring/bl-predictor/badge.svg?branch=main)](https://coveralls.io/github/lgehring/bl-predictor?branch=main) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt) 
 
-_Here will be some documentation._
+_Here will be some documentation soon._
