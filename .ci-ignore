@@ -1,0 +1,11 @@
+# Here, you can list patterns for all files to be ignored by Code Inspector:
+
+.github
+teamproject/gui_slider_widget.py
+tests
+
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE.txt
+MANIFEST.in
+README.md
