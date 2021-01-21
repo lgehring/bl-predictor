@@ -25,7 +25,7 @@ class MainWindow:
 
     def __init__(self):
         """
-        Inits MainClass.
+        Init MainClass.
 
         Initializes interpreter and creates root window.
         Stores crawled data.
@@ -87,7 +87,7 @@ class MainWindow:
 
         # path of gui.py
         gui_path = os.path.abspath(__file__)
-        # path to teamprojekt
+        # path to team project
         dir_path = os.path.dirname(gui_path)
         last_game = first_game + 8
         for i in range(first_game, last_game):
@@ -123,7 +123,7 @@ class MainWindow:
         date_label = tk.Label(text="Choose a period of time:")
         date_label.pack()
 
-        first_recorded_bl_year = 2003  # 1964, openliga has only new matches
+        first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=400,
                              height=60,
                              min_val=first_recorded_bl_year,
@@ -136,7 +136,7 @@ class MainWindow:
     def _activate_crawler(self):
         """
         Builds Download button. When used _activate_crawler_helper is
-        activated, to crawl the data in selected timerange.
+        activated, to crawl the data in selected time range.
         """
         download_time_label = tk.Label(text="Downloading might take a while")
         download_time_label.pack()
@@ -223,7 +223,7 @@ class MainWindow:
         except KeyError:
             option_list = ["Team1", "Team2"]
 
-        # Hometeam dropdown list
+        # home team dropdown list
         ht_label = tk.Label(self.root, text="Home team:")
         ht_label.pack()
 
@@ -232,7 +232,7 @@ class MainWindow:
         ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
         ht_opt.pack()
 
-        # Guestteam dropdown list
+        # guest team dropdown list
         gt_label = tk.Label(self.root, text="Guest team:")
         gt_label.pack()
 
