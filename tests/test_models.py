@@ -4,7 +4,8 @@ This file is used for testing models in a variety of cases
 import pandas as pd
 import pytest
 
-from teamproject import models
+import teamproject.models as models
+import teamproject.prediction_evaluation as prediction_evaluation
 
 norm_train = pd.DataFrame([
     ['A', 0, 3, 'B'],
@@ -120,7 +121,7 @@ def test_stats(trainset,
                expected_draws,
                expected_home_team_avg_goals,
                expected_guest_team_avg_goals):
-    trained_model = models.WholeDataFrequencies(trainset)
+    trained_model = prediction_evaluation.WholeDataFrequencies(trainset)
     assert trained_model.home_team_wins == expected_home_team_wins
     assert trained_model.guest_team_wins == expected_guest_team_wins
     assert trained_model.draws == expected_draws

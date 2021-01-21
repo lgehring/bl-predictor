@@ -4,7 +4,6 @@ it to a pd.DataFrame.
 """
 import datetime
 import json
-import os
 
 import pandas as pd
 import requests
@@ -74,9 +73,7 @@ def fetch_data(start_date, end_date):
         matches.to_csv('crawled_data.csv', index=False)
     # return wanted data
     if start_date == [0, 0] == end_date:
-        print("return unfin matches")
         convertdf(unfinished_matches)
-        print(unfinished_matches)
         return unfinished_matches
     else:
         print("return data from ... to...")
@@ -154,7 +151,6 @@ def convertdf(dataframe):
     :param DataFrame dataframe: DataFrame
     :return: The dataframe with converted elements
     """
-
     dataframe['home_score'] = dataframe['home_score'].astype('int')
     dataframe['matchday'] = dataframe['matchday'].astype('int')
     dataframe['guest_score'] = dataframe['guest_score'].astype('int')
@@ -187,39 +183,6 @@ def incorrect_dates(start_date, end_date):
     return statement_day or statement_season
 
 
-def dict_of_game_days(game_days, start_season, start_day, end_season, end_day):
-    """
-    Constructs a dictionary with all seasons and their matchdays in the
-    timerange we need.
-
-    :param dict game_days: empty dictionary
-    :param int start_season: starting season
-    :param int start_day: starting matchday
-    :param int end_season: ending season
-    :param int end_day:  ending matchday
-    :return: filled dictionary, with seasons and days in given timerange.
-     The keys are the seasons. These are combined with their matchdays as list.
-     An empty list is a full season.
-    """
-    if end_season == start_season:
-        game_days = {
-            start_season: list(range(start_day, end_day + 1))}
-    else:
-        if start_day != 1:
-            game_days = {start_season: list(range(start_day, 35))}
-        else:
-            game_days[start_season] = []
-        # adding seasons between the dates
-        for seasons in range(start_season + 1, end_season):
-            game_days[seasons] = []
-        # adding last season we want to look at
-        if end_day != 34:
-            game_days[end_season] = list(range(1, end_day + 1))
-        else:
-            game_days[end_season] = []
-    return game_days
-
-
 def curate_urls(start_date, end_date):
     """
     A function that curates the urls for the data in the given timerange.
@@ -238,58 +201,51 @@ def curate_urls(start_date, end_date):
         raise ValueError("there has been no match on this day."
                          "Matches are 34 days per season from 1963 to "
                          "2020")
-    # Dictionary with season as key combined with number of gamedays as
-    # list
-    game_days = dict_of_game_days({}, start_season, start_day, end_season,
-                                  end_day)
-    print("making urls from", start_day, ".", start_season, "to", end_day, ".",
-          end_season)
-    # make list of urls for seasons and days
-    print("dict", game_days)
-    for season in game_days:
-        if game_days[season]:
-            for day in game_days[season]:
-                url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
-                      str(season) + '/' + str(day)
-                urls += [url]
+    # dates are in same year
+    if end_season == start_season:
+        for day in list(range(start_day, end_day + 1)):
+            urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                     + str(start_season) + '/' + str(day)]
+    else:
+        # starting date doesn't begin with 1.matchday
+        if start_day != 1:
+            for day in list(range(start_day, 35)):
+                urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                         + str(start_season) + '/' + str(day)]
+        # if it does start on 1. matchday we take the whole season and add
+        # seasons between dates
+        for season in range(start_season, end_season):
+            urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                     + str(season)]
+        # adding last season we want to look at
+        if end_day != 34:
+            for day in list(range(1, end_day + 1)):
+                urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                         + str(end_season) + '/' + str(day)]
         else:
-            url = 'https://api.openligadb.de/getmatchdata/bl1/' + \
-                  str(season)
-            urls += [url]
+            urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                     + str(end_season)]
     return urls
 
 
-def check_if_data_exist(urls):
-    to_crawl = urls
+def data_exists(url):
+    """
+    Checks if data exists for this url.
+
+    :param url: url of a day or season
+    :return: Result as type boolean
+    """
+    to_crawl = url
+
     while to_crawl:
-        print("checking urls for data")
         current_url = to_crawl.pop(0)
-        print("currenturl", current_url)
-        r = requests.get(current_url)
-        json_response = r.content
+        response = requests.get(current_url)
+        json_response = response.content
         json_response = json.loads(json_response)
-        # checks if there is any data yet for this/these day/s
+
         if not json_response:
             return True
-        print("jsonresponse exist for url ")
         return False
-
-
-def check_if_matchday_is_fin(urls):
-    to_crawl = urls
-    while to_crawl:
-        print("check_if_matchday_is_fin")
-        current_url = to_crawl.pop(0)
-        print("currenturl", current_url)
-        r = requests.get(current_url)
-        json_response = r.content
-        json_response = json.loads(json_response)
-        for game in range(len(json_response)):  # all matches in scrape
-            # appends response item-array to matches, !ORDER SENSITIVE!
-            if json_response[game]['matchIsFinished']:
-                return True
-            else:
-                return False
 
 
 def crawl_openligadb(urls):
@@ -303,17 +259,19 @@ def crawl_openligadb(urls):
     """
     to_crawl = urls
     while to_crawl:
-        print("crawling urls")
         current_url = to_crawl.pop(0)
-        print("currenturl", current_url)
         r = requests.get(current_url)
-        json_response = r.content
-        json_response = json.loads(json_response)
-        for game in range(len(json_response)):  # all matches in scrape
+        jsonresponse = r.content
+        jsonresponse = json.loads(jsonresponse)
+        # checks if there is any data yet for this/these day/s
+        # important for fetch_data
+        if not jsonresponse:
+            return True
+
+        for game in range(len(jsonresponse)):  # all matches in scrape
             # appends response item-array to matches, !ORDER SENSITIVE!
             if json_response[game]['matchIsFinished']:
                 matches_length = len(matches)
-                print("matches is filling up")
                 matches.loc[matches_length] = [
                     json_response[game]['matchDateTime'],  # match_date_time
                     json_response[game]['group']["groupOrderID"],  # matchday
@@ -323,7 +281,6 @@ def crawl_openligadb(urls):
                     json_response[game]['team2']['teamName']  # guest_t
                 ]
             else:
-                print("unfinished matches is filling")
                 unfinished_matches_length = len(unfinished_matches)
                 unfinished_matches.loc[unfinished_matches_length] = [
                     json_response[game]['matchDateTime'],  # match_date_time
