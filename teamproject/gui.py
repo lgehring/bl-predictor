@@ -46,7 +46,7 @@ class MainWindow:
         a timeframe slider and activates the crawler.
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("500x800")
+        self.root.geometry("800x500")
 
         self._upcoming_matchday()
         self._timeframe_slider()
@@ -90,8 +90,10 @@ class MainWindow:
         # path to teamprojekt
         dir_path = os.path.dirname(gui_path)
         last_game = first_game + 8
+
         for i in range(first_game, last_game):
             # loads the logos into gui
+            '''
             self.image1 = Image.open(
                 dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
             self.image2 = Image.open(
@@ -104,6 +106,7 @@ class MainWindow:
             self.panel2 = tk.Label(self.root, image=self.img2)
             self.panel1.photo = self.img1
             self.panel2.photo = self.img2
+            '''
 
             # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
@@ -112,9 +115,9 @@ class MainWindow:
             season_label = tk.Label(
                 text=matchday['home_team'][i] + " vs " + matchday[
                     'guest_team'][i])
-            self.panel1.pack()
+            #self.panel1.pack()
             season_label.pack()
-            self.panel2.pack()
+            #self.panel2.pack()
 
     def _timeframe_slider(self):
         """
