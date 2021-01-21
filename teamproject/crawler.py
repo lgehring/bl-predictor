@@ -143,8 +143,8 @@ def data_exists(url):
 
     while to_crawl:
         current_url = to_crawl.pop(0)
-        r = requests.get(current_url)
-        json_response = r.content
+        response = requests.get(current_url)
+        json_response = response.content
         json_response = json.loads(json_response)
 
         if not json_response:
