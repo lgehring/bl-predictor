@@ -3,8 +3,9 @@ This file is used for testing models in a variety of cases
 """
 import pytest
 
-from teamproject import crawler
-from teamproject import models
+import teamproject.crawler as crawler
+import teamproject.models as models
+import teamproject.prediction_evaluation as prediction_evaluation
 
 test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
 
@@ -55,7 +56,7 @@ def test_stats(trainset,
                expected_draws,
                expected_home_team_avg_goals,
                expected_guest_team_avg_goals):
-    trained_model = models.WholeDataFrequencies(trainset)
+    trained_model = prediction_evaluation.WholeDataFrequencies(trainset)
     assert trained_model.home_team_wins == expected_home_team_wins
     assert trained_model.guest_team_wins == expected_guest_team_wins
     assert trained_model.draws == expected_draws

@@ -174,9 +174,6 @@ class MainWindow:
         model_list = [m[0] for m in
                       inspect.getmembers(models, inspect.isclass)
                       if m[1].__module__ == models.__name__]
-        # remove classes that are no models
-        if "WholeDataFrequencies" in model_list:
-            model_list.remove("WholeDataFrequencies")
 
         # Menu title shown above
         model_label = tk.Label(text="Choose a prediction model:")
