@@ -6,8 +6,11 @@ import datetime
 import inspect
 import os
 import tkinter as tk
+from tkinter import *
+from tkinter import ttk
 from datetime import date
-
+import tkinter.ttk as ttk
+from ttkthemes import ThemedStyle
 import pandas as pd
 from PIL import ImageTk, Image
 
@@ -48,11 +51,61 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("500x800")
 
+        self._fullscreen_scrollbar()
         self._upcoming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
 
         self.root.mainloop()
+
+    def _fullscreen_scrollbar(self):
+        # Create A Main Frame
+        main_frame = Frame(self.root)
+        main_frame.pack(fill=BOTH, expand=1)
+
+        # Create A Canvas
+        my_canvas = Canvas(main_frame)
+        my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+
+        # Add A Scrollbar To The Canvas
+        my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+        my_scrollbar.pack(side=RIGHT, fill=Y)
+
+        # Configure The Canvas
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
+
+        # Create ANOTHER Frame INSIDE the Canvas
+        second_frame = Frame(my_canvas)
+
+        # Add that New frame To a Window In The Canvas
+        my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
+
+        def _on_mouse_wheel(event):
+            my_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
+
+            my_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
+        """container = ttk.Frame(self.root)
+        canvas = tk.Canvas(container)
+        scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)"""
+        """scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.root.yview)
+        scrollbar.pack(side=RIGHT, fill="y")
+        self.root.configure(yscrollcommand=scrollbar.set)
+        self.root.bind('<Configure>', lambda e: self.root.configure(scrollregion=self.root.bbox('all')))"""
+
+
+    """def topmenu(self):
+        menu = Menu()
+        root.config(menu=menu)
+
+        turntodark
+        turntolight
+        darkmode = Menu(menu)
+        menu.add_command(label="Dark Mode", command=turntodark)
+        lightmode = Menu(menu)
+        menu.add_command(label="Dark Mode", command=turntolight)"""
+
 
     def _upcoming_matchday(self):
         """
