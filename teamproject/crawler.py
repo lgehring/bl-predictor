@@ -127,18 +127,24 @@ def take_data(start_date, ending_date, df):
     df_ending = get_last_date(df)
     start = str(start_date[1])
     if ending_date[1] > df_ending[1]:
-        end = str(df_ending[1])
+        end = str(df_ending[1] + 1)
     else:
         end = str(ending_date[1])
     # data year to year (january to december)
     data = df[(df['date_time'].dt.strftime('%Y') >= start)
-              & (df['date_time'].dt.strftime('%Y') <= end + 1)]
+              & (df['date_time'].dt.strftime('%Y') <= end)]
 
     # removing pre seasonal matches
     data_start_copy = data[data['date_time'].dt.strftime('%Y') == start]
     data_del_first_year = data[(data['date_time'].dt.strftime('%Y') != start)]
+
     del_pre_season = \
-        data_start_copy[data_start_copy['date_time'].dt.strftime('%m') > 5]
+        data_start_copy[
+            (data_start_copy['date_time'].dt.strftime('%m') != "05")
+            & (data_start_copy['date_time'].dt.strftime('%m') != "04")
+            & (data_start_copy['date_time'].dt.strftime('%m') != "03")
+            & (data_start_copy['date_time'].dt.strftime('%m') != "02")
+            & (data_start_copy['date_time'].dt.strftime('%m') != "01")]
     # version that starts at matchday 1
     data_complete = pd.concat([del_pre_season, data_del_first_year], axis=0)
 
@@ -146,11 +152,19 @@ def take_data(start_date, ending_date, df):
     data_end_copy = data[data['date_time'].dt.strftime('%Y') == end]
     data_del_end_year = data_complete[(data_complete['date_time']
                                        .dt.strftime('%Y') != end)]
+
     del_post_season = data_end_copy[
-        data_end_copy['date_time'].dt.strftime('%m') < 5]
+        data_end_copy['date_time'].dt.strftime('%m') < "5"]
+
+    del_post_season = \
+        data_end_copy[
+            (data_end_copy['date_time'].dt.strftime('%m') != "08")
+            & (data_end_copy['date_time'].dt.strftime('%m') != "09")
+            & (data_end_copy['date_time'].dt.strftime('%m') != "10")
+            & (data_end_copy['date_time'].dt.strftime('%m') != "11")
+            & (data_end_copy['date_time'].dt.strftime('%m') != "12")]
     # version that starts and ends with first and end matchday
     data_seasonal = pd.concat([data_del_end_year, del_post_season], axis=0)
-
     return data_seasonal
 
 
