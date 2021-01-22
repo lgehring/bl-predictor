@@ -132,18 +132,20 @@ def take_data(start_date, ending_date, df):
         end = str(ending_date[1])
     # data year to year (january to december)
     data = df[(df['date_time'].dt.strftime('%Y') >= start)
-              & (df['date_time'].dt.strftime('%Y') <= end+1)]
+              & (df['date_time'].dt.strftime('%Y') <= end + 1)]
 
     # removing pre seasonal matches
     data_start_copy = data[data['date_time'].dt.strftime('%Y') == start]
     data_del_first_year = data[(data['date_time'].dt.strftime('%Y') != start)]
-    del_pre_season = data_start_copy[data_start_copy['date_time'].dt.strftime('%m') > 5]
+    del_pre_season = \
+        data_start_copy[data_start_copy['date_time'].dt.strftime('%m') > 5]
     # version that starts at matchday 1
     data_complete = pd.concat([del_pre_season, data_del_first_year], axis=0)
 
     # removing post seasonal matches
     data_end_copy = data[data['date_time'].dt.strftime('%Y') == end]
-    data_del_end_year = data_complete[(data_complete['date_time'].dt.strftime('%Y') != end)]
+    data_del_end_year = data_complete[(data_complete['date_time']
+                                       .dt.strftime('%Y') != end)]
     del_post_season = data_end_copy[
         data_end_copy['date_time'].dt.strftime('%m') < 5]
     # version that starts and ends with first and end matchday
