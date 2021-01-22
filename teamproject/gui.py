@@ -107,7 +107,6 @@ class MainWindow:
             self.panel1.photo = self.img1
             self.panel2.photo = self.img2
 
-
             # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
