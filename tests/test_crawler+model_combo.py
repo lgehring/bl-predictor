@@ -62,3 +62,11 @@ def test_stats(trainset,
     assert trained_model.draws == expected_draws
     assert trained_model.home_team_avg_goals == expected_home_team_avg_goals
     assert trained_model.guest_team_avg_goals == expected_guest_team_avg_goals
+
+print("1")
+trainset = crawler.fetch_data([5, 2014], [14, 2017])
+print(trainset)
+trained_model = prediction_evaluation.WholeDataFrequencies(
+    trainset).home_team_wins
+print(trained_model)
+print("1")

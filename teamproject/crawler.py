@@ -96,6 +96,7 @@ def get_current_date():
 
 
 def get_last_date(df):
+    # Todo with matchday?
     """
     Gives matchday and season of the last match in the df.
 
@@ -116,56 +117,72 @@ def get_last_date(df):
 
 def take_data(start_date, ending_date, df):
     """
-    Takes data from start_date until ending_date from the dataframe.
+      Takes data from start_date until ending_date from the dataframe.
 
-    :param start_date: beginning of time range
-    :param ending_date: ending of time range
-    :param df: Dataframe with all matches.
-    :return: Dataframe from first until last matchday in season(s)
-     start_date/ending_date.
-    """
+      :param start_date: beginning of time range
+      :param ending_date: ending of time range
+      :param df: Dataframe with all matches.
+      :return: Dataframe from first until last matchday in season(s)
+       start_date/ending_date.
+      """
     df_ending = get_last_date(df)
-    start = str(start_date[1])
-    if ending_date[1] > df_ending[1]:
-        end = str(df_ending[1] + 1)
+    start_day = start_date[0]
+    end_day = ending_date[0]
+    first_half_of_s = False
+
+    start_year = str(start_date[1])
+    if ending_date[1] < df_ending[1]:
+        if end_day < 18:
+            first_half_of_s = True
+            end_year = str(ending_date[1])
+        else:
+            end_year = str(ending_date[1] + 1)
     else:
-        end = str(ending_date[1])
-    # data year to year (january to december)
-    data = df[(df['date_time'].dt.strftime('%Y') >= start)
-              & (df['date_time'].dt.strftime('%Y') <= end)]
+        if df_ending[1] < 18:
+            end_year = str(df_ending[1])
+            first_half_of_s = True
+        else:
+            end_year = str(df_ending[1])
 
-    # removing pre seasonal matches
-    data_start_copy = data[data['date_time'].dt.strftime('%Y') == start]
-    data_del_first_year = data[(data['date_time'].dt.strftime('%Y') != start)]
+    # selecting between years
+    data = df[(df['date_time'].dt.strftime('%Y') > start_year)
+              & (df['date_time'].dt.strftime('%Y') < end_year)]
 
-    del_pre_season = \
-        data_start_copy[
-            (data_start_copy['date_time'].dt.strftime('%m') != "05")
-            & (data_start_copy['date_time'].dt.strftime('%m') != "04")
-            & (data_start_copy['date_time'].dt.strftime('%m') != "03")
-            & (data_start_copy['date_time'].dt.strftime('%m') != "02")
-            & (data_start_copy['date_time'].dt.strftime('%m') != "01")]
-    # version that starts at matchday 1
-    data_complete = pd.concat([del_pre_season, data_del_first_year], axis=0)
-
-    # removing post seasonal matches
-    data_end_copy = data[data['date_time'].dt.strftime('%Y') == end]
-    data_del_end_year = data_complete[(data_complete['date_time']
-                                       .dt.strftime('%Y') != end)]
-
-    del_post_season = data_end_copy[
-        data_end_copy['date_time'].dt.strftime('%m') < "5"]
-
-    del_post_season = \
-        data_end_copy[
-            (data_end_copy['date_time'].dt.strftime('%m') != "08")
-            & (data_end_copy['date_time'].dt.strftime('%m') != "09")
-            & (data_end_copy['date_time'].dt.strftime('%m') != "10")
-            & (data_end_copy['date_time'].dt.strftime('%m') != "11")
-            & (data_end_copy['date_time'].dt.strftime('%m') != "12")]
-    # version that starts and ends with first and end matchday
-    data_seasonal = pd.concat([data_del_end_year, del_post_season], axis=0)
-    return data_seasonal
+    # selecting days in first year
+    data_days1 = df[(df['date_time'].dt.strftime('%Y') == start_year)
+                    & (df['matchday'] >= start_day)
+                    & (df['date_time'].dt.strftime('%m') != "06")
+                    & (df['date_time'].dt.strftime('%m') != "05")
+                    & (df['date_time'].dt.strftime('%m') != "04")
+                    & (df['date_time'].dt.strftime('%m') != "03")
+                    & (df['date_time'].dt.strftime('%m') != "02")
+                    & (df['date_time'].dt.strftime('%m') != "01")]
+    print(data_days1)
+    # select last days
+    # in first year of the season?
+    if not first_half_of_s:
+        # select last days with out post seasonal matches
+        data_days2 = df[
+            (df['date_time'].dt.strftime('%Y') == end_year)
+            & (df['matchday'] <= end_day)
+            & (df['date_time'].dt.strftime('%Y') == end_year)
+            & (df['date_time'].dt.strftime('%m') != "12")
+            & (df['date_time'].dt.strftime('%m') != "11")
+            & (df['date_time'].dt.strftime('%m') != "10")
+            & (df['date_time'].dt.strftime('%m') != "09")
+            & (df['date_time'].dt.strftime('%m') != "08")
+            & (df['date_time'].dt.strftime('%m') != "07")]
+    else:
+        # same year? and not same year?
+        if ending_date[1] == start_date[1]:
+            data_days2 = \
+                data_days1[
+                    (data_days1['date_time'].dt.strftime('%Y') == end_year)
+                    & (df['matchday'] <= end_day)]
+        else:
+            data_days2 = df[(df['date_time'].dt.strftime('%Y') == end_year)
+                            & (df['matchday'] <= end_day)]
+    return pd.concat[data_days1, data, data_days2]
 
 
 def convertdf(dataframe):
