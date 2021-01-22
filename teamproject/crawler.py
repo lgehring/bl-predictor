@@ -75,7 +75,7 @@ def get_df(end_date, current_date):
         # save matches in csv file
         convertdf(matches)
         df = matches
-        matches.to_csv('crawled_data.csv', index=False)
+        matches.to_csv('crawled_data.csv', mode='a', index=False)
     return df
 
 
