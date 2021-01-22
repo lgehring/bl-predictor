@@ -68,23 +68,26 @@ class MainWindow:
         my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
         # Add A Scrollbar To The Canvas
-        my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+        my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL,
+                                     command=my_canvas.yview)
         my_scrollbar.pack(side=RIGHT, fill=Y)
 
         # Configure The Canvas
         my_canvas.configure(yscrollcommand=my_scrollbar.set)
-        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(
+            scrollregion=my_canvas.bbox("all")))
 
         # Create ANOTHER Frame INSIDE the Canvas
-        second_frame = Frame(my_canvas)
+        self.second_frame = Frame(my_canvas)
 
         # Add that New frame To a Window In The Canvas
-        my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
+        my_canvas.create_window((0, 0), window=self.second_frame, anchor="nw")
 
         def _on_mouse_wheel(event):
             my_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
 
             my_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
+
         """container = ttk.Frame(self.root)
         canvas = tk.Canvas(container)
         scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
@@ -93,7 +96,6 @@ class MainWindow:
         scrollbar.pack(side=RIGHT, fill="y")
         self.root.configure(yscrollcommand=scrollbar.set)
         self.root.bind('<Configure>', lambda e: self.root.configure(scrollregion=self.root.bbox('all')))"""
-
 
     """def topmenu(self):
         menu = Menu()
@@ -106,7 +108,6 @@ class MainWindow:
         lightmode = Menu(menu)
         menu.add_command(label="Dark Mode", command=turntolight)"""
 
-
     def _upcoming_matchday(self):
         """
         Writes matches of upcoming matchday in the window. This includes
@@ -114,7 +115,7 @@ class MainWindow:
         play and their logos.
         """
         now = date.today()
-        date_label = tk.Label(text=now)
+        date_label = tk.Label(self.second_frame, text=now)
         date_label.pack()
 
         # signals crawler to crawl unfinished matches
@@ -131,11 +132,13 @@ class MainWindow:
         upcoming_matchday = current_season['matchday'][0]
 
         matchday_label = \
-            tk.Label(
-                text="Upcoming Matchday: Matchday " + str(upcoming_matchday))
+            tk.Label(self.second_frame,
+                     text="Upcoming Matchday: Matchday " + str(
+                         upcoming_matchday))
         matchday_label.pack()
 
-        matchdaygames_label = tk.Label(text="Upcoming Matches: ")
+        matchdaygames_label = tk.Label(self.second_frame,
+                                       text="Upcoming Matches: ")
         matchdaygames_label.pack()
 
         # path of gui.py
@@ -153,18 +156,20 @@ class MainWindow:
             self.image2 = self.image2.resize((20, 20), Image.ANTIALIAS)
             self.img1 = ImageTk.PhotoImage(self.image1)
             self.img2 = ImageTk.PhotoImage(self.image2)
-            self.panel1 = tk.Label(self.root, image=self.img1)
-            self.panel2 = tk.Label(self.root, image=self.img2)
+            self.panel1 = tk.Label(self.second_frame, image=self.img1)
+            self.panel2 = tk.Label(self.second_frame, image=self.img2)
             self.panel1.photo = self.img1
             self.panel2.photo = self.img2
 
             # shows date and time of each match
-            day_label = tk.Label(text=matchday['date_time'][i])
+            day_label = tk.Label(self.second_frame,
+                                 text=matchday['date_time'][i])
             day_label.pack()
             # shows match
-            season_label = tk.Label(
-                text=matchday['home_team'][i] + " vs " + matchday[
-                    'guest_team'][i])
+            season_label = tk.Label(self.second_frame,
+                                    text=matchday['home_team'][i] + " vs " +
+                                         matchday[
+                                             'guest_team'][i])
             self.panel1.pack()
             season_label.pack()
             self.panel2.pack()
@@ -173,11 +178,12 @@ class MainWindow:
         """
         Builds a slider ro adjust the to crawl period.
         """
-        date_label = tk.Label(text="Choose a period of time:")
+        date_label = tk.Label(self.second_frame,
+                              text="Choose a period of time:")
         date_label.pack()
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
-        self.slider = Slider(self.root, width=400,
+        self.slider = Slider(self.second_frame, width=400,
                              height=60,
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year,
@@ -191,11 +197,12 @@ class MainWindow:
         Builds Download button. When used _activate_crawler_helper is
         activated, to crawl the data in selected time range.
         """
-        download_time_label = tk.Label(text="Downloading might take a while")
+        download_time_label = tk.Label(self.second_frame,
+                                       text="Downloading might take a while")
         download_time_label.pack()
 
         self.act_crawler_button = tk.Button(
-            self.root,
+            self.second_frame,
             text="Download Data",
             command=self._activate_crawler_helper)
         self.act_crawler_button.pack()
@@ -232,9 +239,10 @@ class MainWindow:
         model_label = tk.Label(text="Choose a prediction model:")
         model_label.pack()
         # Initialize options
-        self.model_variable = tk.StringVar(self.root)
+        self.model_variable = tk.StringVar(self.second_frame)
         self.model_variable.set(model_list[0])
-        model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
+        model_opt = tk.OptionMenu(self.second_frame, self.model_variable,
+                                  *model_list)
         model_opt.pack()
 
         # Show train model button
@@ -245,7 +253,7 @@ class MainWindow:
         Builds button to train the model. It activates _train_model_helper.
         """
         self.train_ml_button = tk.Button(
-            self.root,
+            self.second_frame,
             text="Train prediction model",
             command=self._train_model_helper)
         self.train_ml_button.pack()
@@ -277,21 +285,23 @@ class MainWindow:
             option_list = ["Team1", "Team2"]
 
         # home team dropdown list
-        ht_label = tk.Label(self.root, text="Home team:")
+        ht_label = tk.Label(self.second_frame, text="Home team:")
         ht_label.pack()
 
-        self.ht_variable = tk.StringVar(self.root)
+        self.ht_variable = tk.StringVar(self.second_frame)
         self.ht_variable.set(option_list[0])
-        ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
+        ht_opt = tk.OptionMenu(self.second_frame, self.ht_variable,
+                               *option_list)
         ht_opt.pack()
 
         # guest team dropdown list
-        gt_label = tk.Label(self.root, text="Guest team:")
+        gt_label = tk.Label(self.second_frame, text="Guest team:")
         gt_label.pack()
 
-        self.gt_variable = tk.StringVar(self.root)
+        self.gt_variable = tk.StringVar(self.second_frame)
         self.gt_variable.set(option_list[0])
-        gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
+        gt_opt = tk.OptionMenu(self.second_frame, self.gt_variable,
+                               *option_list)
         gt_opt.pack()
 
         # Show prediction button
@@ -302,7 +312,7 @@ class MainWindow:
         Button to activate prediction of the winner.
         """
         self.prediction_button = tk.Button(
-            self.root,
+            self.second_frame,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
         self.prediction_button.pack()
@@ -323,7 +333,7 @@ class MainWindow:
             # No matches in data
             self.winner = "Not enough data"
 
-        self.prediction = tk.Label(self.root, text="Not calculated")
+        self.prediction = tk.Label(self.second_frame, text="Not calculated")
         self.prediction.pack()
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
