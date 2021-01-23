@@ -98,8 +98,8 @@ class MainWindow:
                 dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
             self.image2 = Image.open(
                 dir_path + "/Logos/" + matchday['guest_team'][i] + ".png")
-            self.image1 = self.image1.resize((20, 20), Image.ANTIALIAS)
-            self.image2 = self.image2.resize((20, 20), Image.ANTIALIAS)
+            self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
+            self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
             self.img1 = ImageTk.PhotoImage(self.image1)
             self.img2 = ImageTk.PhotoImage(self.image2)
             self.panel1 = tk.Label(self.root, image=self.img1)
