@@ -4,6 +4,7 @@ it to a pd.DataFrame.
 """
 import datetime
 import json
+import os
 
 import pandas as pd
 import requests
@@ -185,6 +186,12 @@ def crawl_openligadb(urls):
             return True
 
         for game in range(len(jsonresponse)):  # all matches in scrape
+
+            save_logos(jsonresponse[game]['team1']['teamName'],
+                       jsonresponse[game]['team1']['teamIconUrl'])
+            save_logos(jsonresponse[game]['team2']['teamName'],
+                       jsonresponse[game]['team2']['teamIconUrl'])
+
             # appends response item-array to matches, !ORDER SENSITIVE!
             if jsonresponse[game]['matchIsFinished']:
                 matches_length = len(matches)
@@ -206,3 +213,12 @@ def crawl_openligadb(urls):
                     -1,  # g
                     jsonresponse[game]['team2']['teamName']  # guest_t]
                 ]
+
+
+def save_logos(teamname, teamicon):
+    gui_path = os.path.abspath(__file__)
+    dir_path = os.path.dirname(gui_path)
+    if not (os.path.isfile(dir_path + "/Logos/" + teamname + ".png")):
+        save_logo = open(dir_path + "/Logos/" + teamname + ".png", "wb")
+        save_logo.write(requests.get(teamicon).content)
+        save_logo.close()
