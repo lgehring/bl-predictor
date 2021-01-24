@@ -50,14 +50,14 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("500x800")
 
-        self._fullscreen_scrollbar()
+        self.fullscreen_scrollbar()
         self._upcoming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
 
         self.root.mainloop()
 
-    def _fullscreen_scrollbar(self):
+    def fullscreen_scrollbar(self):
         """
         Implements a window-wide,fullscreen wide scrollbar on the right side of
         the window.
@@ -94,26 +94,6 @@ class MainWindow:
             main_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
 
             main_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
-
-        """container = ttk.Frame(self.root)
-        canvas = tk.Canvas(container)
-        scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)"""
-        """scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.root.yview)
-        scrollbar.pack(side=RIGHT, fill="y")
-        self.root.configure(yscrollcommand=scrollbar.set)
-        self.root.bind('<Configure>', lambda e: self.root.configure(scrollregion=self.root.bbox('all')))"""
-
-    """def topmenu(self):
-        menu = Menu()
-        root.config(menu=menu)
-
-        turntodark
-        turntolight
-        darkmode = Menu(menu)
-        menu.add_command(label="Dark Mode", command=turntodark)
-        lightmode = Menu(menu)
-        menu.add_command(label="Dark Mode", command=turntolight)"""
 
     def _upcoming_matchday(self):
         """
