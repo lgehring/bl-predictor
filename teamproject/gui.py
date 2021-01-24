@@ -50,11 +50,10 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("800x800")
 
-        "self._full_screen_scrollbar()"
+        self._full_screen_scrollbar()
         self._upcoming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
-        self._full_screen_scrollbar()
 
         self.root.mainloop()
 
@@ -65,16 +64,16 @@ class MainWindow:
         """
         # Create A Main Frame
         main_frame = Frame(self.root)
-        main_frame.pack(fill=BOTH, expand=1)
+        main_frame.grid(columnspan=10)
 
         # Create A Canvas
         main_canvas = Canvas(main_frame)
-        main_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+        main_canvas.grid(columnspan=10)
 
         # Add A Scrollbar To The Canvas
         fs_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL,
                                      command=main_canvas.yview)
-        fs_scrollbar.pack(side=RIGHT, fill=Y)
+        fs_scrollbar.grid(row=0, column=5, sticky=tk.NW)
 
         # Configure The Canvas
         main_canvas.configure(yscrollcommand=fs_scrollbar.set)
