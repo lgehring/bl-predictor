@@ -1,10 +1,9 @@
 """
 This module contains code for evaluating prediction models.
 """
-
+import warnings
 import pandas as pd
-
-import models
+from teamproject import models
 
 
 class ModelEvaluator:
@@ -163,8 +162,86 @@ class ModelEvaluator:
             self.model.team_ranking_df.index += 1  # adjust index for printing
             print(self.model.team_ranking_df.to_markdown())
 
-
 # # Test: Hinrunde 2020 prediction, from 15.01.2021
 # import crawler
-# test_crawler_data = crawler.fetch_data([1, 2004], [34, 2020])
-# ModelEvaluator("PoissonModel", test_crawler_data, 135).print_results()
+# test_crawler_data = crawler.fetch_data([1, 2019], [34, 2020])
+# ModelEvaluator("PoissonModel", test_crawler_data, 90).print_results()
+
+
+# Ignored by GUI
+class WholeDataFrequencies:
+    """
+    Not a model! But:
+    a class that gives the frequencies for all data given for:
+        - game outcomes (home_team wins, guest_team wins, None)
+        - average goals per game (home_team, guest_team)
+    """
+
+    def __init__(self, trainset_df):
+        """
+        Builds the WholeDataFrequencies statistics parameters.
+
+        :param trainset_df:
+         pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
+        """
+        self.all_matches_df = trainset_df
+
+        self.home_team_wins = 0
+        self.guest_team_wins = 0
+        self.draws = 0
+        self.home_team_avg_goals = None
+        self.guest_team_avg_goals = None
+
+        # initialize
+        try:
+            self._count_outcome_frequencies()
+            self._count_average_goals_per_game()
+        except KeyError:
+            warnings.warn("Calculating stats failed. "
+                          "Check training DataFrame for errors")
+
+    def _count_outcome_frequencies(self):
+        """Builds DataFrames of only rows where
+            - home team wins
+            - guest team wins
+            - neither team wins
+        and assigns their lengths"""
+        home_team_wins_df = \
+            self.all_matches_df[(self.all_matches_df['home_score']
+                                 > self.all_matches_df['guest_score'])]
+        self.home_team_wins = len(home_team_wins_df.index)
+
+        guest_team_wins_df = \
+            self.all_matches_df[(self.all_matches_df['guest_score']
+                                 > self.all_matches_df['home_score'])]
+        self.guest_team_wins = len(guest_team_wins_df.index)
+
+        draws_df = \
+            self.all_matches_df[(self.all_matches_df['home_score']
+                                 == self.all_matches_df['guest_score'])]
+        self.draws = len(draws_df.index)
+
+    def _count_average_goals_per_game(self):
+        """Builds DataFrames of only goal count columns for
+            - home team goals
+            - guest team goals
+        and assigns their average value"""
+        home_team_goals_df = self.all_matches_df[['home_score']]
+        sum_of_home_team_goals = home_team_goals_df.sum()[0]  # just sum
+        num_of_home_team_games = len(home_team_goals_df.index)
+
+        if num_of_home_team_games == 0:  # prevent div by 0
+            self.home_team_avg_goals = None
+        else:
+            self.home_team_avg_goals = (sum_of_home_team_goals
+                                        / num_of_home_team_games)
+
+        guest_team_goals_df = self.all_matches_df[['guest_score']]
+        sum_of_guest_team_goals = guest_team_goals_df.sum()[0]  # just sum
+        num_of_guest_team_games = len(guest_team_goals_df.index)
+
+        if num_of_guest_team_games == 0:  # prevent div by 0
+            self.guest_team_avg_goals = None
+        else:
+            self.guest_team_avg_goals = (sum_of_guest_team_goals
+                                         / num_of_guest_team_games)
