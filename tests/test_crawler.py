@@ -17,6 +17,11 @@ def test_fetch_data():
     assert ptypes.is_datetime64_any_dtype(data['date_time'])
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
+    assert (data.season >= 2010).all()
+    assert (data.season <= 2015).all()
+    assert (0 < data.matchday < 35).all()
+
+
 
 
 @pytest.mark.parametrize(

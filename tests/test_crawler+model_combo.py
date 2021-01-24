@@ -7,7 +7,14 @@ import teamproject.crawler as crawler
 import teamproject.models as models
 import teamproject.prediction_evaluation as prediction_evaluation
 
+#import pandas as pd
+
 test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
+#pd.set_option('display.max_rows', None)
+#pd.set_option('display.max_columns', None)
+#print("test crawler \n", test_crawler_data)
+
+
 
 
 # Models testsuite
@@ -63,10 +70,4 @@ def test_stats(trainset,
     assert trained_model.home_team_avg_goals == expected_home_team_avg_goals
     assert trained_model.guest_team_avg_goals == expected_guest_team_avg_goals
 
-print("1")
-trainset = crawler.fetch_data([5, 2014], [14, 2017])
-print(trainset)
-trained_model = prediction_evaluation.WholeDataFrequencies(
-    trainset).home_team_wins
-print(trained_model)
-print("1")
+
