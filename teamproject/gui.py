@@ -159,8 +159,7 @@ class MainWindow:
             # shows match
             season_label = tk.Label(self.second_frame,
                                     text=matchday['home_team'][i] + " vs " +
-                                         matchday[
-                                             'guest_team'][i])
+                                         matchday['guest_team'][i])
             self.panel1.pack()
             season_label.pack()
             self.panel2.pack()
