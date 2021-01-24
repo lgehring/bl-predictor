@@ -64,29 +64,29 @@ class MainWindow:
         main_frame.pack(fill=BOTH, expand=1)
 
         # Create A Canvas
-        my_canvas = Canvas(main_frame)
-        my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+        main_canvas = Canvas(main_frame)
+        main_canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
         # Add A Scrollbar To The Canvas
-        my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL,
-                                     command=my_canvas.yview)
-        my_scrollbar.pack(side=RIGHT, fill=Y)
+        fs_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL,
+                                     command=main_canvas.yview)
+        fs_scrollbar.pack(side=RIGHT, fill=Y)
 
         # Configure The Canvas
-        my_canvas.configure(yscrollcommand=my_scrollbar.set)
-        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(
-            scrollregion=my_canvas.bbox("all")))
+        main_canvas.configure(yscrollcommand=fs_scrollbar.set)
+        main_canvas.bind('<Configure>', lambda e: main_canvas.configure(
+            scrollregion=main_canvas.bbox("all")))
 
         # Create ANOTHER Frame INSIDE the Canvas
-        self.second_frame = Frame(my_canvas)
+        self.second_frame = Frame(main_canvas)
 
         # Add that New frame To a Window In The Canvas
-        my_canvas.create_window((0, 0), window=self.second_frame, anchor="nw")
+        main_canvas.create_window((0, 0), window=self.second_frame, anchor="nw")
 
         def _on_mouse_wheel(event):
-            my_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
+            main_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
 
-            my_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
+            main_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
 
         """container = ttk.Frame(self.root)
         canvas = tk.Canvas(container)
