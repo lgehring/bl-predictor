@@ -6,17 +6,29 @@ import datetime
 import inspect
 import os
 import tkinter as tk
-from tkinter import *
-from tkinter import ttk
-from datetime import date
 import tkinter.ttk as ttk
-from ttkthemes import ThemedStyle
+from datetime import date
+from tkinter import *
+
 import pandas as pd
 from PIL import ImageTk, Image
 
 from teamproject import crawler
 from teamproject import models
 from teamproject.gui_slider_widget import Slider
+
+"""import datetime
+import inspect
+import os
+import tkinter as tk
+from datetime import date
+
+import pandas as pd
+from PIL import ImageTk, Image
+
+from teamproject import crawler
+from teamproject import models
+from teamproject.gui_slider_widget import Slider"""
 
 
 class MainWindow:
