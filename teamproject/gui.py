@@ -194,12 +194,12 @@ class MainWindow:
 
         # Menu title shown above
         model_label = tk.Label(text="Choose a prediction model:")
-        model_label.pack()
+        model_label.grid(columnspan=5)
         # Initialize options
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
         model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
-        model_opt.pack()
+        model_opt.grid(columnspan=5)
 
         # Show train model button
         self._train_model()
@@ -212,7 +212,7 @@ class MainWindow:
             self.root,
             text="Train prediction model",
             command=self._train_model_helper)
-        self.train_ml_button.pack()
+        self.train_ml_button.grid(columnspan=5)
 
     def _train_model_helper(self):
         """
@@ -242,21 +242,21 @@ class MainWindow:
 
         # home team dropdown list
         ht_label = tk.Label(self.root, text="Home team:")
-        ht_label.pack()
+        ht_label.grid(columnspan=5)
 
         self.ht_variable = tk.StringVar(self.root)
         self.ht_variable.set(option_list[0])
         ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
-        ht_opt.pack()
+        ht_opt.grid(columnspan=5)
 
         # guest team dropdown list
         gt_label = tk.Label(self.root, text="Guest team:")
-        gt_label.pack()
+        gt_label.grid(columnspan=5)
 
         self.gt_variable = tk.StringVar(self.root)
         self.gt_variable.set(option_list[0])
         gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
-        gt_opt.pack()
+        gt_opt.grid(columnspan=5)
 
         # Show prediction button
         self._make_prediction()
@@ -269,7 +269,7 @@ class MainWindow:
             self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
-        self.prediction_button.pack()
+        self.prediction_button.grid(columnspan=5)
 
     def _make_prediction_helper(self):
         """
@@ -288,7 +288,7 @@ class MainWindow:
             self.winner = "Not enough data"
 
         self.prediction = tk.Label(self.root, text="Not calculated")
-        self.prediction.pack()
+        self.prediction.grid(columnspan=5)
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
                                         + self.gt_variable.get()
