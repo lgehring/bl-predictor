@@ -225,7 +225,7 @@ def save_logos(teamname, teamicon):
     """
     gui_path = os.path.abspath(__file__)
     dir_path = os.path.dirname(gui_path)
-    if not (os.path.isfile(dir_path + "/Logos/" + teamname + ".png")):
+    if not os.path.isfile(dir_path + "/Logos/" + teamname + ".png"):
         save_logo = open(dir_path + "/Logos/" + teamname + ".png", "wb")
         save_logo.write(requests.get(teamicon).content)
         save_logo.close()
