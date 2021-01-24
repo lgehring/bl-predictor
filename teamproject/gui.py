@@ -50,17 +50,17 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("500x800")
 
-        self.fullscreen_scrollbar()
+        self._full_screen_scrollbar()
         self._upcoming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
 
         self.root.mainloop()
 
-    def fullscreen_scrollbar(self):
+    def _full_screen_scrollbar(self):
         """
-        Implements a window-wide,fullscreen wide scrollbar on the right side of
-        the window.
+        Implements a window-wide, full screen wide scrollbar on
+        the right side of the window.
         """
         # Create A Main Frame
         main_frame = Frame(self.root)
@@ -77,23 +77,27 @@ class MainWindow:
 
         # Configure The Canvas
         main_canvas.configure(yscrollcommand=fs_scrollbar.set)
-        main_canvas.bind('<Configure>', lambda e: main_canvas.configure(
-            scrollregion=main_canvas.bbox("all")))
+        main_canvas.bind('<Configure>',
+                         lambda e: main_canvas.configure(
+                             scrollregion=main_canvas.bbox("all")))
 
         # Create ANOTHER Frame INSIDE the Canvas
         self.second_frame = Frame(main_canvas)
 
         # Add that New frame To a Window In The Canvas
-        main_canvas.create_window((0, 0), window=self.second_frame, anchor="nw")
+        main_canvas.create_window((0, 0),
+                                  window=self.second_frame, anchor="nw")
 
         def _on_mouse_wheel(event):
             """
-            Implements a scrolling function on the window wide scrollbar on the right side of
-            the screen.
+            Implements a scrolling function on the window wide
+            scrollbar on the right side of the screen.
             """
-            main_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
+            main_canvas.yview_scroll(-1 * int((event.delta / 120)),
+                                     "units")
 
-            main_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
+            main_canvas.bind_all("<MouseWheel>",
+                                 _on_mouse_wheel)
 
     def _upcoming_matchday(self):
         """
