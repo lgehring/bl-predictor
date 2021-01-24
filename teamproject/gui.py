@@ -106,8 +106,8 @@ class MainWindow:
         play and their logos.
         """
         now = date.today()
-        date_label = tk.Label(self.second_frame, text=now)
-        date_label.pack()
+        date_label = tk.Label(text=now)
+        date_label.grid(sticky=tk.W)
 
         # signals crawler to crawl unfinished matches
         current_season = crawler.fetch_data([0, 0], [0, 0])
@@ -123,79 +123,91 @@ class MainWindow:
         upcoming_matchday = current_season['matchday'][0]
 
         matchday_label = \
-            tk.Label(self.second_frame,
-                     text="Upcoming Matchday: Matchday " + str(
-                         upcoming_matchday))
-        matchday_label.pack()
+            tk.Label(
+                text="Upcoming Matchday: Matchday " + str(upcoming_matchday),
+                font=("Calibri Light", 30))
+        matchday_label.grid(columnspan=5)
 
-        matchdaygames_label = tk.Label(self.second_frame,
-                                       text="Upcoming Matches: ")
-        matchdaygames_label.pack()
+        matchdaygames_label = tk.Label(text="Upcoming Matches: ",
+                                       font=("Calibri Light", 25))
+        matchdaygames_label.grid(columnspan=5)
 
         # path of gui.py
         gui_path = os.path.abspath(__file__)
         # path to team project
         dir_path = os.path.dirname(gui_path)
-        last_game = first_game + 8
+        last_game = first_game + 9
         for i in range(first_game, last_game):
             # loads the logos into gui
             self.image1 = Image.open(
                 dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
             self.image2 = Image.open(
                 dir_path + "/Logos/" + matchday['guest_team'][i] + ".png")
-            self.image1 = self.image1.resize((20, 20), Image.ANTIALIAS)
-            self.image2 = self.image2.resize((20, 20), Image.ANTIALIAS)
+            self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
+            self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
             self.img1 = ImageTk.PhotoImage(self.image1)
             self.img2 = ImageTk.PhotoImage(self.image2)
-            self.panel1 = tk.Label(self.second_frame, image=self.img1)
-            self.panel2 = tk.Label(self.second_frame, image=self.img2)
+            self.panel1 = tk.Label(self.root, image=self.img1)
+            self.panel2 = tk.Label(self.root, image=self.img2)
             self.panel1.photo = self.img1
             self.panel2.photo = self.img2
 
             # shows date and time of each match
-            day_label = tk.Label(self.second_frame,
-                                 text=matchday['date_time'][i])
-            day_label.pack()
+            if i == first_game or \
+                    matchday['date_time'][i] != matchday['date_time'][i - 1]:
+                day_label = tk.Label(text=matchday['date_time'][i],
+                                     font=("Calibri Light", 13))
+                day_label.grid(columnspan=5)
             # shows match
-            season_label = tk.Label(self.second_frame,
-                                    text=matchday['home_team'][i] + " vs " +
-                                         matchday['guest_team'][i])
-            self.panel1.pack()
-            season_label.pack()
-            self.panel2.pack()
+            home_label = tk.Label(text=matchday['home_team'][i],
+                                  font=("Calibri Light", 13))
+            versus_label = tk.Label(text=" vs ",
+                                    font=("Calibri Light", 13))
+            guest_label = tk.Label(text=matchday['guest_team'][i],
+                                   font=("Calibri Light", 13))
+
+            home_label.grid(row=2 * i, column=0, sticky=tk.E)
+            self.panel1.grid(row=2 * i, column=1)
+            versus_label.grid(row=2 * i, column=2, padx=10)
+            self.panel2.grid(row=2 * i, column=3)
+            guest_label.grid(row=2 * i, column=4, sticky=tk.W)
+
+            self.root.grid_columnconfigure(0, weight=1)
+            self.root.grid_columnconfigure(4, weight=1)
 
     def _timeframe_slider(self):
         """
         Builds a slider ro adjust the to crawl period.
         """
-        date_label = tk.Label(self.second_frame,
-                              text="Choose a period of time:")
-        date_label.pack()
+        date_label = tk.Label(text="Choose a period of time:",
+                              font=("Calibri Light", 13))
+        date_label.grid(columnspan=5)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
-        self.slider = Slider(self.second_frame, width=400,
+        self.slider = Slider(self.root, width=400,
                              height=60,
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
                                        datetime.datetime.now().year],
                              show_value=True)
-        self.slider.pack()
+        self.slider.grid(columnspan=5)
 
     def _activate_crawler(self):
         """
         Builds Download button. When used _activate_crawler_helper is
         activated, to crawl the data in selected time range.
         """
-        download_time_label = tk.Label(self.second_frame,
-                                       text="Downloading might take a while")
-        download_time_label.pack()
+        download_time_label = tk.Label(text="Downloading might take a while",
+                                       font=("Calibri Light", 13))
+        download_time_label.grid(columnspan=5)
 
         self.act_crawler_button = tk.Button(
-            self.second_frame,
+            self.root,
             text="Download Data",
+            font=("Calibri Light", 13),
             command=self._activate_crawler_helper)
-        self.act_crawler_button.pack()
+        self.act_crawler_button.grid(columnspan=5)
 
     def _activate_crawler_helper(self):
         """
@@ -227,13 +239,12 @@ class MainWindow:
 
         # Menu title shown above
         model_label = tk.Label(text="Choose a prediction model:")
-        model_label.pack()
+        model_label.grid(columnspan=5)
         # Initialize options
-        self.model_variable = tk.StringVar(self.second_frame)
+        self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
-        model_opt = tk.OptionMenu(self.second_frame, self.model_variable,
-                                  *model_list)
-        model_opt.pack()
+        model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
+        model_opt.grid(columnspan=5)
 
         # Show train model button
         self._train_model()
@@ -243,10 +254,10 @@ class MainWindow:
         Builds button to train the model. It activates _train_model_helper.
         """
         self.train_ml_button = tk.Button(
-            self.second_frame,
+            self.root,
             text="Train prediction model",
             command=self._train_model_helper)
-        self.train_ml_button.pack()
+        self.train_ml_button.grid(columnspan=5)
 
     def _train_model_helper(self):
         """
@@ -275,24 +286,22 @@ class MainWindow:
             option_list = ["Team1", "Team2"]
 
         # home team dropdown list
-        ht_label = tk.Label(self.second_frame, text="Home team:")
-        ht_label.pack()
+        ht_label = tk.Label(self.root, text="Home team:")
+        ht_label.grid(columnspan=5)
 
-        self.ht_variable = tk.StringVar(self.second_frame)
+        self.ht_variable = tk.StringVar(self.root)
         self.ht_variable.set(option_list[0])
-        ht_opt = tk.OptionMenu(self.second_frame, self.ht_variable,
-                               *option_list)
-        ht_opt.pack()
+        ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
+        ht_opt.grid(columnspan=5)
 
         # guest team dropdown list
-        gt_label = tk.Label(self.second_frame, text="Guest team:")
-        gt_label.pack()
+        gt_label = tk.Label(self.root, text="Guest team:")
+        gt_label.grid(columnspan=5)
 
-        self.gt_variable = tk.StringVar(self.second_frame)
+        self.gt_variable = tk.StringVar(self.root)
         self.gt_variable.set(option_list[0])
-        gt_opt = tk.OptionMenu(self.second_frame, self.gt_variable,
-                               *option_list)
-        gt_opt.pack()
+        gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
+        gt_opt.grid(columnspan=5)
 
         # Show prediction button
         self._make_prediction()
@@ -302,10 +311,10 @@ class MainWindow:
         Button to activate prediction of the winner.
         """
         self.prediction_button = tk.Button(
-            self.second_frame,
+            self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
-        self.prediction_button.pack()
+        self.prediction_button.grid(columnspan=5)
 
     def _make_prediction_helper(self):
         """
@@ -323,8 +332,8 @@ class MainWindow:
             # No matches in data
             self.winner = "Not enough data"
 
-        self.prediction = tk.Label(self.second_frame, text="Not calculated")
-        self.prediction.pack()
+        self.prediction = tk.Label(self.root, text="Not calculated")
+        self.prediction.grid(columnspan=5)
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
                                         + self.gt_variable.get()
