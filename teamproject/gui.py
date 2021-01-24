@@ -48,7 +48,7 @@ class MainWindow:
         a timeframe slider and activates the crawler.
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("500x800")
+        self.root.geometry("800x800")
 
         self._full_screen_scrollbar()
         self._upcoming_matchday()
