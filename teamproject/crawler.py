@@ -4,6 +4,7 @@ it to a pd.DataFrame.
 """
 import datetime
 import json
+import os
 
 import pandas as pd
 import requests
