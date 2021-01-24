@@ -32,12 +32,16 @@ def fetch_data(start_date, end_date):
     current_date = get_current_date()
     if start_date == [0, 0] == end_date:
         crawl_openligadb(curate_urls(current_date, [34, current_date[1]]))
-        convertdf(unfinished_matches)
-        return unfinished_matches
+        unfinished_m = convertdf(unfinished_matches)
+        return unfinished_m
     else:
         csv_last_date = get_csv_last_date()
-        if current_date[1] > end_date[1] or (current_date[1] == end_date[1] and current_date[0] > end_date[0]):
-            if end_date[1] > csv_last_date[1] or (end_date[1] == csv_last_date[1] and end_date[0] > csv_last_date[0]):
+        if current_date[1] > end_date[1] or (
+                current_date[1] == end_date[1] and current_date[0] > end_date[
+            0]):
+            if end_date[1] > csv_last_date[1] or (
+                    end_date[1] == csv_last_date[1] and end_date[0] >
+                    csv_last_date[0]):
                 crawl_openligadb(curate_urls(csv_last_date, end_date))
                 dataframe = take_data(start_date, csv_last_date)
             else:
@@ -81,9 +85,15 @@ def get_current_date():
 
 def get_csv_last_date():
     if os.path.exists("crawled_data.csv"):
-        df = pd.read_csv("crawled_data.csv")
-        print(type(df['home_score'].iloc[-1]))
+        df = pd.read_csv("crawled_data.csv", sep=r'\s*,\s*')
+        print(df)
+        print(df.keys())
+        print(type(df['matchday'].iloc[-1]))
+        print(type(df['date_time'].iloc[-1]))
         df = convertdf(df)
+        print(type(df['matchday'].iloc[-1]))
+        print(type(df['date_time'].iloc[-1]))
+
         end_date_csv = [df['matchday'].iloc[-1],
                         df['season'].iloc[-1]]
     else:
@@ -93,11 +103,18 @@ def get_csv_last_date():
 
 def take_data(start, end):
     if os.path.exists("crawled_data.csv"):
-        df = pd.read_csv("crawled_data.csv")
+        df = pd.read_csv("crawled_data.csv"
+                        )
+        print("1.1", type(df['matchday'].iloc[-1]))
+        print("2.1", type(df['date_time'].iloc[-1]))
         df = convertdf(df)
+        print("1",type(df['matchday'].iloc[-1]))
+        print("2", type(df['date_time'].iloc[-1]))
         data = df[(df['season'] > start[1]) & (df['season'] < end[1])]
-        data2 = data[(data['season'] != start[1]) & (data['matchday'] <= start[0])]
-        data3 = data2[(data2['season'] != end[1]) & (data['matchday'] >= end[0])]
+        data2 = data[
+            (data['season'] != start[1]) & (data['matchday'] <= start[0])]
+        data3 = data2[
+            (data2['season'] != end[1]) & (data['matchday'] >= end[0])]
         return data3
 
 
@@ -262,5 +279,7 @@ def crawl_openligadb(urls):
                     json_response[game]['team2']['teamName'],  # guest_t
                     current_url[43:47]  # season
                 ]
-    convertdf(matches)
-    matches.to_csv('crawled_data.csv', mode='a', index=False)
+    if not matches.empty:
+        matches_convert = convertdf(matches)
+        print(matches)
+        matches_convert.to_csv('crawled_data.csv', mode='a', header=False)
