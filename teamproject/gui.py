@@ -50,10 +50,11 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("800x800")
 
-        self._full_screen_scrollbar()
+        "self._full_screen_scrollbar()"
         self._upcoming_matchday()
         self._timeframe_slider()
         self._activate_crawler()
+        self._full_screen_scrollbar()
 
         self.root.mainloop()
 
