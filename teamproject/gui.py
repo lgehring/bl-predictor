@@ -17,19 +17,6 @@ from teamproject import crawler
 from teamproject import models
 from teamproject.gui_slider_widget import Slider
 
-"""import datetime
-import inspect
-import os
-import tkinter as tk
-from datetime import date
-
-import pandas as pd
-from PIL import ImageTk, Image
-
-from teamproject import crawler
-from teamproject import models
-from teamproject.gui_slider_widget import Slider"""
-
 
 class MainWindow:
     """
@@ -71,6 +58,10 @@ class MainWindow:
         self.root.mainloop()
 
     def _fullscreen_scrollbar(self):
+        """
+        Implements a window-wide,fullscreen wide scrollbar on the right side of
+        the window.
+        """
         # Create A Main Frame
         main_frame = Frame(self.root)
         main_frame.pack(fill=BOTH, expand=1)
@@ -96,6 +87,10 @@ class MainWindow:
         main_canvas.create_window((0, 0), window=self.second_frame, anchor="nw")
 
         def _on_mouse_wheel(event):
+            """
+            Implements a scrolling function on the window wide scrollbar on the right side of
+            the screen.
+            """
             main_canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
 
             main_canvas.bind_all("<MouseWheel>", _on_mouse_wheel)
