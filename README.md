@@ -5,4 +5,6 @@
 [![Coverage status](https://coveralls.io/repos/github/lgehring/bl-predictor/badge.svg)](https://coveralls.io/github/lgehring/bl-predictor) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt) 
 
+<img src="./bl-predictor_logo.svg" width="200">
+
 _Here will be some documentation soon._
