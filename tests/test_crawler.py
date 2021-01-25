@@ -8,7 +8,15 @@ import teamproject.crawler as crawler
 
 
 def test_fetch_data():
-    data = crawler.fetch_data([1, 2010], [12, 2015])
+
+    data = crawler.fetch_data([1, 2010], [12, 2011])
+    test_urls = crawler.curate_urls([1, 2010], [12, 2011])
+    columns = ['date_time', 'matchday', 'home_team', 'home_score',
+               'guest_score', 'guest_team', 'season']
+    m_empty = pd.DataFrame([], columns=columns)  # empty df to fill
+    un_m_empty = pd.DataFrame([], columns=columns)
+    test_matches = crawler.crawl_openligadb(test_urls, m_empty, un_m_empty)[1]
+
     assert isinstance(data, pd.DataFrame)
     assert all(ptypes.is_numeric_dtype(data[col])
                for col in ['home_score', 'guest_score'])
@@ -18,10 +26,22 @@ def test_fetch_data():
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
     assert (data.season >= 2010).all()
-    assert (data.season <= 2015).all()
-    assert (0 < data.matchday < 35).all()
+    #Todo change to 2015
+    assert (data.season <= 2011).all()
+    assert (0 < data.matchday).all()
+    assert (35 > data.matchday).all()
+    #Todo change to 130
+    assert data['matchday'].head(30).is_monotonic_increasing
+    assert (len(data.columns) == 7)
+    assert data['season'].is_monotonic_increasing
+    # matches might have indices that data does not have
+    #pd.set_option('display.max_rows', None)
+    #print("testmacthes \n", data)
 
-
+    # Todo data changes depending wether or not the file exists befor
+    pd.testing.assert_frame_equal(test_matches.reset_index(drop=True), data.reset_index(drop=True))
+#Todo delete
+test_fetch_data()
 
 
 @pytest.mark.parametrize(
