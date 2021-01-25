@@ -7,11 +7,9 @@ from bl_predictor import crawler
 from bl_predictor import models
 from bl_predictor import prediction_evaluation
 
-#import pandas as pd
+# import pandas as pd
 
 test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
-
-
 
 
 # Models testsuite
@@ -66,5 +64,3 @@ def test_stats(trainset,
     assert trained_model.draws == expected_draws
     assert trained_model.home_team_avg_goals == expected_home_team_avg_goals
     assert trained_model.guest_team_avg_goals == expected_guest_team_avg_goals
-
-
