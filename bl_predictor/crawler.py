@@ -47,8 +47,8 @@ def fetch_data(start_date, end_date):
                 and current_date[0] > end_date[0]):
             # wenn unser enddatum später ist als csv geht
             if end_date[1] > csv_last_date[1] or (
-                    end_date[1] == csv_last_date[1] and end_date[0] >
-                    csv_last_date[0]):
+                    end_date[1] == csv_last_date[1]
+                    and end_date[0] > csv_last_date[0]):
                 # hole daten von csv datum bis unser end datum
                 urls = curate_urls(csv_last_date, current_date)
                 crawl_openligadb(urls, unfinished_matches_empty, matches_empty)
@@ -61,8 +61,8 @@ def fetch_data(start_date, end_date):
             # wenn heute später ist als csv letztes datum
             if current_date[1] > csv_last_date[1] \
                     or (
-                    current_date[1] == csv_last_date[1] and current_date[0] >
-                    csv_last_date[0]):
+                    current_date[1] == csv_last_date[1]
+                    and current_date[0] > csv_last_date[0]):
                 # hole alle daten von csv (viel. 2004) bis heute
                 crawl_openligadb(curate_urls(csv_last_date, current_date))
                 if start_date <= current_date:
@@ -82,7 +82,7 @@ def fetch_data(start_date, end_date):
 def get_current_date():
     """
     Checks if there is data for the current year. If not, the year before is
-    the currents season. Exp. any match in 2021 before may is in the season
+    the current season. Expample: any match in 2021 before may is in the season
     2020.
     :return: current date [day, season]
     """
@@ -102,6 +102,11 @@ def get_current_date():
 
 
 def get_csv_last_date():
+    """
+    This function finds the season and matchday of the last match in the csv,
+    if a file exists. If there is no file yet it returns [1, 2004].
+    :return: [matchday, season]
+    """
     if os.path.exists("crawled_data.csv"):
         this_df = pd.read_csv("crawled_data.csv")
 
@@ -115,6 +120,12 @@ def get_csv_last_date():
 
 
 def take_data(start, end):
+    """
+    Takes data from start to end out of the csv file.
+    :param list[int] start: Starting Date
+    :param list[int] end: Ending Date
+    :return: Dataframe
+    """
     if os.path.exists("crawled_data.csv"):
         df = pd.read_csv("crawled_data.csv")
         df = convertdf(df)
@@ -125,8 +136,8 @@ def take_data(start, end):
             (data['season'] != start[1]) | (data['matchday'] >= start[0])]
 
         data_cor_end = data_cor_start[
-            (data_cor_start['season'] != end[1]) | (
-                    data['matchday'] <= end[0])]
+            (data_cor_start['season'] != end[1])
+            | (data['matchday'] <= end[0])]
         return data_cor_end
 
 
@@ -237,13 +248,19 @@ def data_exists(url):
 
 
 def matches_exists(url):
+    """
+    Checks if there is information to this match. Exp. if the season began but
+    the match is tomorrow.
+
+    :param url: url of the match
+    :return: Result as boolean
+    """
     to_crawl = url
     while to_crawl:
         current_url = to_crawl.pop(0)
         r = requests.get(current_url)
         json_response = r.content
         json_response = json.loads(json_response)
-
         for game in range(len(json_response)):
             if json_response[game]['matchIsFinished']:
                 return True
