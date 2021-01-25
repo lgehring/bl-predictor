@@ -3,7 +3,7 @@ This module contains code for evaluating prediction models.
 """
 import warnings
 import pandas as pd
-from teamproject import models
+from bl_predictor import models
 
 
 class ModelEvaluator:

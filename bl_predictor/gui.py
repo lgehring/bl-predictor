@@ -11,14 +11,14 @@ from datetime import date
 import pandas as pd
 from PIL import ImageTk, Image
 
-from teamproject import crawler
-from teamproject import models
-from teamproject.gui_slider_widget import Slider
+from bl_predictor import crawler
+from bl_predictor import models
+from bl_predictor.gui_slider_widget import Slider
 
 
 class MainWindow:
     """
-    Graphical User Interface for the bl-predictor project.
+    Graphical User Interface for the bl_predictor project.
 
     The GUI window can be shown with show_window()
     """
@@ -41,7 +41,7 @@ class MainWindow:
 
     def show_window(self):
         """
-        Shows the bl-predictor GUI.
+        Shows the bl_predictor GUI.
         The function constructs a window with matches of the upcoming matchday,
         a timeframe slider and activates the crawler.
         """
@@ -95,9 +95,9 @@ class MainWindow:
         for i in range(first_game, last_game):
             # loads the logos into gui
             self.image1 = Image.open(
-                dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
+                dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
             self.image2 = Image.open(
-                dir_path + "/Logos/" + matchday['guest_team'][i] + ".png")
+                dir_path + "/team_logos/" + matchday['guest_team'][i] + ".png")
             self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
             self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
             self.img1 = ImageTk.PhotoImage(self.image1)

@@ -3,9 +3,9 @@ This file is used for testing models in a variety of cases
 """
 import pytest
 
-import teamproject.crawler as crawler
-import teamproject.models as models
-import teamproject.prediction_evaluation as prediction_evaluation
+from bl_predictor import crawler
+from bl_predictor import models
+from bl_predictor import prediction_evaluation
 
 test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
 
