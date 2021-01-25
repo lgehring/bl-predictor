@@ -43,21 +43,18 @@ def fetch_data(start_date, end_date):
         csv_last_date = get_csv_last_date()
         # wenn heute später ist als unser enddatum
         if current_date[1] > end_date[1] or (
-                current_date[1] == end_date[1] and current_date[0] > end_date[0]):
+                current_date[1] == end_date[1]
+                and current_date[0] > end_date[0]):
             # wenn unser enddatum später ist als csv geht
-            print("1")
             if end_date[1] > csv_last_date[1] or (
                     end_date[1] == csv_last_date[1] and end_date[0] >
                     csv_last_date[0]):
-                print("2")
                 # hole daten von csv datum bis unser end datum
                 urls = curate_urls(csv_last_date, current_date)
                 crawl_openligadb(urls, unfinished_matches_empty, matches_empty)
                 dataframe = take_data(start_date, end_date)
             else:
-                print(start_date)
-                print(end_date)
-                # sonst haben wir alle Daten, Nimm daten von unseren Start bis unserem ende
+                # sonst haben wir alle Daten, Nimm daten von Start bis ende
                 dataframe = take_data(start_date, end_date)
         # sonst, also wenn unser end datum später ist als unser heute
         else:
@@ -69,16 +66,16 @@ def fetch_data(start_date, end_date):
                 # hole alle daten von csv (viel. 2004) bis heute
                 crawl_openligadb(curate_urls(csv_last_date, current_date))
                 if start_date <= current_date:
-                    # hole dann daten von unserem start bis heute, wenn start vor heute ist
-                    take_data(start_date, current_date)
+                    # hole dann daten von unserem start bis heute,
+                    # wenn start vor heute ist
+                    dataframe = take_data(start_date, current_date)
                 else:
-                    take_data([1, current_date[1]], current_date)
+                    dataframe = take_data([1, current_date[1]], current_date)
             # sonst, also wenn heute in csv ist
             else:
                 # Nimm Daten von start bis ende
                 if start_date <= current_date:
-                    take_data(start_date, end_date)
-
+                    dataframe = take_data(start_date, end_date)
         return dataframe
 
 
@@ -121,12 +118,7 @@ def take_data(start, end):
     if os.path.exists("crawled_data.csv"):
         df = pd.read_csv("crawled_data.csv")
         df = convertdf(df)
-        # Todo delete
-        #pd.set_option('display.max_rows', None)
-        print(df)
         data = df[(df['season'] >= start[1]) & (df['season'] <= end[1])]
-
-
 
         # take data except for days unitl 5 in 2014
         data_cor_start = data[

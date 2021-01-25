@@ -10,9 +10,6 @@ from bl_predictor import prediction_evaluation
 #import pandas as pd
 
 test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
-#pd.set_option('display.max_rows', None)
-#pd.set_option('display.max_columns', None)
-#print("test crawler \n", test_crawler_data)
 
 
 
