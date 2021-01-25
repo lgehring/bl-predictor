@@ -93,7 +93,7 @@ class MainWindow:
 
         for i in range(first_game, last_game):
             # loads the logos into gui
-            '''
+
             self.image1 = Image.open(
                 dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
             self.image2 = Image.open(
@@ -106,7 +106,7 @@ class MainWindow:
             self.panel2 = tk.Label(self.root, image=self.img2)
             self.panel1.photo = self.img1
             self.panel2.photo = self.img2
-            '''
+
             # shows date and time of each match
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
@@ -114,9 +114,9 @@ class MainWindow:
             season_label = tk.Label(
                 text=matchday['home_team'][i] + " vs " + matchday[
                     'guest_team'][i])
-            #self.panel1.pack()
+            self.panel1.pack()
             season_label.pack()
-            #self.panel2.pack()
+            self.panel2.pack()
 
     def _timeframe_slider(self):
         """

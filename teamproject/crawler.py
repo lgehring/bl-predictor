@@ -44,15 +44,19 @@ def fetch_data(start_date, end_date):
         # wenn heute später ist als unser enddatum
         if current_date[1] > end_date[1] or (
                 current_date[1] == end_date[1] and current_date[0] > end_date[0]):
-            # wenn unser enddatum später ist asl csv geht
+            # wenn unser enddatum später ist als csv geht
+            print("1")
             if end_date[1] > csv_last_date[1] or (
                     end_date[1] == csv_last_date[1] and end_date[0] >
                     csv_last_date[0]):
+                print("2")
                 # hole daten von csv datum bis unser end datum
                 urls = curate_urls(csv_last_date, current_date)
                 crawl_openligadb(urls, unfinished_matches_empty, matches_empty)
                 dataframe = take_data(start_date, end_date)
             else:
+                print(start_date)
+                print(end_date)
                 # sonst haben wir alle Daten, Nimm daten von unseren Start bis unserem ende
                 dataframe = take_data(start_date, end_date)
         # sonst, also wenn unser end datum später ist als unser heute
@@ -118,7 +122,7 @@ def take_data(start, end):
         df = pd.read_csv("crawled_data.csv")
         df = convertdf(df)
         # Todo delete
-        pd.set_option('display.max_rows', None)
+        #pd.set_option('display.max_rows', None)
         print(df)
         data = df[(df['season'] >= start[1]) & (df['season'] <= end[1])]
 
