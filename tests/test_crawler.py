@@ -4,7 +4,7 @@ import pandas as pd
 import pandas.api.types as ptypes
 import pytest
 
-import teamproject.crawler as crawler
+from bl_predictor import crawler
 
 
 def test_fetch_data():

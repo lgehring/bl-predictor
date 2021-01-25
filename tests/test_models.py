@@ -4,8 +4,8 @@ This file is used for testing models in a variety of cases
 import pandas as pd
 import pytest
 
-import teamproject.models as models
-import teamproject.prediction_evaluation as prediction_evaluation
+from bl_predictor import models
+from bl_predictor import prediction_evaluation
 
 norm_train = pd.DataFrame([
     ['A', 0, 3, 'B'],

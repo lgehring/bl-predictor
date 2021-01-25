@@ -11,14 +11,14 @@ from datetime import date
 import pandas as pd
 from PIL import ImageTk, Image
 
-from teamproject import crawler
-from teamproject import models
-from teamproject.gui_slider_widget import Slider
+from bl_predictor import crawler
+from bl_predictor import models
+from bl_predictor.gui_slider_widget import Slider
 
 
 class MainWindow:
     """
-    Graphical User Interface for the bl-predictor project.
+    Graphical User Interface for the bl_predictor project.
 
     The GUI window can be shown with show_window()
     """
@@ -41,12 +41,12 @@ class MainWindow:
 
     def show_window(self):
         """
-        Shows the bl-predictor GUI.
+        Shows the bl_predictor GUI.
         The function constructs a window with matches of the upcoming matchday,
         a timeframe slider and activates the crawler.
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("800x500")
+        self.root.geometry("800x800")
 
         self._upcoming_matchday()
         self._timeframe_slider()
@@ -62,7 +62,7 @@ class MainWindow:
         """
         now = date.today()
         date_label = tk.Label(text=now)
-        date_label.pack()
+        date_label.grid(sticky=tk.W)
 
         # signals crawler to crawl unfinished matches
         current_season = crawler.fetch_data([0, 0], [0, 0])
@@ -79,27 +79,27 @@ class MainWindow:
 
         matchday_label = \
             tk.Label(
-                text="Upcoming Matchday: Matchday " + str(upcoming_matchday))
-        matchday_label.pack()
+                text="Upcoming Matchday: Matchday " + str(upcoming_matchday),
+                font=("Calibri Light", 30))
+        matchday_label.grid(columnspan=5)
 
-        matchdaygames_label = tk.Label(text="Upcoming Matches: ")
-        matchdaygames_label.pack()
+        matchdaygames_label = tk.Label(text="Upcoming Matches: ",
+                                       font=("Calibri Light", 25))
+        matchdaygames_label.grid(columnspan=5)
 
         # path of gui.py
         gui_path = os.path.abspath(__file__)
         # path to team project
         dir_path = os.path.dirname(gui_path)
-        last_game = first_game + 8
-
+        last_game = first_game + 9
         for i in range(first_game, last_game):
             # loads the logos into gui
-
             self.image1 = Image.open(
-                dir_path + "/Logos/" + matchday['home_team'][i] + ".png")
+                dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
             self.image2 = Image.open(
-                dir_path + "/Logos/" + matchday['guest_team'][i] + ".png")
-            self.image1 = self.image1.resize((20, 20), Image.ANTIALIAS)
-            self.image2 = self.image2.resize((20, 20), Image.ANTIALIAS)
+                dir_path + "/team_logos/" + matchday['guest_team'][i] + ".png")
+            self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
+            self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
             self.img1 = ImageTk.PhotoImage(self.image1)
             self.img2 = ImageTk.PhotoImage(self.image2)
             self.panel1 = tk.Label(self.root, image=self.img1)
@@ -108,22 +108,35 @@ class MainWindow:
             self.panel2.photo = self.img2
 
             # shows date and time of each match
-            day_label = tk.Label(text=matchday['date_time'][i])
-            day_label.pack()
+            if i == first_game or \
+                    matchday['date_time'][i] != matchday['date_time'][i - 1]:
+                day_label = tk.Label(text=matchday['date_time'][i],
+                                     font=("Calibri Light", 13))
+                day_label.grid(columnspan=5)
             # shows match
-            season_label = tk.Label(
-                text=matchday['home_team'][i] + " vs " + matchday[
-                    'guest_team'][i])
-            self.panel1.pack()
-            season_label.pack()
-            self.panel2.pack()
+            home_label = tk.Label(text=matchday['home_team'][i],
+                                  font=("Calibri Light", 13))
+            versus_label = tk.Label(text=" vs ",
+                                    font=("Calibri Light", 13))
+            guest_label = tk.Label(text=matchday['guest_team'][i],
+                                   font=("Calibri Light", 13))
+
+            home_label.grid(row=2 * i, column=0, sticky=tk.E)
+            self.panel1.grid(row=2 * i, column=1)
+            versus_label.grid(row=2 * i, column=2, padx=10)
+            self.panel2.grid(row=2 * i, column=3)
+            guest_label.grid(row=2 * i, column=4, sticky=tk.W)
+
+            self.root.grid_columnconfigure(0, weight=1)
+            self.root.grid_columnconfigure(4, weight=1)
 
     def _timeframe_slider(self):
         """
         Builds a slider ro adjust the to crawl period.
         """
-        date_label = tk.Label(text="Choose a period of time:")
-        date_label.pack()
+        date_label = tk.Label(text="Choose a period of time:",
+                              font=("Calibri Light", 13))
+        date_label.grid(columnspan=5)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=400,
@@ -133,21 +146,23 @@ class MainWindow:
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
                                        datetime.datetime.now().year],
                              show_value=True)
-        self.slider.pack()
+        self.slider.grid(columnspan=5)
 
     def _activate_crawler(self):
         """
         Builds Download button. When used _activate_crawler_helper is
         activated, to crawl the data in selected time range.
         """
-        download_time_label = tk.Label(text="Downloading might take a while")
-        download_time_label.pack()
+        download_time_label = tk.Label(text="Downloading might take a while",
+                                       font=("Calibri Light", 13))
+        download_time_label.grid(columnspan=5)
 
         self.act_crawler_button = tk.Button(
             self.root,
             text="Download Data",
+            font=("Calibri Light", 13),
             command=self._activate_crawler_helper)
-        self.act_crawler_button.pack()
+        self.act_crawler_button.grid(columnspan=5)
 
     def _activate_crawler_helper(self):
         """
@@ -179,12 +194,12 @@ class MainWindow:
 
         # Menu title shown above
         model_label = tk.Label(text="Choose a prediction model:")
-        model_label.pack()
+        model_label.grid(columnspan=5)
         # Initialize options
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
         model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
-        model_opt.pack()
+        model_opt.grid(columnspan=5)
 
         # Show train model button
         self._train_model()
@@ -197,7 +212,7 @@ class MainWindow:
             self.root,
             text="Train prediction model",
             command=self._train_model_helper)
-        self.train_ml_button.pack()
+        self.train_ml_button.grid(columnspan=5)
 
     def _train_model_helper(self):
         """
@@ -227,21 +242,21 @@ class MainWindow:
 
         # home team dropdown list
         ht_label = tk.Label(self.root, text="Home team:")
-        ht_label.pack()
+        ht_label.grid(columnspan=5)
 
         self.ht_variable = tk.StringVar(self.root)
         self.ht_variable.set(option_list[0])
         ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
-        ht_opt.pack()
+        ht_opt.grid(columnspan=5)
 
         # guest team dropdown list
         gt_label = tk.Label(self.root, text="Guest team:")
-        gt_label.pack()
+        gt_label.grid(columnspan=5)
 
         self.gt_variable = tk.StringVar(self.root)
         self.gt_variable.set(option_list[0])
         gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
-        gt_opt.pack()
+        gt_opt.grid(columnspan=5)
 
         # Show prediction button
         self._make_prediction()
@@ -254,7 +269,7 @@ class MainWindow:
             self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
-        self.prediction_button.pack()
+        self.prediction_button.grid(columnspan=5)
 
     def _make_prediction_helper(self):
         """
@@ -273,7 +288,7 @@ class MainWindow:
             self.winner = "Not enough data"
 
         self.prediction = tk.Label(self.root, text="Not calculated")
-        self.prediction.pack()
+        self.prediction.grid(columnspan=5)
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
                                         + self.gt_variable.get()
