@@ -6,30 +6,27 @@ import pytest
 
 from bl_predictor import crawler
 import os
+from pathlib import Path
 
 
 def test_fetch_data():
+    data = crawler.fetch_data([1, 2010], [34, 2012])
+    test_next_day = crawler.fetch_data([0, 0], [0, 0])
 
     # path of csv file
-    test_path = os.path.abspath(os.path.join(os.getcwd(),"../.."))
-    print(test_path)
-    csv_file = os.path.join(test_path, 'bl_predictor/bl_predictor/crawled_data.csv')
-    print(csv_file)
-    # test_matches
-    '''
+    dir = Path(__file__).parents[1]
+    csv_file = os.path.join(dir, "bl_predictor/crawled_data.csv")
+    # make test_matches to compare with data
     test_urls = crawler.curate_urls([1, 2010], [34, 2012])
     columns = ['date_time', 'matchday', 'home_team', 'home_score',
                'guest_score', 'guest_team', 'season']
     m_empty = pd.DataFrame([], columns=columns)  # empty df to fill
     un_m_empty = pd.DataFrame([], columns=columns)
-    test_matches = crawler.crawl_openligadb(test_urls, m_empty, un_m_empty, csv_file)[
-        1]
+    test_matches = \
+        crawler.crawl_openligadb(test_urls, m_empty, un_m_empty, csv_file)[
+            1]
     test_matches = crawler.convertdf(test_matches)
     os.remove(csv_file)
-    '''
-
-    data = crawler.fetch_data([1, 2010], [34, 2012])
-    test_next_day = crawler.fetch_data([0, 0], [0, 0])
 
     assert isinstance(data, pd.DataFrame)
     assert all(ptypes.is_numeric_dtype(data[col])
@@ -46,8 +43,8 @@ def test_fetch_data():
     assert data['matchday'].head(130).is_monotonic_increasing
     assert (len(data.columns) == 7)
     assert data['season'].is_monotonic_increasing
-    #pd.testing.assert_frame_equal(test_matches.reset_index(drop=True),
-     #                             data.reset_index(drop=True))
+    pd.testing.assert_frame_equal(test_matches.reset_index(drop=True),
+                                  data.reset_index(drop=True))
     assert (len(data) != 0)
     # testing test_next_day
     assert isinstance(test_next_day, pd.DataFrame)
@@ -66,6 +63,9 @@ def test_fetch_data():
     assert (len(test_next_day) != 0)
 
 
+test_fetch_data()
+
+
 @pytest.mark.parametrize(
     "start_date, end_date, index_of_url, expected",
     [  # curate urls tests
@@ -81,10 +81,36 @@ def test_fetch_data():
         ([1, 2014], [8, 2016], 1,
          "https://api.openligadb.de/getmatchdata/bl1/2015")
     ])
-
 def test_test_curate_urls(start_date, end_date, index_of_url, expected):
     urls = crawler.curate_urls(start_date, end_date)
     if index_of_url is not None:
         assert urls[index_of_url] == expected
     else:
         assert urls == expected
+
+
+@pytest.mark.parametrize(
+    "start, end, expected",
+    [
+        (crawler.get_current_date(), crawler.get_current_date(), False),
+        ([12, 2012], [12, 2012], False),
+    ])
+def test_data_exists(start, end, expected):
+    url = crawler.curate_urls(start, end)
+    result = crawler.data_not_exist(url)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "start, end, expected",
+    [
+        (crawler.get_current_date(), crawler.get_current_date(), True),
+        ([12, 2012], [12, 2012], True),
+        ([crawler.get_current_date()[0] + 1, crawler.get_current_date()[1]],
+         [crawler.get_current_date()[0] + 1, crawler.get_current_date()[1]],
+         False)
+    ])
+def matches_exists(start, end, expected):
+    url = crawler.curate_urls(start, end)
+    result = crawler.data_not_exist(url)
+    assert result == expected
