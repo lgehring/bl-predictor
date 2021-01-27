@@ -30,13 +30,13 @@ def fetch_data(start_date, end_date):
     crawler_path = os.path.abspath(__file__)
     directory_path = os.path.dirname(crawler_path)
     csv_file = os.path.join(directory_path, 'crawled_data.csv')
-
+    # empty df to fill
     columns = ['date_time', 'matchday', 'home_team', 'home_score',
                'guest_score', 'guest_team', 'season']
-    matches_empty = pd.DataFrame([], columns=columns)  # empty df to fill
+    matches_empty = pd.DataFrame([], columns=columns)
     unfin_m_empty = pd.DataFrame([], columns=columns)
-
     current_d = get_current_date()
+
     if start_date == [0, 0] == end_date:
         urls = curate_urls([current_d[0] + 1, current_d[1]],
                            [34, current_d[1]])
@@ -45,47 +45,65 @@ def fetch_data(start_date, end_date):
         unfinished_m = convertdf(unfinished_matches)
         return unfinished_m
     else:
-        # last csv date or [1, 2004]
-        csv_last_d = get_csv_last_date(csv_file)
-        # if our end date if befor today
-        if current_d[1] > end_date[1] or (
-                current_d[1] == end_date[1]
-                and current_d[0] > end_date[0]):
-            # if our our date is later than the csv file goes
-            if end_date[1] > csv_last_d[1] or (
-                    end_date[1] == csv_last_d[1]
-                    and end_date[0] > csv_last_d[0]):
-                # get the missing or all data until today and take matches in
-                # our time range
-                urls = curate_urls(csv_last_d, current_d)
-                crawl_openligadb(urls, unfin_m_empty, matches_empty, csv_file)
-                dataframe = take_data(start_date, end_date, csv_file)
-            else:
-                # otherwise just take matches in our time range
-                dataframe = take_data(start_date, end_date, csv_file)
-        # otherwise our end_date is in the future. Exp. Slider can give
-        # until [34, current year]
-        else:
-            # if end_date later than our csv file
-            if current_d[1] > csv_last_d[1] \
-                    or (
-                    current_d[1] == csv_last_d[1]
-                    and current_d[0] > csv_last_d[0]):
-                # get all missing data
-                crawl_openligadb(curate_urls(csv_last_d, current_d, csv_file))
-                # and take needed matches after checking if start date isn´t in
-                # the future
-                if start_date <= current_d:
-                    dataframe = take_data(start_date, current_d, csv_file)
-                else:
-                    dataframe = take_data([1, current_d[1]], current_d,
-                                          csv_file)
-            # otherwise we have all data
-            else:
-                # Nimm Daten von start bis ende
-                if start_date <= current_d:
-                    dataframe = take_data(start_date, end_date)
+        dataframe = fetch_data_helper(start_date, end_date, csv_file,
+                                      current_d, unfin_m_empty, matches_empty)
         return dataframe
+
+
+def fetch_data_helper(start_date, end_date, csv_file, current_d, unfin_m_empty,
+                      matches_empty):
+    """
+    Helps fetch data to get missing data and takes data from the csv
+    file in the correct time range.
+    :param list [int] start_date: [matchday, year]
+    :param list [int] end_date: [matchday, year]
+    :param csv_file: path or going to be to path to the csv file
+    :param list [int] current_d: current date [matchday, season]
+    :param unfin_m_empty: empty dataframe
+    :param matches_empty: empty dataframe
+    :return: Dataframe with matches from start_date until end_date
+    """
+    # last csv date or [1, 2004]
+    csv_last_d = get_csv_last_date(csv_file)
+    # if our end date if befor today
+    if current_d[1] > end_date[1] or (
+            current_d[1] == end_date[1]
+            and current_d[0] > end_date[0]):
+        # if our end date is later than the csv file goes
+        if end_date[1] > csv_last_d[1] or (
+                end_date[1] == csv_last_d[1]
+                and end_date[0] > csv_last_d[0]):
+            # get the missing or all data until today and take matches in
+            # our time range
+            urls = curate_urls(csv_last_d, current_d)
+            crawl_openligadb(urls, unfin_m_empty, matches_empty, csv_file)
+            dataframe = take_data(start_date, end_date, csv_file)
+        else:
+            # otherwise just take matches in our time range
+            dataframe = take_data(start_date, end_date, csv_file)
+    # otherwise our end_date is in the future. Exp. Slider can give
+    # until [34, current year]
+    else:
+        # if today later than our csv file
+        if current_d[1] > csv_last_d[1] \
+                or (
+                current_d[1] == csv_last_d[1]
+                and current_d[0] > csv_last_d[0]):
+            # get all missing data
+            crawl_openligadb(curate_urls(csv_last_d, current_d, csv_file))
+            # and take needed matches after checking if start date isn´t in
+            # the future
+            if start_date <= current_d:
+                dataframe = take_data(start_date, current_d, csv_file)
+            else:
+                dataframe = take_data([1, current_d[1]], current_d,
+                                      csv_file)
+        # otherwise we have all data
+        else:
+            # Nimm Daten von start bis ende
+            if start_date <= current_d:
+                dataframe = take_data(start_date, end_date)
+    return dataframe
 
 
 def get_current_date():
@@ -321,7 +339,7 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
                 ]
     # if matches has been filled in this function
     if not matches.empty:
-        if os.path.exists("crawled_data.csv"):
+        if os.path.exists(csv_file):
             matches.to_csv(csv_file, mode='a',
                            index=False, header=False)
 
