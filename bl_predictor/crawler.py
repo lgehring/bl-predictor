@@ -103,6 +103,9 @@ def fetch_data_helper(start_date, end_date, csv_file, current_d, unfin_m_empty,
         else:
             if start_date <= current_d:
                 dataframe = take_data(start_date, end_date, csv_file)
+            else:
+                dataframe = take_data([1, current_d[1]], current_d,
+                                      csv_file)
     return dataframe
 
 
