@@ -5,32 +5,16 @@ import pandas.api.types as ptypes
 import pytest
 
 from bl_predictor import crawler
-import os
-from pathlib import Path
 
 
 @pytest.mark.parametrize(
-    "start, end",
+    "start, end, exp_start, exp_end",
     [
-        ([32, 2019], [2, 2020]),
-        ([22, 2020], [1, 2021])
+        ([32, 2019], [2, 2020], [32, 2019], [2, 2020]),
+        ([22, 2020], [1, 2021], [1, 2020], [34, 2020])
     ])
-def test_fetch_data(start, end):
+def test_fetch_data(start, end, exp_start, exp_end):
     data = crawler.fetch_data(start, end)
-    # path of csv file
-    dir = Path(__file__).parents[1]
-    csv_file = os.path.join(dir, "bl_predictor/crawled_data.csv")
-    # make test_matches to compare with data
-    test_urls = crawler.curate_urls(start, end)
-    columns = ['date_time', 'matchday', 'home_team', 'home_score',
-               'guest_score', 'guest_team', 'season']
-    m_empty = pd.DataFrame([], columns=columns)  # empty df to fill
-    un_m_empty = pd.DataFrame([], columns=columns)
-    test_matches = \
-        crawler.crawl_openligadb(test_urls, m_empty, un_m_empty, csv_file)[
-            1]
-    test_matches = crawler.convertdf(test_matches)
-    os.remove(csv_file)
 
     assert isinstance(data, pd.DataFrame)
     assert all(ptypes.is_numeric_dtype(data[col])
@@ -40,15 +24,12 @@ def test_fetch_data(start, end):
     assert ptypes.is_datetime64_any_dtype(data['date_time'])
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
-    assert (data.season >= start[1]).all()
-    assert (data.season <= end[1]).all()
+    assert (data.season >= exp_start[1]).all()
+    assert (data.season <= exp_end[1]).all()
     assert (0 < data.matchday).all()
     assert (35 > data.matchday).all()
-    assert data['matchday'].head(130).is_monotonic_increasing
     assert (len(data.columns) == 7)
     assert data['season'].is_monotonic_increasing
-    pd.testing.assert_frame_equal(test_matches.reset_index(drop=True),
-                                  data.reset_index(drop=True)),
     assert (len(data) != 0)
 
 
