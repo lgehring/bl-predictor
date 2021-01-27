@@ -26,56 +26,61 @@ def fetch_data(start_date, end_date):
     :return: Dataframe that contains all the matches between
         start_date and end_date.
     """
+    #get path of csv file
+    crawler_path = os.path.abspath(__file__)
+    directory_path = os.path.dirname(crawler_path)
+    csv_file = os.path.join(directory_path, 'crawled_data.csv')
+
     columns = ['date_time', 'matchday', 'home_team', 'home_score',
                'guest_score', 'guest_team', 'season']
     matches_empty = pd.DataFrame([], columns=columns)  # empty df to fill
-    unfinished_matches_empty = pd.DataFrame([], columns=columns)
+    unfin_m_empty = pd.DataFrame([], columns=columns)
 
-    current_date = get_current_date()
+    current_d = get_current_date()
     if start_date == [0, 0] == end_date:
-        urls = curate_urls([current_date[0] + 1, current_date[1]],
-                           [34, current_date[1]])
-        unfinished_matches = crawl_openligadb(urls, unfinished_matches_empty,
-                                              matches_empty)[0]
+        urls = curate_urls([current_d[0] + 1, current_d[1]],
+                           [34, current_d[1]])
+        unfinished_matches = crawl_openligadb(urls, unfin_m_empty,
+                                              matches_empty, csv_file)[0]
         unfinished_m = convertdf(unfinished_matches)
         return unfinished_m
     else:
         # letzte csv datum oder 2004
-        csv_last_date = get_csv_last_date()
+        csv_last_d = get_csv_last_date(csv_file)
         # wenn heute später ist als unser enddatum
-        if current_date[1] > end_date[1] or (
-                current_date[1] == end_date[1]
-                and current_date[0] > end_date[0]):
+        if current_d[1] > end_date[1] or (
+                current_d[1] == end_date[1]
+                and current_d[0] > end_date[0]):
             # wenn unser enddatum später ist als csv geht
-            if end_date[1] > csv_last_date[1] or (
-                    end_date[1] == csv_last_date[1]
-                    and end_date[0] > csv_last_date[0]):
+            if end_date[1] > csv_last_d[1] or (
+                    end_date[1] == csv_last_d[1]
+                    and end_date[0] > csv_last_d[0]):
                 # hole daten von csv datum bis unser end datum
-                urls = curate_urls(csv_last_date, current_date)
-                crawl_openligadb(urls, unfinished_matches_empty, matches_empty)
-                dataframe = take_data(start_date, end_date)
+                urls = curate_urls(csv_last_d, current_d)
+                crawl_openligadb(urls, unfin_m_empty, matches_empty, csv_file)
+                dataframe = take_data(start_date, end_date, csv_file)
             else:
                 # sonst haben wir alle Daten, Nimm daten von Start bis ende
-                dataframe = take_data(start_date, end_date)
+                dataframe = take_data(start_date, end_date, csv_file)
         # sonst, also wenn unser end datum später ist als unser heute
         else:
             # wenn heute später ist als csv letztes datum
-            if current_date[1] > csv_last_date[1] \
+            if current_d[1] > csv_last_d[1] \
                     or (
-                    current_date[1] == csv_last_date[1]
-                    and current_date[0] > csv_last_date[0]):
+                    current_d[1] == csv_last_d[1]
+                    and current_d[0] > csv_last_d[0]):
                 # hole alle daten von csv (viel. 2004) bis heute
-                crawl_openligadb(curate_urls(csv_last_date, current_date))
-                if start_date <= current_date:
+                crawl_openligadb(curate_urls(csv_last_d, current_d, csv_file))
+                if start_date <= current_d:
                     # hole dann daten von unserem start bis heute,
                     # wenn start vor heute ist
-                    dataframe = take_data(start_date, current_date)
+                    dataframe = take_data(start_date, current_d, csv_file)
                 else:
-                    dataframe = take_data([1, current_date[1]], current_date)
+                    dataframe = take_data([1, current_d[1]], current_d, csv_file)
             # sonst, also wenn heute in csv ist
             else:
                 # Nimm Daten von start bis ende
-                if start_date <= current_date:
+                if start_date <= current_d:
                     dataframe = take_data(start_date, end_date)
         return dataframe
 
@@ -101,14 +106,14 @@ def get_current_date():
     return [day, current_year]
 
 
-def get_csv_last_date():
+def get_csv_last_date(csv_file):
     """
     This function finds the season and matchday of the last match in the csv,
     if a file exists. If there is no file yet it returns [1, 2004].
     :return: [matchday, season]
     """
-    if os.path.exists("crawled_data.csv"):
-        this_df = pd.read_csv("crawled_data.csv")
+    if os.path.exists(csv_file):
+        this_df = pd.read_csv(csv_file)
         end_date_csv = [int(this_df['matchday'].iloc[-1]),
                         int(this_df['season'].iloc[-1])]
     else:
@@ -116,15 +121,15 @@ def get_csv_last_date():
     return end_date_csv
 
 
-def take_data(start, end):
+def take_data(start, end, csv_file):
     """
     Takes data from start to end out of the csv file.
     :param list[int] start: Starting Date
     :param list[int] end: Ending Date
     :return: Dataframe
     """
-    if os.path.exists("crawled_data.csv"):
-        df = pd.read_csv("crawled_data.csv")
+    if os.path.exists(csv_file):
+        df = pd.read_csv(csv_file)
         df = convertdf(df)
         # take all data with in these seasons(each included)
         data = df[(df['season'] >= start[1]) & (df['season'] <= end[1])]
@@ -267,7 +272,7 @@ def matches_exists(url):
                 return False
 
 
-def crawl_openligadb(urls, unfinished_matches, matches):
+def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
     """
     Crawls through the given urls
     and safes the useful data in the dataframe 'matches'. The Data of an
@@ -312,14 +317,11 @@ def crawl_openligadb(urls, unfinished_matches, matches):
                 ]
     # if matches has been filled in this function
     if not matches.empty:
-        crawler_path = os.path.abspath(__file__)
-        directory_path = os.path.dirname(crawler_path)
-        csv_file = os.path.join(directory_path, 'crawled_data.csv')
         if os.path.exists("crawled_data.csv"):
             matches.to_csv(csv_file, mode='a',
                            index=False, header=False)
 
         else:
-            matches.to_csv(csv_file, mode='a',
+            matches.to_csv(csv_file,
                            index=False)
     return [unfinished_matches, matches]
