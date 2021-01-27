@@ -65,7 +65,7 @@ def fetch_data_helper(start_date, end_date, csv_file, current_d, unfin_m_empty,
     """
     # last csv date or [1, 2004]
     csv_last_d = get_csv_last_date(csv_file)
-    # if our end date if befor today
+    # if our end date if before today
     if current_d[1] > end_date[1] or (
             current_d[1] == end_date[1]
             and current_d[0] > end_date[0]):
@@ -90,7 +90,8 @@ def fetch_data_helper(start_date, end_date, csv_file, current_d, unfin_m_empty,
                 current_d[1] == csv_last_d[1]
                 and current_d[0] > csv_last_d[0]):
             # get all missing data
-            crawl_openligadb(curate_urls(csv_last_d, current_d, csv_file))
+            url = curate_urls(csv_last_d, current_d)
+            crawl_openligadb(url, unfin_m_empty, matches_empty, csv_file)
             # and take needed matches after checking if start date isn´t in
             # the future
             if start_date <= current_d:
@@ -100,16 +101,15 @@ def fetch_data_helper(start_date, end_date, csv_file, current_d, unfin_m_empty,
                                       csv_file)
         # otherwise we have all data
         else:
-            # Nimm Daten von start bis ende
             if start_date <= current_d:
-                dataframe = take_data(start_date, end_date)
+                dataframe = take_data(start_date, end_date, csv_file)
     return dataframe
 
 
 def get_current_date():
     """
     Checks if there is data for the current year. If not, the year before is
-    the current season. Expample: any match in 2021 before may is in the season
+    the current season. Exp. any match in 2021 before may is in the season
     2020.
     :return: current date [day, season]
     """
@@ -237,11 +237,15 @@ def curate_urls(start_date, end_date):
             for day in list(range(start_day, 35)):
                 urls += ['https://api.openligadb.de/getmatchdata/bl1/'
                          + str(start_season) + '/' + str(day)]
+            for season in range(start_season + 1, end_season):
+                urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                         + str(season)]
         # if it does start on 1. matchday we take the whole season and add
         # seasons between dates
-        for season in range(start_season, end_season):
-            urls += ['https://api.openligadb.de/getmatchdata/bl1/'
-                     + str(season)]
+        else:
+            for season in range(start_season, end_season):
+                urls += ['https://api.openligadb.de/getmatchdata/bl1/'
+                         + str(season)]
         # adding last season we want to look at
         if end_day != 34:
             for day in list(range(1, end_day + 1)):
@@ -300,8 +304,9 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
     and safes the useful data in the dataframe 'matches'. The Data of an
     unfinished season is saved in 'unfinished_matches'.
 
-    :param matches:
-    :param unfinished_matches:
+    :param csv_file: path to csv file
+    :param matches: empty dataframe
+    :param unfinished_matches: empty dataframe
     :param list[str] urls: List with urls from matches and seasons in our
      time range.
     """

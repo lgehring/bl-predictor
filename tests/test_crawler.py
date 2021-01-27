@@ -9,15 +9,24 @@ import os
 from pathlib import Path
 
 
-def test_fetch_data():
-    data = crawler.fetch_data([1, 2010], [34, 2012])
-    test_next_day = crawler.fetch_data([0, 0], [0, 0])
+@pytest.mark.parametrize(
+    "start, end",
+    [
+        ([1, 2010], [34, 2012]),
+        ([1, 2020], [18, 2020]),
+        ([18, 2020], [34, 2020]),
+        ([18, 2020], [1, 2021])
 
+    ])
+def test_fetch_data(start, end):
+    data = crawler.fetch_data(start, end)
+    pd.set_option('display.max_columns', None)
+    pd.set_option("max_rows", None)
     # path of csv file
     dir = Path(__file__).parents[1]
     csv_file = os.path.join(dir, "bl_predictor/crawled_data.csv")
     # make test_matches to compare with data
-    test_urls = crawler.curate_urls([1, 2010], [34, 2012])
+    test_urls = crawler.curate_urls(start, end)
     columns = ['date_time', 'matchday', 'home_team', 'home_score',
                'guest_score', 'guest_team', 'season']
     m_empty = pd.DataFrame([], columns=columns)  # empty df to fill
@@ -36,17 +45,25 @@ def test_fetch_data():
     assert ptypes.is_datetime64_any_dtype(data['date_time'])
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
-    assert (data.season >= 2010).all()
-    assert (data.season <= 2012).all()
+    assert (data.season >= start[1]).all()
+    assert (data.season <= end[1]).all()
     assert (0 < data.matchday).all()
     assert (35 > data.matchday).all()
     assert data['matchday'].head(130).is_monotonic_increasing
     assert (len(data.columns) == 7)
     assert data['season'].is_monotonic_increasing
     pd.testing.assert_frame_equal(test_matches.reset_index(drop=True),
-                                  data.reset_index(drop=True))
+                                  data.reset_index(drop=True)),
     assert (len(data) != 0)
-    # testing test_next_day
+
+
+@pytest.mark.parametrize(
+    "start, end",
+    [
+        ([0, 0], [0, 0])
+    ])
+def test_fetch_data_next_day(start, end):
+    test_next_day = crawler.fetch_data(start, end)
     assert isinstance(test_next_day, pd.DataFrame)
     assert all(ptypes.is_numeric_dtype(test_next_day[col])
                for col in ['home_score', 'guest_score'])
@@ -61,9 +78,6 @@ def test_fetch_data():
     assert (len(test_next_day.columns) == 7)
     assert test_next_day['season'].is_monotonic_increasing
     assert (len(test_next_day) != 0)
-
-
-test_fetch_data()
 
 
 @pytest.mark.parametrize(
