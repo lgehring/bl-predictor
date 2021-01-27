@@ -312,11 +312,18 @@ def crawl_openligadb(urls, unfinished_matches, matches):
                 ]
     # if matches has been filled in this function
     if not matches.empty:
+        crawler_path = os.path.abspath(__file__)
+        directory_path = os.path.dirname(crawler_path)
+        print(directory_path)
+        csv_file = os.path.join(directory_path, 'crawled_data.csv')
+        print(csv_file)
         if os.path.exists("../bl_predictor/crawled_data.csv"):
-            matches.to_csv('../bl_predictor/crawled_data.csv', mode='a',
+            matches.to_csv(csv_file, mode='a',
                            index=False, header=False)
 
         else:
-            matches.to_csv('../bl_predictor/crawled_data.csv', mode='a',
+            matches.to_csv(csv_file, mode='a',
                            index=False)
     return [unfinished_matches, matches]
+
+print(type(fetch_data([1, 2012], [2, 2012])))
