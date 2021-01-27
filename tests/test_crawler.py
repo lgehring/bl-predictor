@@ -4,22 +4,21 @@ import pandas as pd
 import pandas.api.types as ptypes
 import pytest
 
-import bl_predictor.crawler as crawler
+from bl_predictor import crawler
 import os
 
 
 def test_fetch_data():
-    test_urls = crawler.curate_urls([1, 2010], [12, 2015])
+    test_urls = crawler.curate_urls([1, 2010], [34, 2012])
     columns = ['date_time', 'matchday', 'home_team', 'home_score',
                'guest_score', 'guest_team', 'season']
     m_empty = pd.DataFrame([], columns=columns)  # empty df to fill
     un_m_empty = pd.DataFrame([], columns=columns)
     test_matches = crawler.crawl_openligadb(test_urls, m_empty, un_m_empty)[1]
-    os.remove("crawled_data.csv")
+    os.remove("../bl_predictor/crawled_data.csv")
 
-    data = crawler.fetch_data([1, 2010], [12, 2015])
+    data = crawler.fetch_data([1, 2010], [34, 2012])
     pd.set_option('display.max_rows', None)
-    print(data)
 
     assert isinstance(data, pd.DataFrame)
     assert all(ptypes.is_numeric_dtype(data[col])
@@ -30,7 +29,7 @@ def test_fetch_data():
     assert (data.home_score >= 0).all()
     assert (data.guest_score >= 0).all()
     assert (data.season >= 2010).all()
-    assert (data.season <= 2015).all()
+    assert (data.season <= 2012).all()
     assert (0 < data.matchday).all()
     assert (35 > data.matchday).all()
     assert data['matchday'].head(130).is_monotonic_increasing
@@ -38,6 +37,7 @@ def test_fetch_data():
     assert data['season'].is_monotonic_increasing
     pd.testing.assert_frame_equal(test_matches.reset_index(drop=True),
                                   data.reset_index(drop=True))
+    assert (len(data) != 0)
 
 
 @pytest.mark.parametrize(

@@ -174,10 +174,10 @@ class MainWindow:
         """
         first_day_of_season = 1
         last_day_of_season = 34
-
         self.crawler_data = crawler.fetch_data(
             [first_day_of_season, int(self.slider.get_values()[0])],
             [last_day_of_season, int(self.slider.get_values()[1])])
+
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # Show model selection menu

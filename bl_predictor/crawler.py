@@ -33,7 +33,8 @@ def fetch_data(start_date, end_date):
 
     current_date = get_current_date()
     if start_date == [0, 0] == end_date:
-        urls = curate_urls(current_date, [34, current_date[1]])
+        urls = curate_urls([current_date[0] + 1, current_date[1]],
+                           [34, current_date[1]])
         unfinished_matches = crawl_openligadb(urls, unfinished_matches_empty,
                                               matches_empty)[0]
         unfinished_m = convertdf(unfinished_matches)
@@ -86,7 +87,6 @@ def get_current_date():
     2020.
     :return: current date [day, season]
     """
-
     current_year = datetime.date.today().year
     current_year_has_no_data = data_exists(
         curate_urls([1, current_year], [1, current_year]))
@@ -107,13 +107,10 @@ def get_csv_last_date():
     if a file exists. If there is no file yet it returns [1, 2004].
     :return: [matchday, season]
     """
-    if os.path.exists("crawled_data.csv"):
-        this_df = pd.read_csv("crawled_data.csv")
-
-        this_df = convertdf(this_df)
-
-        end_date_csv = [this_df['matchday'].iloc[-1],
-                        this_df['season'].iloc[-1]]
+    if os.path.exists("../bl_predictor/crawled_data.csv"):
+        this_df = pd.read_csv("../bl_predictor/crawled_data.csv")
+        end_date_csv = [int(this_df['matchday'].iloc[-1]),
+                        int(this_df['season'].iloc[-1])]
     else:
         end_date_csv = [1, 2004]
     return end_date_csv
@@ -126,15 +123,17 @@ def take_data(start, end):
     :param list[int] end: Ending Date
     :return: Dataframe
     """
-    if os.path.exists("crawled_data.csv"):
-        df = pd.read_csv("crawled_data.csv")
+    if os.path.exists("../bl_predictor/crawled_data.csv"):
+        df = pd.read_csv("../bl_predictor/crawled_data.csv")
         df = convertdf(df)
+        # take all data with in these seasons(each included)
         data = df[(df['season'] >= start[1]) & (df['season'] <= end[1])]
-
-        # take data except for days unitl 5 in 2014
+        # take all except days in the first season, that are
+        # before our first matchday
         data_cor_start = data[
             (data['season'] != start[1]) | (data['matchday'] >= start[0])]
-
+        # same thing with last season, this time all that are after our last
+        # matchday
         data_cor_end = data_cor_start[
             (data_cor_start['season'] != end[1])
             | (data['matchday'] <= end[0])]
@@ -313,11 +312,11 @@ def crawl_openligadb(urls, unfinished_matches, matches):
                 ]
     # if matches has been filled in this function
     if not matches.empty:
-        matches_convert = convertdf(matches)
-        if os.path.exists("crawled_data.csv"):
-            matches_convert.to_csv('crawled_data.csv', mode='a', index=False,
-                                   header=False)
+        if os.path.exists("../bl_predictor/crawled_data.csv"):
+            matches.to_csv('../bl_predictor/crawled_data.csv', mode='a',
+                           index=False, header=False)
 
         else:
-            matches_convert.to_csv('crawled_data.csv', mode='a', index=False)
+            matches.to_csv('../bl_predictor/crawled_data.csv', mode='a',
+                           index=False)
     return [unfinished_matches, matches]
