@@ -160,8 +160,8 @@ def take_data(start, end, csv_file):
         dataframe = pd.read_csv(csv_file)
         dataframe = convertdf(dataframe)
         # take all data with in these seasons(each included)
-        data = dataframe[(dataframe['season'] >= start[1]) & (
-                    dataframe['season'] <= end[1])]
+        data = dataframe[(dataframe['season'] >= start[1])
+                         & (dataframe['season'] <= end[1])]
         # take all except days in the first season, that are
         # before our first matchday
         data_cor_start = data[
@@ -322,8 +322,9 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
         request = requests.get(current_url)
         json_response = request.content
         json_response = json.loads(json_response)
+        json_length = len(json_response)
 
-        for game in range(len(json_response)):  # all matches in scrape
+        for game in range(json_length):  # all matches in scrape
             # appends response item-array to matches, !ORDER SENSITIVE!
             if json_response[game]['matchIsFinished']:
                 matches_length = len(matches)
