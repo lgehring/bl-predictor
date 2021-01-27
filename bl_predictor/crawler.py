@@ -326,4 +326,3 @@ def crawl_openligadb(urls, unfinished_matches, matches):
                            index=False)
     return [unfinished_matches, matches]
 
-print(type(fetch_data([1, 2012], [2, 2012])))
