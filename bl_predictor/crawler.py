@@ -325,4 +325,3 @@ def crawl_openligadb(urls, unfinished_matches, matches):
             matches.to_csv(csv_file, mode='a',
                            index=False)
     return [unfinished_matches, matches]
-
