@@ -12,16 +12,11 @@ from pathlib import Path
 @pytest.mark.parametrize(
     "start, end",
     [
-        ([1, 2010], [34, 2012]),
-        ([1, 2020], [18, 2020]),
-        ([18, 2020], [34, 2020]),
-        ([18, 2020], [1, 2021])
-
+        ([32, 2019], [2, 2020]),
+        ([22, 2020], [1, 2021])
     ])
 def test_fetch_data(start, end):
     data = crawler.fetch_data(start, end)
-    pd.set_option('display.max_columns', None)
-    pd.set_option("max_rows", None)
     # path of csv file
     dir = Path(__file__).parents[1]
     csv_file = os.path.join(dir, "bl_predictor/crawled_data.csv")
