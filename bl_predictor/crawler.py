@@ -107,8 +107,8 @@ def get_csv_last_date():
     if a file exists. If there is no file yet it returns [1, 2004].
     :return: [matchday, season]
     """
-    if os.path.exists("../bl_predictor/crawled_data.csv"):
-        this_df = pd.read_csv("../bl_predictor/crawled_data.csv")
+    if os.path.exists("crawled_data.csv"):
+        this_df = pd.read_csv("crawled_data.csv")
         end_date_csv = [int(this_df['matchday'].iloc[-1]),
                         int(this_df['season'].iloc[-1])]
     else:
@@ -123,8 +123,8 @@ def take_data(start, end):
     :param list[int] end: Ending Date
     :return: Dataframe
     """
-    if os.path.exists("../bl_predictor/crawled_data.csv"):
-        df = pd.read_csv("../bl_predictor/crawled_data.csv")
+    if os.path.exists("crawled_data.csv"):
+        df = pd.read_csv("crawled_data.csv")
         df = convertdf(df)
         # take all data with in these seasons(each included)
         data = df[(df['season'] >= start[1]) & (df['season'] <= end[1])]
