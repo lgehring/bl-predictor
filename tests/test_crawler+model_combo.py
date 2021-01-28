@@ -7,6 +7,8 @@ from bl_predictor import crawler
 from bl_predictor import models
 from bl_predictor import prediction_evaluation
 
+# import pandas as pd
+
 test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
 
 
