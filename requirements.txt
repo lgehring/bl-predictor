@@ -1,0 +1,2 @@
+# takes packages from setup.py
+ -e .
