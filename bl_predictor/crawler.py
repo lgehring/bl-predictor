@@ -144,7 +144,8 @@ def get_csv_last_date(csv_file):
         end_date_csv = [int(this_df['matchday'].iloc[-1]),
                         int(this_df['season'].iloc[-1])]
     else:
-        end_date_csv = [1, 2004]
+        frist_match = [1, 2004]
+        end_date_csv = frist_match
     return end_date_csv
 
 
@@ -195,7 +196,6 @@ def convertdf(dataframe):
 def incorrect_dates(start_date, end_date):
     """
     Checks if the submitted dates are correct.
-
     :param list [int] start_date: [matchday, year]
     :param list [int] end_date: [matchday, year]
     :returns: Result whether or not the dates are incorrect as type boolean
@@ -295,8 +295,8 @@ def matches_exists(url):
     to_crawl = url
     while to_crawl:
         current_url = to_crawl.pop(0)
-        r = requests.get(current_url)
-        json_response = r.content
+        request = requests.get(current_url)
+        json_response = request.content
         json_response = json.loads(json_response)
         for game in range(len(json_response)):
             if json_response[game]['matchIsFinished']:
@@ -322,9 +322,14 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
         request = requests.get(current_url)
         json_response = request.content
         json_response = json.loads(json_response)
-        json_length = len(json_response)
 
-        for game in range(json_length):  # all matches in scrape
+        for game in range(len(json_response)):  # all matches in scrape
+
+            # save_logos(json_response[game]['team1']['teamName'],
+            #            json_response[game]['team1']['teamIconUrl'])
+            # save_logos(json_response[game]['team2']['teamName'],
+            #            json_response[game]['team2']['teamIconUrl'])
+
             # appends response item-array to matches, !ORDER SENSITIVE!
             if json_response[game]['matchIsFinished']:
                 matches_length = len(matches)
@@ -353,7 +358,22 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
         if os.path.exists(csv_file):
             matches.to_csv(csv_file, mode='a',
                            index=False, header=False)
-
         else:
             matches.to_csv(csv_file, index=False)
     return unfinished_matches
+
+
+def save_logos(teamname, teamicon):
+    """
+    checks if logos are missing in the folder "team_logos" and download,
+    if necessary
+
+    :param teamname: string with the name the file should be called
+    :param teamname: Web URL where the image is saved
+    """
+    gui_path = os.path.abspath(__file__)
+    dir_path = os.path.dirname(gui_path)
+    if not os.path.isfile(dir_path + "/team_logos/" + teamname + ".png"):
+        save_logo = open(dir_path + "/team_logos/" + teamname + ".png", "wb")
+        save_logo.write(requests.get(teamicon).content)
+        save_logo.close()

@@ -4,16 +4,28 @@ import pandas as pd
 import pandas.api.types as ptypes
 import pytest
 
+import os
+from pathlib import Path
 from bl_predictor import crawler
 
 
 @pytest.mark.parametrize(
-    "start, end, exp_start, exp_end",
+    "start, end, exp_start, exp_end, remove",
     [
-        ([32, 2019], [2, 2020], [32, 2019], [2, 2020]),
-        ([22, 2020], [1, 2021], [1, 2020], [34, 2020])
+
+        ([32, 2019], [2, 2020], [32, 2019], [2, 2020], "no"),
+        ([22, 2020], [1, 2021], [1, 2020], [34, 2020], "no"),
+        ([18, 2020], [1, 2021], [18, 2020], [18, 2020], "no"),
+        ([32, 2019], [2, 2020], [32, 2019], [2, 2020], "yes"),
+        ([22, 2020], [1, 2021], [1, 2020], [34, 2020], "yes"),
+        ([18, 2020], [1, 2021], [18, 2020], [18, 2020], "yes"),
     ])
-def test_fetch_data(start, end, exp_start, exp_end):
+def test_fetch_data(start, end, exp_start, exp_end, remove):
+    dir_path = Path(__file__).parents[1]
+    csv_file = os.path.join(dir_path, "bl_predictor/crawled_data.csv")
+    if remove == "yes":
+        os.remove(csv_file)
+
     data = crawler.fetch_data(start, end)
 
     assert isinstance(data, pd.DataFrame)
@@ -69,7 +81,8 @@ def test_fetch_data_next_day(start, end):
         ([1, 2014], [8, 2016], 0,
          "https://api.openligadb.de/getmatchdata/bl1/2014"),
         ([1, 2014], [8, 2016], 1,
-         "https://api.openligadb.de/getmatchdata/bl1/2015")
+         "https://api.openligadb.de/getmatchdata/bl1/2015"),
+
     ])
 def test_test_curate_urls(start_date, end_date, index_of_url, expected):
     urls = crawler.curate_urls(start_date, end_date)
@@ -77,6 +90,10 @@ def test_test_curate_urls(start_date, end_date, index_of_url, expected):
         assert urls[index_of_url] == expected
     else:
         assert urls == expected
+
+
+def test_curate_urls_exc():
+    pytest.raises(ValueError, crawler.curate_urls, [0, 2014], [8, 2014])
 
 
 @pytest.mark.parametrize(

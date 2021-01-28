@@ -74,8 +74,9 @@ class MainWindow:
             day_label = tk.Label(text=matchday['date_time'][i])
             day_label.pack()
             # shows match
-            season_label = tk.Label(text=matchday['home_team'][i] + " vs "
-                                         + matchday['guest_team'][i])
+            h_t_name = matchday['home_team'][i]
+            g_t_name = matchday['guest_team'][i]
+            season_label = tk.Label(text=h_t_name + " vs " + g_t_name)
             season_label.pack()
 
     def _timeframe_slider(self):
@@ -107,11 +108,11 @@ class MainWindow:
         last_day_of_season = 34
 
         self.crawler_data = crawler.fetch_data([first_day_of_season,
-                                                int(self.slider.get_values()[
-                                                        0])],
+                                                int(self.slider.get_values()
+                                                    [0])],
                                                [last_day_of_season,
-                                                int(self.slider.get_values()[
-                                                        1])])
+                                                int(self.slider.get_values()
+                                                    [1])])
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # Show model selection menu
