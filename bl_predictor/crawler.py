@@ -323,7 +323,7 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
         json_response = request.content
         json_response = json.loads(json_response)
 
-        for game in range(len(json_response)):  # all matches in scrape
+        for game in json_response:  # all matches in scrape
 
             # save_logos(json_response[game]['team1']['teamName'],
             #            json_response[game]['team1']['teamIconUrl'])
@@ -331,26 +331,26 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
             #            json_response[game]['team2']['teamIconUrl'])
 
             # appends response item-array to matches, !ORDER SENSITIVE!
-            if json_response[game]['matchIsFinished']:
+            if game['matchIsFinished']:
                 matches_length = len(matches)
                 matches.loc[matches_length] = [
-                    json_response[game]['matchDateTime'],  # match_date_time
-                    json_response[game]['group']["groupOrderID"],  # matchday
-                    json_response[game]['team1']['teamName'],  # home_t
-                    json_response[game]['matchResults'][0]['pointsTeam1'],  # h
-                    json_response[game]['matchResults'][0]['pointsTeam2'],  # g
-                    json_response[game]['team2']['teamName'],  # guest_t
+                    game['matchDateTime'],  # match_date_time
+                    game['group']["groupOrderID"],  # matchday
+                    game['team1']['teamName'],  # home_t
+                    game['matchResults'][0]['pointsTeam1'],  # h
+                    game['matchResults'][0]['pointsTeam2'],  # g
+                    game['team2']['teamName'],  # guest_t
                     current_url[43:47]  # season
                 ]
             else:
                 unfinished_matches_length = len(unfinished_matches)
                 unfinished_matches.loc[unfinished_matches_length] = [
-                    json_response[game]['matchDateTime'],  # match_date_time
-                    json_response[game]['group']["groupOrderID"],  # matchday
-                    json_response[game]['team1']['teamName'],  # home_t
+                    game['matchDateTime'],  # match_date_time
+                    game['group']["groupOrderID"],  # matchday
+                    game['team1']['teamName'],  # home_t
                     -1,  # h
                     -1,  # g
-                    json_response[game]['team2']['teamName'],  # guest_t
+                    game['team2']['teamName'],  # guest_t
                     current_url[43:47]  # season
                 ]
     # if matches has been filled in this function
