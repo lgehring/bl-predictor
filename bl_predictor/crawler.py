@@ -5,9 +5,9 @@ it to a pd.DataFrame.
 import datetime
 import json
 
-import pandas as pd
-import requests
 import os
+import requests
+import pandas as pd
 
 
 # Initialize matches dataframe that will be filled and returned
