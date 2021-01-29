@@ -91,7 +91,24 @@ draw_train = pd.DataFrame([
                                                'errors'),
         ("PoissonModel", missing_column, 'C', 'B', 'Prediction failed. Check '
                                                    'training DataFrame for '
-                                                   'errors')
+                                                   'errors'),
+        # BettingPoissonModel tests
+        ("BettingPoissonModel", norm_train, 'A', 'B', 'A: 57.6%'),
+        ("BettingPoissonModel", norm_train, 'B', 'A', 'B: 80.3%'),
+        ("BettingPoissonModel", norm_train, 'A', 'C', 'C: 66.4%'),
+        ("BettingPoissonModel", norm_train, 'C', 'A', 'C: 95.9%'),
+        ("BettingPoissonModel", norm_train, 'B', 'C', 'C: 64.0%'),
+        ("BettingPoissonModel", norm_train, 'C', 'B', 'C: 96.2%'),
+        ("BettingPoissonModel", too_many_columns, 'A', 'B', 'B: 51.7%'),
+        ("BettingPoissonModel", draw_train, 'B', 'A', 'Draw: 22.3%'),
+        ("BettingPoissonModel", nonsense_matches, 'B', 'C',
+         'Prediction failed. Check training DataFrame for errors'),
+        ("BettingPoissonModel", empty_data, 'C', 'A',
+         'Prediction failed. Check training DataFrame for errors'),
+        ("BettingPoissonModel", empty_data, 'C', 'A',
+         'Prediction failed. Check training DataFrame for errors'),
+        ("BettingPoissonModel", missing_column, 'C', 'B',
+         'Prediction failed. Check training DataFrame for errors')
     ])
 def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
