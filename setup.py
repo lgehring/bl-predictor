@@ -40,5 +40,5 @@ setuptools.setup(
                       'requests~=2.24.0',
                       'pillow~=8.1.0',
                       'lxml~=4.6.1',
-                      'tabulate~0.8.7'],
+                      'tabulate~=0.8.7'],
 )
