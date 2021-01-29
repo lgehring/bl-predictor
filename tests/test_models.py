@@ -5,7 +5,6 @@ import pandas as pd
 import pytest
 
 from bl_predictor import models
-from bl_predictor import prediction_evaluation
 
 norm_train = pd.DataFrame([
     ['A', 0, 3, 'B'],
@@ -98,32 +97,3 @@ def test_predict_winner(model, trainset, home_team, guest_team, expected):
     trained_model = getattr(models, model)(trainset)
     winner = trained_model.predict_winner
     assert winner(home_team, guest_team) == expected
-
-
-# WholeDataFrequencies testsuite
-@pytest.mark.parametrize(
-    "trainset,"
-    "expected_home_team_wins,"
-    "expected_guest_team_wins,"
-    "expected_draws,"
-    "expected_home_team_avg_goals,"
-    "expected_guest_team_avg_goals",
-    [  # WholeDataFrequencies tests
-        (norm_train, 2, 2, 2, 5 / 3, 4 / 3),
-        (nonsense_matches, 2, 1, 0, 4 / 3, 333),
-        (empty_data, 0, 0, 0, None, None),
-        (too_many_columns, 2, 4, 0, 10 / 6, 18 / 6),
-        (missing_column, 0, 0, 0, None, None)
-    ])
-def test_stats(trainset,
-               expected_home_team_wins,
-               expected_guest_team_wins,
-               expected_draws,
-               expected_home_team_avg_goals,
-               expected_guest_team_avg_goals):
-    trained_model = prediction_evaluation.WholeDataFrequencies(trainset)
-    assert trained_model.home_team_wins == expected_home_team_wins
-    assert trained_model.guest_team_wins == expected_guest_team_wins
-    assert trained_model.draws == expected_draws
-    assert trained_model.home_team_avg_goals == expected_home_team_avg_goals
-    assert trained_model.guest_team_avg_goals == expected_guest_team_avg_goals
