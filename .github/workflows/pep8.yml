@@ -28,4 +28,4 @@ jobs:
         pip install -e .[teamproject]
     
     - name: flake8
-      run: flake8 --ignore W503
+      run: flake8 bl_predictor --ignore W503
