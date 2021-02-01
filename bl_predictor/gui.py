@@ -79,7 +79,6 @@ class MainWindow:
             season_label.pack()
 
     def _timeframe_slider(self):
-        print(self.crawler_data)
         self.date_label = tk.Label(text="Choose a period of time:")
         self.date_label.pack()
 
