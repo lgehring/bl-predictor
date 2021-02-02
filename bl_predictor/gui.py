@@ -253,6 +253,7 @@ class MainWindow:
         self.date_label.pack_forget()
         self.slider.pack_forget()
         self.prediction.pack_forget()
+        self.prediction.destroy()
         self.prediction_button.pack_forget()
         self.gt_opt.pack_forget()
         self.ht_opt.pack_forget()
