@@ -1,7 +1,6 @@
 # Here, you can list patterns for all files to be ignored by Code Inspector:
-
 .github
-teamproject/gui_slider_widget.py
+bl_predictor/gui_slider_widget.py
 tests
 
 CODE_OF_CONDUCT.md
