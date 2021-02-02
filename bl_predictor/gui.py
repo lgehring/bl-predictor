@@ -23,6 +23,8 @@ class MainWindow:
 
     def __init__(self):
         self.root = tk.Tk()
+        self.left = tk.Frame(self.root)
+        self.left.pack(side=tk.RIGHT, expand=True)
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
@@ -38,7 +40,7 @@ class MainWindow:
         two teams that will be compared
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("500x800")
+        self.root.geometry("1000x800")
 
         self._upcoming_matchday()
         self._timeframe_slider()
@@ -207,20 +209,41 @@ class MainWindow:
             self.winner = "Not enough data"
 
         self.prediction = tk.Label(self.root, text="Not calculated")
-        self.prediction.pack()
+        self.prediction.pack(in_=self.left)
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
                                         + self.gt_variable.get()
                                         + ": "
                                         + self.winner))
+        self._reset_teams_button()
         self._reset_button()
+        self.prediction_button.config(state=tk.DISABLED)
+
+
+    def _reset_teams_button(self):
+        self.reset_teams_button = tk.Button(
+            self.root,
+            text="put in new teams",
+            command=self._reset_teams)
+        self.reset_teams_button.pack(side=tk.RIGHT)
+
+    def _reset_teams(self):
+        self.prediction_button.pack_forget()
+
+        self.reset_teams_button.pack_forget()
+        self.reset_button.pack_forget()
+
+        self.picked_home_team = None
+        self.picked_guest_team = None
+
+        self._make_prediction()
 
     def _reset_button(self):
         self.reset_button = tk.Button(
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.pack()
+        self.reset_button.pack(side=tk.LEFT)
 
     def _reset_values(self):
         self.prediction_button.pack_forget()
@@ -237,6 +260,7 @@ class MainWindow:
         self.ht_label.pack_forget()
         self.model_label.pack_forget()
         self.model_opt.pack_forget()
+        self.reset_teams_button.pack_forget()
 
         self.reset_button.pack_forget()
 
