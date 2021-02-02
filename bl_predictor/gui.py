@@ -42,7 +42,6 @@ class MainWindow:
 
         self._upcoming_matchday()
         self._timeframe_slider()
-        self._activate_crawler()
 
         self.root.mainloop()
 
@@ -80,8 +79,8 @@ class MainWindow:
             season_label.pack()
 
     def _timeframe_slider(self):
-        date_label = tk.Label(text="Choose a period of time:")
-        date_label.pack()
+        self.date_label = tk.Label(text="Choose a period of time:")
+        self.date_label.pack()
 
         first_recorded_bl_year = 2003  # 1964 openliga has only new matches
         self.slider = Slider(self.root, width=400,
@@ -92,10 +91,13 @@ class MainWindow:
                                        datetime.datetime.now().year],
                              show_value=True)
         self.slider.pack()
+        self._activate_crawler()
 
     def _activate_crawler(self):
-        download_time_label = tk.Label(text="Downloading might take a while")
-        download_time_label.pack()
+        self.download_time_label = tk.Label(
+            text="Downloading might take a while")
+
+        self.download_time_label.pack()
 
         self.act_crawler_button = tk.Button(
             self.root,
@@ -128,13 +130,14 @@ class MainWindow:
             model_list.remove("WholeDataFrequencies")
 
         # Menu title shown above
-        model_label = tk.Label(text="Choose a prediction model:")
-        model_label.pack()
+        self.model_label = tk.Label(text="Choose a prediction model:")
+        self.model_label.pack()
         # Initialize options
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
-        model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
-        model_opt.pack()
+        self.model_opt = tk.OptionMenu(self.root, self.model_variable,
+                                       *model_list)
+        self.model_opt.pack()
 
         # Show train model button
         self._train_model()
@@ -165,22 +168,22 @@ class MainWindow:
             option_list = ["Team1", "Team2"]
 
         # Hometeam dropdown list
-        ht_label = tk.Label(self.root, text="Home team:")
-        ht_label.pack()
+        self.ht_label = tk.Label(self.root, text="Home team:")
+        self.ht_label.pack()
 
         self.ht_variable = tk.StringVar(self.root)
         self.ht_variable.set(option_list[0])
-        ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
-        ht_opt.pack()
+        self.ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
+        self.ht_opt.pack()
 
         # Guestteam dropdown list
-        gt_label = tk.Label(self.root, text="Guest team:")
-        gt_label.pack()
+        self.gt_label = tk.Label(self.root, text="Guest team:")
+        self.gt_label.pack()
 
         self.gt_variable = tk.StringVar(self.root)
         self.gt_variable.set(option_list[0])
-        gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
-        gt_opt.pack()
+        self.gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
+        self.gt_opt.pack()
 
         # Show prediction button
         self._make_prediction()
@@ -210,3 +213,34 @@ class MainWindow:
                                         + self.gt_variable.get()
                                         + ": "
                                         + self.winner))
+        self._reset_button()
+
+    def _reset_button(self):
+        self.reset_button = tk.Button(
+            self.root,
+            text="Reset",
+            command=self._reset_values)
+        self.reset_button.pack()
+
+    def _reset_values(self):
+        self.prediction_button.pack_forget()
+        self.train_ml_button.pack_forget()
+        self.act_crawler_button.pack_forget()
+        self.download_time_label.pack_forget()
+        self.date_label.pack_forget()
+        self.slider.pack_forget()
+        self.prediction.pack_forget()
+        self.prediction_button.pack_forget()
+        self.gt_opt.pack_forget()
+        self.ht_opt.pack_forget()
+        self.gt_label.pack_forget()
+        self.ht_label.pack_forget()
+        self.model_label.pack_forget()
+        self.model_opt.pack_forget()
+
+        self.reset_button.pack_forget()
+
+        self.crawler_data = pd.DataFrame()
+        self.picked_home_team = None
+        self.picked_guest_team = None
+        self._timeframe_slider()
