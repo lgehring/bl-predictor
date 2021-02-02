@@ -208,6 +208,9 @@ class MainWindow:
             # No matches in data
             self.winner = "Not enough data"
 
+        self.result_label = tk.Label(self.root, text="Results")
+        self.result_label.configure(font="Verdana 20 underline")
+        self.result_label.pack(in_=self.left)
         self.prediction = tk.Label(self.root, text="Not calculated")
         self.prediction.pack(in_=self.left)
 
@@ -218,7 +221,6 @@ class MainWindow:
         self._reset_teams_button()
         self._reset_button()
         self.prediction_button.config(state=tk.DISABLED)
-
 
     def _reset_teams_button(self):
         self.reset_teams_button = tk.Button(
