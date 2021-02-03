@@ -4,8 +4,16 @@ This module contains code for evaluating prediction models.
 import warnings
 import pandas as pd
 from bl_predictor import models
-
 import sklearn.metrics as skm
+import matplotlib.pyplot as plt
+
+
+# noinspection PyUnusedLocal
+def warn(*args, **kwargs):
+    pass
+
+
+warnings.warn = warn
 
 
 class ModelEvaluator:
@@ -30,9 +38,9 @@ class ModelEvaluator:
         self.trainset_df, self.testset_df = self._build_train_testset()
         self.predicted_result_df, self.model = self._predict_testset()
         self.true_winner_df = self._determine_winner()
-        self.prediction_accuracy, self.success_df = \
-            self._calc_prediction_accuracy()
-        self.overview_df = self.success_df.join(self.testset_df)
+        self.overview_df = self.true_winner_df.join(
+            self.predicted_result_df).join(self.testset_df)
+        self.accuracy, self.f1_score, self.conf_matrix = self.calc_metrics()
 
     def _build_train_testset(self):
         """
@@ -93,61 +101,36 @@ class ModelEvaluator:
                 len(predicted_result_df)] = predicted_winner
         return predicted_result_df, trained_model
 
-    def _calc_prediction_accuracy(self):
+    def calc_metrics(self):
         """
-        Uses the true_winner_df and predicted_result_df and calculates
-        what percentage of matches in the testset was correctly predicted
+        Generates metrics for the testset, including:
+           - Accuracy
+           - F1-Score
+           - Confusion matrix
 
-        :return: tuple percentage of correctly predicted matches,
-            pd.DataFrame['prediction_correct?']
+        :return: triple - accuracy, f1_score, confusion_matrix
         """
-        success_df = self.true_winner_df.join(self.predicted_result_df)
-        success_df['prediction_correct?'] = bool
-        # rearrange DF to display correctness of prediction in first column
-        success_df = success_df[['prediction_correct?',
-                                 'predicted_result',
-                                 'true_winner']]
-
-        for index, row in success_df.iterrows():
-            # some models return more data than just the teamname
-            if row['true_winner'] in row['predicted_result']:
-                success_df.loc[index, 'prediction_correct?'] = True
-            else:
-                success_df.loc[index, 'prediction_correct?'] = False
-        try:
-            good_pred = success_df['prediction_correct?'].value_counts(
-            ).loc[True]
-        except KeyError:
-            # happens when no match is correctly predicted
-            good_pred = 0
-
-        percent_corr_pred = "{:.1%}".format(good_pred / len(success_df))
-        return percent_corr_pred, success_df
-
-    def metrics(self):
-        """
-        Generates metrics for the testset
-        # TODO: describe metrics
-
-        :return: TODO
-        """
-        df = self.success_df.drop(columns=['prediction_correct?'])
+        df = self.true_winner_df.join(self.predicted_result_df)
         for index, row in df.iterrows():
             # cut off percentages
             df.loc[index, 'predicted_result'] = \
                 row['predicted_result'].split(':', 1)[0]
+
         true_winner = df['true_winner']
         predicted_winner = df['predicted_result']
+        accuracy = skm.accuracy_score(true_winner, predicted_winner)
+        f1_score = skm.f1_score(true_winner, predicted_winner,
+                                average='weighted')
+        conf_matrix = skm.confusion_matrix(true_winner, predicted_winner)
+        return accuracy, f1_score, conf_matrix
 
-        # metrics
-        print(skm.classification_report(true_winner, predicted_winner))
-
-    def print_results(self):
+    def print_results(self, print_plot=False):
         """
-        Pretty prints all evaluation results in the console
+        Pretty prints all evaluation results in the console.
+
+        :param print_plot: plots the confusion matrix, if TRUE
         """
 
-        purple = '\033[95m'
         darkcyan = '\033[36m'
         green = '\033[92m'
         yellow = '\033[93m'
@@ -159,7 +142,9 @@ class ModelEvaluator:
               + 'Evaluation Results' + end)
         print("Model: " + self.modelname)
         print("Accuracy (proportion of correct testset predictions): "
-              + green + self.prediction_accuracy + end)
+              + green + "{:.1%}".format(self.accuracy) + end)
+        print("F1-score (weighted average of the precision and recall): "
+              + green + "{:.1%}".format(self.f1_score) + end)
         print("Size of: Trainset: " + str(len(self.trainset_df.index))
               + " ({:.1%}".format(len(self.trainset_df.index)
                                   / len(self.data_df.index)) + ")")
@@ -168,12 +153,7 @@ class ModelEvaluator:
                                     / len(self.data_df.index)) + ")")
         print("")
 
-        print(purple + 'Detailed prediction results' + end)
-        self.overview_df.index += 1  # adjust index for printing
-        print(self.overview_df.to_markdown())
-        print("")
-
-        if self.modelname == 'PoissonModel':
+        if self.modelname == 'PoissonModel' or 'BettingPoissonModel':
             # only the PoissonModel has this functionality
             print(yellow + 'Team Ranking' + end)
             print("The given coefficients are an unaltered result "
@@ -182,10 +162,57 @@ class ModelEvaluator:
             self.model.team_ranking_df.index += 1  # adjust index for printing
             print(self.model.team_ranking_df.to_markdown())
 
+        if print_plot:
+            df = self.true_winner_df.join(self.predicted_result_df)
+            for index, row in df.iterrows():
+                # cut off percentages
+                df.loc[index, 'predicted_result'] = \
+                    row['predicted_result'].split(':', 1)[0]
+
+            true_winner = df['true_winner']
+            labels = true_winner.drop_duplicates().sort_values()
+            skm.ConfusionMatrixDisplay(self.conf_matrix, labels).plot()
+            plt.title('Confusion matrix: ' + self.modelname)
+            plt.xticks(rotation=90)
+            plt.xlabel('Predicted winner')
+            plt.ylabel('True winner')
+            plt.tight_layout()
+            plt.show()
+
+
 # Test
-import crawler
-test_crawler_data = crawler.fetch_data([1, 2019], [34, 2019])
-ModelEvaluator("PoissonModel", test_crawler_data, 90).metrics()
+# import crawler
+#
+# test_crawler_data = crawler.fetch_data([1, 2003], [34, 2019])
+# ModelEvaluator("BettingPoissonModel", test_crawler_data, 90).print_results()
+
+
+# class ModelCompare:
+#     """
+#     A class that compares two given models
+#
+#     To print the report use: ModelCompare(args).print_results()
+#     """
+#
+#     def __init__(self, model1, model2):
+#         """
+#         Holds the basic comparison parameters and initiates the comparison.
+#
+#         :param str model1: name of the first model
+#         :param str model2: name of the second model
+#         """
+#         self.model1 = model1
+#         self.model2 = model2
+#
+#     def cohen_kappa(self):
+#         """
+#         Calculates the kappa score for two models
+#
+#         :return: int - kappa_score
+#         """
+#         # TODO: ModelEvaluator
+#         kappa_score = skm.cohen_kappa_score(model1_pred, model2_pred)
+#         return kappa_score
 
 
 class WholeDataFrequencies:
