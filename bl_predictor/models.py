@@ -410,9 +410,9 @@ class FrequencyModel:
             guest_team_win_prob = self._wins(guest_team) / len(
                 self.matchups_df.index)
             if home_team_win_prob > guest_team_win_prob:
-                return home_team
+                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
             elif home_team_win_prob < guest_team_win_prob:
-                return guest_team
+                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
             else:
                 return "Draw"
         except KeyError:
