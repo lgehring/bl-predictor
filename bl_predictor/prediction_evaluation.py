@@ -5,6 +5,8 @@ import warnings
 import pandas as pd
 from bl_predictor import models
 
+import sklearn.metrics as skm
+
 
 class ModelEvaluator:
     """
@@ -122,6 +124,24 @@ class ModelEvaluator:
         percent_corr_pred = "{:.1%}".format(good_pred / len(success_df))
         return percent_corr_pred, success_df
 
+    def metrics(self):
+        """
+        Generates metrics for the testset
+        # TODO: describe metrics
+
+        :return: TODO
+        """
+        df = self.success_df.drop(columns=['prediction_correct?'])
+        for index, row in df.iterrows():
+            # cut off percentages
+            df.loc[index, 'predicted_result'] = \
+                row['predicted_result'].split(':', 1)[0]
+        true_winner = df['true_winner']
+        predicted_winner = df['predicted_result']
+
+        # metrics
+        print(skm.classification_report(true_winner, predicted_winner))
+
     def print_results(self):
         """
         Pretty prints all evaluation results in the console
@@ -162,13 +182,12 @@ class ModelEvaluator:
             self.model.team_ranking_df.index += 1  # adjust index for printing
             print(self.model.team_ranking_df.to_markdown())
 
-# # Test: Hinrunde 2020 prediction, from 15.01.2021
-# import crawler
-# test_crawler_data = crawler.fetch_data([1, 2019], [34, 2020])
-# ModelEvaluator("PoissonModel", test_crawler_data, 90).print_results()
+# Test
+import crawler
+test_crawler_data = crawler.fetch_data([1, 2019], [34, 2019])
+ModelEvaluator("PoissonModel", test_crawler_data, 90).metrics()
 
 
-# Ignored by GUI
 class WholeDataFrequencies:
     """
     Not a model! But:
