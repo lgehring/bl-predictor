@@ -88,7 +88,7 @@ class ModelByTimespan:
 
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
         if print_plot:
-            ax = multiple_accuracy_df.plot.scatter(x="first_year",
+            axis = multiple_accuracy_df.plot.scatter(x="first_year",
                                                    y=col_names[0],
                                                    c=colors[0],
                                                    label=col_names[0])
@@ -97,7 +97,7 @@ class ModelByTimespan:
                                                   y=col_names[i],
                                                   c=colors[i],
                                                   label=col_names[i],
-                                                  ax=ax)
+                                                  ax=axis)
             plt.title('Performance comparison: trainset from x to '
                       + str(self.last_year))
             plt.xlabel('First year in trainset')
@@ -167,7 +167,7 @@ class ModelByTimespan:
 
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
         if print_plot:
-            ax = multiple_f1_df.plot.scatter(x="first_year",
+            axis = multiple_f1_df.plot.scatter(x="first_year",
                                              y=col_names[0],
                                              c=colors[0],
                                              label=col_names[0])
@@ -176,7 +176,7 @@ class ModelByTimespan:
                                             y=col_names[i],
                                             c=colors[i],
                                             label=col_names[i],
-                                            ax=ax)
+                                            ax=axis)
             plt.title('Performance comparison: trainset from x to '
                       + str(self.last_year))
             plt.xlabel('First year in trainset')
