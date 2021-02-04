@@ -42,8 +42,8 @@ def test_fetch_data(start, end, exp_start, exp_end, remove):
 
 
 def test_fetch_data_exc():
-    pytest.warns(Warning, crawler.fetch_data, [0, 2014], [8, 2014])
-    pytest.warns(Warning, crawler.fetch_data, [1, 1997], [8, 2014])
+    pytest.warns(Warning, crawler.fetch_data, [0, 2014], [2, 2014])
+    pytest.warns(Warning, crawler.fetch_data, [1, 1997], [8, 2004])
 
 @pytest.mark.parametrize(
     "start, end",
@@ -78,8 +78,6 @@ def test_fetch_data_next_day(start, end):
             'https://api.openligadb.de/getmatchdata/bl1/2014/1']),
         ([1, 2014], [8, 2016], -1,
          "https://api.openligadb.de/getmatchdata/bl1/2016/8"),
-        ([2, 2014], [8, 2016], 0,
-         "https://api.openligadb.de/getmatchdata/bl1/2014/2"),
     ])
 def test_test_curate_urls(start_date, end_date, index_of_url, expected):
     urls = crawler.curate_urls(start_date, end_date)
