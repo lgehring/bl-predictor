@@ -2,7 +2,6 @@
 This module contains the GUI code.
 """
 
-import datetime
 import inspect
 import tkinter as tk
 from datetime import date
@@ -22,9 +21,11 @@ class MainWindow:
     """
 
     def __init__(self):
+
         self.root = tk.Tk()
         self.left = tk.Frame(self.root)
         self.left.pack(side=tk.RIGHT, expand=True)
+        self.result_label = tk.Label(self.root, text="Results")
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
@@ -44,6 +45,9 @@ class MainWindow:
 
         self._upcoming_matchday()
         self._timeframe_slider()
+
+        self.result_label.configure(font="Verdana 20 underline")
+        self.result_label.pack(in_=self.left)
 
         self.root.mainloop()
 
@@ -85,12 +89,13 @@ class MainWindow:
         self.date_label.pack()
 
         first_recorded_bl_year = 2003  # 1964 openliga has only new matches
+        current_season = crawler.get_current_date()[1]
         self.slider = Slider(self.root, width=400,
                              height=60,
                              min_val=first_recorded_bl_year,
-                             max_val=datetime.datetime.now().year,
+                             max_val=current_season,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
-                                       datetime.datetime.now().year],
+                                       current_season],
                              show_value=True)
         self.slider.pack()
         self._activate_crawler()
@@ -208,9 +213,6 @@ class MainWindow:
             # No matches in data
             self.winner = "Not enough data"
 
-        self.result_label = tk.Label(self.root, text="Results")
-        self.result_label.configure(font="Verdana 20 underline")
-        self.result_label.pack(in_=self.left)
         self.prediction = tk.Label(self.root, text="Not calculated")
         self.prediction.pack(in_=self.left)
 
