@@ -8,6 +8,184 @@ import pandas as pd
 import sklearn.metrics as skm
 
 from bl_predictor import models
+from bl_predictor import crawler
+
+
+class ModelByTimespan:
+    """
+    A class that evaluates a given models accuracy for different trainsets.
+
+    ! This class may take several minutes to complete.
+    """
+
+    def __init__(self, modelnames, testset_size, first_year, last_year):
+        """
+        Holds the basic evaluation parameters and initiates the evaluation.
+        """
+        self.modelnames = modelnames
+        self.testset_size = testset_size
+        self.first_year = first_year
+        self.last_year = last_year
+        self.multiple_accuracy_df = self._multiple_models_accuracy()
+        self.multiple_f1_df = self._multiple_models_f1()
+
+    def _model_accuracy(self, modelname, print_plot=False):
+        """
+        Uses ModelEvaluator to calculate accuracies for trainsets:
+           - starting with the last year
+           - extending 1 year into the past every turn
+        and saves into a DataFrame
+
+        :return: pd.DataFrame['accuracy', 'first_year', 'last_year']
+        """
+        accuracy_df = pd.DataFrame([], dtype="float", columns=['accuracy',
+                                                               'first_year',
+                                                               'last_year'])
+        current_first_year = self.last_year
+        while current_first_year != self.first_year - 1:  # incl. last year
+            trainset = crawler.fetch_data([1, current_first_year],
+                                          [34, self.last_year])
+            evaluator = ModelEvaluator(modelname,
+                                       trainset,
+                                       self.testset_size)
+            new_row = {'accuracy': round(evaluator.accuracy, 3),
+                       'first_year': current_first_year,
+                       'last_year': self.last_year}
+            accuracy_df = accuracy_df.append(new_row, ignore_index=True)
+            current_first_year -= 1
+
+        if print_plot:
+            accuracy_df.plot.scatter(x="first_year", y="accuracy")
+            plt.title(modelname + ' performance: trainset from x to '
+                      + str(self.last_year))
+            plt.xlabel('First year in trainset')
+            plt.ylabel('Accuracy')
+            plt.gca().invert_xaxis()
+            plt.tight_layout()
+            plt.show()
+        return accuracy_df
+
+    def _multiple_models_accuracy(self, print_plot=False):
+        """
+        Uses ModelEvaluator to calculate accuracies for multiple models
+        for trainsets:
+           - starting with the last year
+           - extending 1 year into the past every turn
+        and saves into a DataFrame
+
+        :return: pd.DataFrame[modelnames]
+        """
+        years = self._model_accuracy(self.modelnames[0])['first_year']
+        multiple_accuracy_df = pd.DataFrame([])
+        for modelname in self.modelnames:
+            whole_df = self._model_accuracy(modelname).rename(
+                columns={'accuracy': modelname})
+            accuracy_col = whole_df[modelname]
+            multiple_accuracy_df = multiple_accuracy_df.append(accuracy_col)
+        multiple_accuracy_df = multiple_accuracy_df.transpose()
+        col_names = multiple_accuracy_df.columns
+        multiple_accuracy_df = multiple_accuracy_df.join(years)
+
+        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+        if print_plot:
+            axis = multiple_accuracy_df.plot.scatter(x="first_year",
+                                                     y=col_names[0],
+                                                     c=colors[0],
+                                                     label=col_names[0])
+            for i in range(1, len(col_names)):
+                multiple_accuracy_df.plot.scatter(x="first_year",
+                                                  y=col_names[i],
+                                                  c=colors[i],
+                                                  label=col_names[i],
+                                                  ax=axis)
+            plt.title('Performance comparison: trainset from x to '
+                      + str(self.last_year))
+            plt.xlabel('First year in trainset')
+            plt.ylabel('Accuracy')
+            plt.gca().invert_xaxis()
+            plt.tight_layout()
+            plt.show()
+
+        return multiple_accuracy_df
+
+    def _model_f1(self, modelname, print_plot=False):
+        """
+        Uses ModelEvaluator to calculate F1-scores for trainsets:
+           - starting with the last year
+           - extending 1 year into the past every turn
+        and saves into a DataFrame
+
+        :return: pd.DataFrame['accuracy', 'first_year', 'last_year']
+        """
+        f1_df = pd.DataFrame([], dtype="float", columns=['f1',
+                                                         'first_year',
+                                                         'last_year'])
+        current_first_year = self.last_year
+        while current_first_year != self.first_year - 1:  # incl. last year
+            trainset = crawler.fetch_data([1, current_first_year],
+                                          [34, self.last_year])
+            evaluator = ModelEvaluator(modelname,
+                                       trainset,
+                                       self.testset_size)
+            new_row = {'f1': round(evaluator.f1_score, 3),
+                       'first_year': current_first_year,
+                       'last_year': self.last_year}
+            f1_df = f1_df.append(new_row, ignore_index=True)
+            current_first_year -= 1
+
+        if print_plot:
+            f1_df.plot.scatter(x="first_year", y="f1")
+            plt.title(modelname + ' performance: trainset from x to '
+                      + str(self.last_year))
+            plt.xlabel('First year in trainset')
+            plt.ylabel('F1-score')
+            plt.gca().invert_xaxis()
+            plt.tight_layout()
+            plt.show()
+        return f1_df
+
+    def _multiple_models_f1(self, print_plot=False):
+        """
+        Uses ModelEvaluator to calculate accuracies for multiple models
+        for trainsets:
+           - starting with the last year
+           - extending 1 year into the past every turn
+        and saves into a DataFrame
+
+        :return: pd.DataFrame[modelnames]
+        """
+        years = self._model_f1(self.modelnames[0])['first_year']
+        multiple_f1_df = pd.DataFrame([])
+        for modelname in self.modelnames:
+            whole_df = self._model_f1(modelname).rename(
+                columns={'f1': modelname})
+            f1_col = whole_df[modelname]
+            multiple_f1_df = multiple_f1_df.append(f1_col)
+        multiple_f1_df = multiple_f1_df.transpose()
+        col_names = multiple_f1_df.columns
+        multiple_f1_df = multiple_f1_df.join(years)
+
+        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+        if print_plot:
+            axis = multiple_f1_df.plot.scatter(x="first_year",
+                                               y=col_names[0],
+                                               c=colors[0],
+                                               label=col_names[0])
+            for i in range(1, len(col_names)):
+                multiple_f1_df.plot.scatter(x="first_year",
+                                            y=col_names[i],
+                                            c=colors[i],
+                                            label=col_names[i],
+                                            ax=axis)
+            plt.title('Performance comparison: trainset from x to '
+                      + str(self.last_year))
+            plt.xlabel('First year in trainset')
+            plt.ylabel('F1-score')
+            plt.gca().invert_xaxis()
+            plt.tight_layout()
+            plt.show()
+
+        return multiple_f1_df
 
 
 class ModelEvaluator:
