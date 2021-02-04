@@ -89,9 +89,9 @@ class ModelByTimespan:
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
         if print_plot:
             axis = multiple_accuracy_df.plot.scatter(x="first_year",
-                                                   y=col_names[0],
-                                                   c=colors[0],
-                                                   label=col_names[0])
+                                                     y=col_names[0],
+                                                     c=colors[0],
+                                                     label=col_names[0])
             for i in range(1, len(col_names)):
                 multiple_accuracy_df.plot.scatter(x="first_year",
                                                   y=col_names[i],
@@ -168,9 +168,9 @@ class ModelByTimespan:
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
         if print_plot:
             axis = multiple_f1_df.plot.scatter(x="first_year",
-                                             y=col_names[0],
-                                             c=colors[0],
-                                             label=col_names[0])
+                                               y=col_names[0],
+                                               c=colors[0],
+                                               label=col_names[0])
             for i in range(1, len(col_names)):
                 multiple_f1_df.plot.scatter(x="first_year",
                                             y=col_names[i],
