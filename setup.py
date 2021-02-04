@@ -36,9 +36,11 @@ setuptools.setup(
                       'statsmodels~=0.12.1',
                       'numpy~=1.19.3',
                       'scipy~=1.5.2',
+                      'matplotlib~=3.3.4',
                       'pytest~=6.1.2',
                       'requests~=2.24.0',
                       'pillow~=8.1.0',
                       'lxml~=4.6.1',
-                      'tabulate~=0.8.7'],
+                      'tabulate~=0.8.7',
+                      'scikit-learn~=0.24.1'],
 )
