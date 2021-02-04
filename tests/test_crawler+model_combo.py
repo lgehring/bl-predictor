@@ -17,13 +17,13 @@ test_crawler_data = crawler.fetch_data([1, 2010], [1, 2015])
     "model,trainset,home_team,guest_team,expected",
     [  # FrequencyModel tests
         ("FrequencyModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
-         'Draw'),
+         'Draw: 100.0%'),
         ("FrequencyModel", test_crawler_data, 'Hannover 96', 'Hamburger SV',
-         'Draw'),
+         'Draw: 100.0%'),
         ("FrequencyModel", test_crawler_data, 'VfB Stuttgart',
-         'FC Bayern München', 'FC Bayern München'),
+         'FC Bayern München', 'FC Bayern München: 100.0%'),
         ("FrequencyModel", test_crawler_data, 'FC Schalke 04', 'Werder Bremen',
-         'FC Schalke 04'),
+         'FC Schalke 04: 72.7%'),
         # PoissonModel tests
         ("PoissonModel", test_crawler_data, 'Hamburger SV', 'Hannover 96',
          'Hamburger SV: 38.2%'),
