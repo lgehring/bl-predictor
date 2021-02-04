@@ -1,4 +1,5 @@
 # Use this file to test your crawler.
+import warnings
 
 import pandas as pd
 import pandas.api.types as ptypes
@@ -45,6 +46,17 @@ def test_fetch_data(start, end, exp_start, exp_end, remove):
     assert (len(data) != 0)
 
 
+
+
+
+def test_fetch_data_exc():
+    pytest.warns(Warning, crawler.fetch_data, [0, 2014], [8, 2014])
+    pytest.warns(Warning, crawler.fetch_data, [1, 1997], [8, 2014])
+
+
+crawler.fetch_data([0, 2014], [8, 2014])
+
+
 @pytest.mark.parametrize(
     "start, end",
     [
@@ -83,9 +95,9 @@ def test_fetch_data_next_day(start, end):
         ([1, 2014], [8, 2016], 1,
          "https://api.openligadb.de/getmatchdata/bl1/2015"),
         ([2, 2014], [8, 2016], 0,
-            "https://api.openligadb.de/getmatchdata/bl1/2014/2"),
+         "https://api.openligadb.de/getmatchdata/bl1/2014/2"),
         ([2, 2014], [34, 2016], 0,
-            "https://api.openligadb.de/getmatchdata/bl1/2014/2"),
+         "https://api.openligadb.de/getmatchdata/bl1/2014/2"),
 
     ])
 def test_test_curate_urls(start_date, end_date, index_of_url, expected):
@@ -94,10 +106,6 @@ def test_test_curate_urls(start_date, end_date, index_of_url, expected):
         assert urls[index_of_url] == expected
     else:
         assert urls == expected
-
-
-def test_curate_urls_exc():
-    pytest.raises(ValueError, crawler.curate_urls, [0, 2014], [8, 2014])
 
 
 @pytest.mark.parametrize(
