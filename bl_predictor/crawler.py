@@ -6,6 +6,8 @@ import datetime
 import json
 
 import os
+import warnings
+
 import requests
 import pandas as pd
 
@@ -26,6 +28,7 @@ def fetch_data(start_date, end_date):
     :return: Dataframe that contains all the matches between
         start_date and end_date.
     """
+
     columns = ['date_time', 'matchday', 'home_team', 'home_score',
                'guest_score', 'guest_team', 'season']
     matches_empty = pd.DataFrame([], columns=columns)
@@ -37,7 +40,6 @@ def fetch_data(start_date, end_date):
     csv_file = os.path.join(directory_path, 'crawled_data.csv')
 
     current_d = get_current_date()
-
     if start_date == [0, 0] == end_date:
         urls = curate_urls([current_d[0] + 1, current_d[1]],
                            [34, current_d[1]])
@@ -46,6 +48,7 @@ def fetch_data(start_date, end_date):
         unfinished_m = convertdf(unfinished_matches)
         return unfinished_m
     else:
+        incorrect_dates(start_date, end_date, get_current_date()[1])
         dataframe = fetch_data_helper(start_date, end_date, csv_file,
                                       current_d)
         return dataframe
@@ -70,47 +73,36 @@ def fetch_data_helper(start_date, end_date, csv_file, current_d):
     # last csv date or [1, 2004]
     csv_last_d = get_csv_last_date(csv_file)
     # if our end date if before today
-    if current_d[1] > end_date[1] or (
-            current_d[1] == end_date[1]
-            and current_d[0] > end_date[0]):
+    if is_first_date_later(current_d, end_date):
         # if our end date is later than the csv file goes
-        if end_date[1] > csv_last_d[1] or (
-                end_date[1] == csv_last_d[1]
-                and end_date[0] > csv_last_d[0]):
+        if is_first_date_later(end_date, csv_last_d):
             # get the missing or all data until today and take matches in
             # our time range
             urls = curate_urls(csv_last_d, current_d)
             crawl_openligadb(urls, unfin_m_empty, matches_empty, csv_file)
-            dataframe = take_data(start_date, end_date, csv_file)
-        else:
-            # otherwise just take matches in our time range
-            dataframe = take_data(start_date, end_date, csv_file)
-    # otherwise our end_date is in the future. Exp. Slider can give
-    # until [34, current year]
+        # than take matches in our time range
+        dataframe = take_data(start_date, end_date, csv_file)
+
+    # otherwise our end_date is in the future.
     else:
+        # is start_date also in the future, than take data until today.
+        if is_first_date_later(start_date, current_d):
+            start_date = [1, current_d[1]]
         # if today later than our csv file
-        if current_d[1] > csv_last_d[1] \
-                or (
-                current_d[1] == csv_last_d[1]
-                and current_d[0] > csv_last_d[0]):
+        if is_first_date_later(current_d, csv_last_d):
             # get all missing data
             url = curate_urls(csv_last_d, current_d)
             crawl_openligadb(url, unfin_m_empty, matches_empty, csv_file)
-            # and take needed matches after checking if start date isn´t in
-            # the future
-            if start_date <= current_d:
-                dataframe = take_data(start_date, current_d, csv_file)
-            else:
-                dataframe = take_data([1, current_d[1]], current_d,
-                                      csv_file)
-        # otherwise we have all data
-        else:
-            if start_date <= current_d:
-                dataframe = take_data(start_date, end_date, csv_file)
-            else:
-                dataframe = take_data([1, current_d[1]], current_d,
-                                      csv_file)
+        # and take needed matches
+        dataframe = take_data(start_date, current_d, csv_file)
     return dataframe
+
+
+def is_first_date_later(first_date, second_date):
+    f_d_is_later = (first_date[1] > second_date[1]
+                    or (first_date[1] == second_date[1]
+                        and first_date[0] > second_date[0]))
+    return f_d_is_later
 
 
 def get_current_date():
@@ -120,17 +112,17 @@ def get_current_date():
     2020.
     :return: current date [day, season]
     """
-    current_year = datetime.date.today().year
+    current_seas = datetime.date.today().year
     current_year_has_no_data = data_not_exist(
-        curate_urls([1, current_year], [1, current_year]))
+        curate_urls([1, current_seas], [1, current_seas]))
     if current_year_has_no_data:
-        current_year = datetime.date.today().year - 1
+        current_seas = datetime.date.today().year - 1
     day = 0
     for day in range(34, 1, -1):
         if matches_exists(
-                curate_urls([day, current_year], [day, current_year])):
+                curate_urls([day, current_seas], [day, current_seas])):
             break
-    return [day, current_year]
+    return [day, current_seas]
 
 
 def get_csv_last_date(csv_file):
@@ -144,8 +136,8 @@ def get_csv_last_date(csv_file):
         end_date_csv = [int(this_df['matchday'].iloc[-1]),
                         int(this_df['season'].iloc[-1])]
     else:
-        frist_match = [1, 2004]
-        end_date_csv = frist_match
+        first_match = [1, 2004]
+        end_date_csv = first_match
     return end_date_csv
 
 
@@ -165,14 +157,14 @@ def take_data(start, end, csv_file):
                          & (dataframe['season'] <= end[1])]
         # take all except days in the first season, that are
         # before our first matchday
-        data_cor_start = data[
+        data_correct_start = data[
             (data['season'] != start[1]) | (data['matchday'] >= start[0])]
         # same thing with last season, this time all that are after our last
         # matchday
-        data_cor_end = data_cor_start[
-            (data_cor_start['season'] != end[1])
+        correct_data = data_correct_start[
+            (data_correct_start['season'] != end[1])
             | (data['matchday'] <= end[0])]
-    return data_cor_end
+    return correct_data
 
 
 def convertdf(dataframe):
@@ -193,9 +185,10 @@ def convertdf(dataframe):
     return dataframe
 
 
-def incorrect_dates(start_date, end_date):
+def incorrect_dates(start_date, end_date, current_seas):
     """
     Checks if the submitted dates are correct.
+    :param current_seas: the current season
     :param list [int] start_date: [matchday, year]
     :param list [int] end_date: [matchday, year]
     :returns: Result whether or not the dates are incorrect as type boolean
@@ -204,15 +197,19 @@ def incorrect_dates(start_date, end_date):
     seasons = [start_date[1], end_date[1]]
     statement_day = False
     statement_season = False
-    for date in days:
-        # each season has 35 game days
-        statement_day = (date == 0) or (date > 35) or statement_day
+    for day in days:
+        # each season has 34 game days
+        statement_day = (day == 0) or (day > 34) or statement_day
     for season in seasons:
         first_recorded_bl_year = 2003  # 1964 openliga has only new matches
         statement_season = (first_recorded_bl_year > season
-                            or season > datetime.datetime.now().year
+                            or season > current_seas
                             or statement_season)
-    return statement_day or statement_season
+    if statement_day or statement_season:
+        warnings.warn('there has been no match on this day. Matches are 34 '
+                      'days per season from 1963 to 2020. The prediction '
+                      'will work with the earliest/latest data there is.',
+                      category=Warning)
 
 
 def curate_urls(start_date, end_date):
@@ -229,10 +226,6 @@ def curate_urls(start_date, end_date):
     end_day = end_date[0]
     start_day = start_date[0]
     urls = []
-    if incorrect_dates(start_date, end_date):
-        raise ValueError("there has been no match on this day."
-                         "Matches are 34 days per season from 1963 to "
-                         "2020")
     # dates are in same year
     if end_season == start_season:
         for day in list(range(start_day, end_day + 1)):
