@@ -10,15 +10,6 @@ import sklearn.metrics as skm
 from bl_predictor import models
 
 
-# Suppress warnings
-# noinspection PyUnusedLocal
-def warn(*args, **kwargs):
-    pass
-
-
-warnings.warn = warn
-
-
 class ModelEvaluator:
     """
     A class that evaluates a given model with the given data.
@@ -113,14 +104,14 @@ class ModelEvaluator:
 
         :return: triple - accuracy, f1_score, confusion_matrix
         """
-        df = self.true_winner_df.join(self.predicted_result_df)
-        for index, row in df.iterrows():
+        true_and_pred_df = self.true_winner_df.join(self.predicted_result_df)
+        for index, row in true_and_pred_df.iterrows():
             # cut off percentages
-            df.loc[index, 'predicted_result'] = \
+            true_and_pred_df.loc[index, 'predicted_result'] = \
                 row['predicted_result'].split(':', 1)[0]
 
-        true_winner = df['true_winner']
-        predicted_winner = df['predicted_result']
+        true_winner = true_and_pred_df['true_winner']
+        predicted_winner = true_and_pred_df['predicted_result']
         accuracy = skm.accuracy_score(true_winner, predicted_winner)
         f1_score = skm.f1_score(true_winner, predicted_winner,
                                 average='weighted')
@@ -166,13 +157,14 @@ class ModelEvaluator:
             print(self.model.team_ranking_df.to_markdown())
 
         if print_plot:
-            df = self.true_winner_df.join(self.predicted_result_df)
-            for index, row in df.iterrows():
+            true_and_pred_df = \
+                self.true_winner_df.join(self.predicted_result_df)
+            for index, row in true_and_pred_df.iterrows():
                 # cut off percentages
-                df.loc[index, 'predicted_result'] = \
+                true_and_pred_df.loc[index, 'predicted_result'] = \
                     row['predicted_result'].split(':', 1)[0]
 
-            true_winner = df['true_winner']
+            true_winner = true_and_pred_df['true_winner']
             labels = true_winner.drop_duplicates().sort_values()
             skm.ConfusionMatrixDisplay(self.conf_matrix, labels).plot()
             plt.title('Confusion matrix: ' + self.modelname)
@@ -202,11 +194,11 @@ class ModelCompare:
         """
         self.model1 = ModelEvaluator(model1, data_df, testset_size)
         self.model2 = ModelEvaluator(model2, data_df, testset_size)
-        self.kappa = self.cohen_kappa()
-        self.acc_diff, self.better_acc_mod = self.accuracy_diff()
-        self.f1_diff, self.better_f1_mod = self.f1_diff()
+        self.kappa = self._cohen_kappa()
+        self.acc_diff, self.better_acc_mod = self._accuracy_diff()
+        self.f1_diff, self.better_f1_mod = self._f1_diff()
 
-    def cohen_kappa(self):
+    def _cohen_kappa(self):
         """
         Calculates the kappa score for two models
 
@@ -226,7 +218,7 @@ class ModelCompare:
         kappa_score = skm.cohen_kappa_score(model1_pred, model2_pred)
         return kappa_score
 
-    def accuracy_diff(self):
+    def _accuracy_diff(self):
         """
         Calculates the difference in accuracy for two models.
 
@@ -241,7 +233,7 @@ class ModelCompare:
             better_model = self.model2.modelname
         return acc_diff, better_model
 
-    def f1_diff(self):
+    def _f1_diff(self):
         """
         Calculates the difference in F1-score for two models.
 
