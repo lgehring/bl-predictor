@@ -153,7 +153,8 @@ class ModelEvaluator:
                                     / len(self.data_df.index)) + ")")
         print("")
 
-        if self.modelname == 'PoissonModel' or 'BettingPoissonModel':
+        if self.modelname == 'PoissonModel' or \
+                self.modelname == 'BettingPoissonModel':
             # only the PoissonModel has this functionality
             print(yellow + 'Team Ranking' + end)
             print("The given coefficients are an unaltered result "

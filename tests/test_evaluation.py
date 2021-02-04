@@ -57,28 +57,18 @@ test_crawler_data = crawler.fetch_data([1, 2018], [34, 2019])
 FMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: FrequencyModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
+F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
-
-\x1b[95mDetailed prediction results\x1b[0m
-|    | prediction_correct?   | predicted_result   | true_winner   | home_team   |   home_score |   guest_score | guest_team   |
-|---:|:----------------------|:-------------------|:--------------|:------------|-------------:|--------------:|:-------------|
-|  1 | False                 | C                  | Draw          | B           |            1 |             1 | C            |
-|  2 | False                 | B                  | A             | A           |            4 |             0 | B            |
 
 """
 
 PMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: PoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
+F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
-
-\x1b[95mDetailed prediction results\x1b[0m
-|    | prediction_correct?   | predicted_result   | true_winner   | home_team   |   home_score |   guest_score | guest_team   |
-|---:|:----------------------|:-------------------|:--------------|:------------|-------------:|--------------:|:-------------|
-|  1 | False                 | C: 72.5%           | Draw          | B           |            1 |             1 | C            |
-|  2 | False                 | B: 72.5%           | A             | A           |            4 |             0 | B            |
 
 \x1b[93mTeam Ranking\x1b[0m
 The given coefficients are an unaltered result of the PoissonModel training
@@ -95,6 +85,7 @@ and do NOT represent actual wins or true rankings
     "modelname,trainset,testset_size, result",
     [("FrequencyModel", norm_train, 2, FMOutput),
      ("PoissonModel", norm_train, 2, PMOutput),
+     #("BettingPoissonModel", norm_train, 2, BPMOutput),
      ])
 def test_evaluator(modelname, trainset, testset_size, result, capfd):
     prediction_evaluation.ModelEvaluator(modelname,
