@@ -395,7 +395,7 @@ class FrequencyModel:
     def predict_winner(self, home_team, guest_team):
         """
         Casts a prediction based on the calculated probabilities and
-        returns the names of the winning team or "Draw"
+        returns the names and probabilities of the winning team or "Draw"
         if neither has a higher probability
 
         :return: str One of: home_team, guest_team, "Draw"
@@ -410,11 +410,12 @@ class FrequencyModel:
             guest_team_win_prob = self._wins(guest_team) / len(
                 self.matchups_df.index)
             if home_team_win_prob > guest_team_win_prob:
-                return home_team
+                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
             elif home_team_win_prob < guest_team_win_prob:
-                return guest_team
+                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
             else:
-                return "Draw"
+                return "Draw" + ": " + "{:.1%}".format(
+                    abs(1 - guest_team_win_prob + home_team_win_prob))
         except KeyError:
             # prevents other modules from failing by casting no prediction/draw
             return "Prediction failed. Check training DataFrame for errors"
