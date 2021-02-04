@@ -2,12 +2,15 @@
 This module contains code for evaluating prediction models.
 """
 import warnings
-import pandas as pd
-from bl_predictor import models
-import sklearn.metrics as skm
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import sklearn.metrics as skm
+
+from bl_predictor import models
 
 
+# Suppress warnings
 # noinspection PyUnusedLocal
 def warn(*args, **kwargs):
     pass
@@ -138,8 +141,7 @@ class ModelEvaluator:
         underline = '\033[4m'
         end = '\033[0m'
 
-        print(underline + bold + darkcyan
-              + 'Evaluation Results' + end)
+        print(underline + bold + darkcyan + 'Evaluation Results' + end)
         print("Model: " + self.modelname)
         print("Accuracy (proportion of correct testset predictions): "
               + green + "{:.1%}".format(self.accuracy) + end)
@@ -181,39 +183,110 @@ class ModelEvaluator:
             plt.show()
 
 
-# Test
-# import crawler
-#
-# test_crawler_data = crawler.fetch_data([1, 2003], [34, 2019])
-# ModelEvaluator("BettingPoissonModel", test_crawler_data, 90).print_results()
+class ModelCompare:
+    """
+    A class that compares two given models
 
+    To print the report use: ModelCompare(args).print_results()
+    """
 
-# class ModelCompare:
-#     """
-#     A class that compares two given models
-#
-#     To print the report use: ModelCompare(args).print_results()
-#     """
-#
-#     def __init__(self, model1, model2):
-#         """
-#         Holds the basic comparison parameters and initiates the comparison.
-#
-#         :param str model1: name of the first model
-#         :param str model2: name of the second model
-#         """
-#         self.model1 = model1
-#         self.model2 = model2
-#
-#     def cohen_kappa(self):
-#         """
-#         Calculates the kappa score for two models
-#
-#         :return: int - kappa_score
-#         """
-#         # TODO: ModelEvaluator
-#         kappa_score = skm.cohen_kappa_score(model1_pred, model2_pred)
-#         return kappa_score
+    def __init__(self, model1, model2, data_df, testset_size):
+        """
+        Holds the basic comparison parameters and initiates the comparison.
+
+        :param str model1: name of the first model
+        :param str model2: name of the second model
+        :param data_df:
+         pd.DataFrame['home_team', 'home_score', 'guest_score', 'guest_team']
+        :param int testset_size: number of last rows to assign to testset
+        """
+        self.model1 = ModelEvaluator(model1, data_df, testset_size)
+        self.model2 = ModelEvaluator(model2, data_df, testset_size)
+        self.kappa = self.cohen_kappa()
+        self.acc_diff, self.better_acc_mod = self.accuracy_diff()
+        self.f1_diff, self.better_f1_mod = self.f1_diff()
+
+    def cohen_kappa(self):
+        """
+        Calculates the kappa score for two models
+
+        :return: int - kappa_score
+        """
+        for index, row in self.model1.predicted_result_df.iterrows():
+            # cut off percentages
+            self.model1.predicted_result_df.loc[index, 'predicted_result'] = \
+                row['predicted_result'].split(':', 1)[0]
+        for index, row in self.model2.predicted_result_df.iterrows():
+            # cut off percentages
+            self.model2.predicted_result_df.loc[index, 'predicted_result'] = \
+                row['predicted_result'].split(':', 1)[0]
+
+        model1_pred = self.model1.predicted_result_df
+        model2_pred = self.model2.predicted_result_df
+        kappa_score = skm.cohen_kappa_score(model1_pred, model2_pred)
+        return kappa_score
+
+    def accuracy_diff(self):
+        """
+        Calculates the difference in accuracy for two models.
+
+        :return: tuple - acc_diff, better_model
+        """
+        model1_acc = self.model1.accuracy
+        model2_acc = self.model2.accuracy
+        acc_diff = abs(model1_acc - model2_acc)
+        if model1_acc >= model2_acc:
+            better_model = self.model1.modelname
+        else:
+            better_model = self.model2.modelname
+        return acc_diff, better_model
+
+    def f1_diff(self):
+        """
+        Calculates the difference in F1-score for two models.
+
+        :return: tuple - f1_diff, better_model
+        """
+        model1_f1 = self.model1.f1_score
+        model2_f1 = self.model2.f1_score
+        f1_diff = abs(model1_f1 - model2_f1)
+        if model1_f1 >= model2_f1:
+            better_model = self.model1.modelname
+        else:
+            better_model = self.model2.modelname
+        return f1_diff, better_model
+
+    def print_results(self):
+        """
+        Pretty prints all comparison results in the console.
+        """
+
+        darkcyan = '\033[36m'
+        green = '\033[92m'
+        yellow = '\033[93m'
+        bold = '\033[1m'
+        underline = '\033[4m'
+        end = '\033[0m'
+
+        print(underline + bold + darkcyan + 'Comparison Results' + end)
+        print("Model1: " + self.model1.modelname)
+        print("Model2: " + self.model2.modelname)
+        print("Size of testsets: " + str(self.model1.testset_size))
+        print("")
+        print(self.model1.modelname + " accuracy: " + yellow
+              + "{:.1%}".format(self.model1.accuracy) + end)
+        print(self.model2.modelname + " accuracy: " + yellow
+              + "{:.1%}".format(self.model2.accuracy) + end)
+        print("Better accuracy: " + bold + self.better_acc_mod + end
+              + " by " + green + "{:.1%}".format(self.acc_diff) + end)
+        print("")
+        print(self.model1.modelname + "F1-score: " + yellow
+              + "{:.1%}".format(self.model1.f1_score) + end)
+        print(self.model2.modelname + "F1-score: " + yellow
+              + "{:.1%}".format(self.model2.f1_score) + end)
+        print("Better F1-score: " + bold + self.better_f1_mod + end
+              + " by " + green + "{:.1%}".format(self.f1_diff) + end)
+        print("")
 
 
 class WholeDataFrequencies:

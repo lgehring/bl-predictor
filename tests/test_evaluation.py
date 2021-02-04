@@ -79,13 +79,29 @@ and do NOT represent actual wins or true rankings
 |  2 |      1.4904 | B                  | B                   |      -0.0262 |
 """
 
+BPMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
+Model: BettingPoissonModel
+Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
+F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+Size of: Trainset: 4 (66.7%)
+         Testset:  2   (33.3%)
+
+\x1b[93mTeam Ranking\x1b[0m
+The given coefficients are an unaltered result of the PoissonModel training
+and do NOT represent actual wins or true rankings
+|    |   home_coef | hometeam_ranking   | guestteam_ranking   |   guest_coef |
+|---:|------------:|:-------------------|:--------------------|-------------:|
+|  1 |      1.5166 | C                  | C                   |      -1.5166 |
+|  2 |      1.4904 | B                  | B                   |      -0.0262 |
+"""
+
 
 # ModelEvaluator testsuite
 @pytest.mark.parametrize(
     "modelname,trainset,testset_size, result",
     [("FrequencyModel", norm_train, 2, FMOutput),
      ("PoissonModel", norm_train, 2, PMOutput),
-     #("BettingPoissonModel", norm_train, 2, BPMOutput),
+     ("BettingPoissonModel", norm_train, 2, BPMOutput),
      ])
 def test_evaluator(modelname, trainset, testset_size, result, capfd):
     prediction_evaluation.ModelEvaluator(modelname,
