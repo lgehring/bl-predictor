@@ -74,8 +74,8 @@ def test_fetch_data_next_day(start, end):
         ([1, 2014], [2, 2014], None, [
             'https://api.openligadb.de/getmatchdata/bl1/2014/1',
             'https://api.openligadb.de/getmatchdata/bl1/2014/2']),
-        ([1, 2014], [1, 2014], None, [
-            'https://api.openligadb.de/getmatchdata/bl1/2014/1']),
+        ([29, 2014], [34, 2014], None, [
+            'https://api.openligadb.de/getmatchdata/bl1/2014/29']),
         ([1, 2014], [8, 2016], -1,
          "https://api.openligadb.de/getmatchdata/bl1/2016/8"),
     ])
