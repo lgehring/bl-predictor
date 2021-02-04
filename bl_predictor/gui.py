@@ -2,7 +2,6 @@
 This module contains the GUI code.
 """
 
-import datetime
 import inspect
 import tkinter as tk
 from datetime import date
@@ -213,7 +212,6 @@ class MainWindow:
         if self.winner is None:
             # No matches in data
             self.winner = "Not enough data"
-
 
         self.prediction = tk.Label(self.root, text="Not calculated")
         self.prediction.pack(in_=self.left)

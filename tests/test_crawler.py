@@ -1,6 +1,4 @@
 # Use this file to test your crawler.
-import warnings
-
 import pandas as pd
 import pandas.api.types as ptypes
 import pytest
@@ -44,9 +42,6 @@ def test_fetch_data(start, end, exp_start, exp_end, remove):
     assert (len(data.columns) == 7)
     assert data['season'].is_monotonic_increasing
     assert (len(data) != 0)
-
-
-
 
 
 def test_fetch_data_exc():

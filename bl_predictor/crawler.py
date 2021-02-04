@@ -99,9 +99,9 @@ def fetch_data_helper(start_date, end_date, csv_file, current_d):
 
 
 def is_first_date_later(first_date, second_date):
-    f_d_is_later = first_date[1] > second_date[1] or (
-            first_date[1] == second_date[1]
-            and first_date[0] > second_date[0])
+    f_d_is_later = (first_date[1] > second_date[1]
+                    or (first_date[1] == second_date[1]
+                        and first_date[0] > second_date[0]))
     return f_d_is_later
 
 
