@@ -25,7 +25,8 @@ class MainWindow:
         self.root = tk.Tk()
         self.left = tk.Frame(self.root)
         self.left.pack(side=tk.RIGHT, expand=True)
-        self.result_label = tk.Label(self.root, text="Results")
+        self.result_label = tk.Label(self.root,
+                                     text="Results")
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
@@ -46,7 +47,7 @@ class MainWindow:
         self._upcoming_matchday()
         self._timeframe_slider()
 
-        self.result_label.configure(font="Verdana 20 underline")
+        self.result_label.configure(font="Verdana 20 underline bold")
         self.result_label.pack(in_=self.left)
 
         self.root.mainloop()
@@ -124,6 +125,19 @@ class MainWindow:
                                                     [1])])
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
+        # add time range label to results
+        self.time_range_label = tk.Label(self.left,
+                                         text=("Time range: "
+                                               + "1st of "
+                                               + str(int(
+                                                     self.slider.get_values()[
+                                                         0]))
+                                               + " until "
+                                                 "34th of " + str(int(
+                                                     self.slider.get_values()[
+                                                         1]))))
+        self.time_range_label.configure(font="Verdana 15 bold")
+        self.time_range_label.pack(in_=self.left)
         # Show model selection menu
         self._choose_model()
 
@@ -162,6 +176,12 @@ class MainWindow:
         self.train_ml_button.config(text='Model trained',
                                     background='green')
 
+        self.result_model_label = tk.Label(self.left,
+                                           text=("calculated with: "
+                                                 + self.model_variable.get()
+                                                 ))
+        self.result_model_label.configure(font="Verdana 15 bold")
+        self.result_model_label.pack(in_=self.left)
         # Show team selection menu
         self._choose_teams()
 
@@ -183,7 +203,7 @@ class MainWindow:
         self.ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
         self.ht_opt.pack()
 
-        # Guestteam dropdown list
+        # Guest team dropdown list
         self.gt_label = tk.Label(self.root, text="Guest team:")
         self.gt_label.pack()
 
@@ -200,6 +220,7 @@ class MainWindow:
             self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
+
         self.prediction_button.pack()
 
     def _make_prediction_helper(self):
@@ -208,13 +229,24 @@ class MainWindow:
             self.gt_variable.get())
         self.prediction_button.config(text='Winner predicted',
                                       background='green')
+        # delete first result, if too many for window
+        result_frame_y = self.left.winfo_height()
+        high_window = 700
+        results = self.left.winfo_children()
+        if result_frame_y >= high_window:
+            if results[3].cget("text")[0:4] == "Time":
+                results[0].destroy()
+                results[1].destroy()
+                results[2].destroy()
+            else:
+                results[2].destroy()
 
         if self.winner is None:
             # No matches in data
             self.winner = "Not enough data"
 
-        self.prediction = tk.Label(self.root, text="Not calculated")
-        self.prediction.pack(in_=self.left)
+        self.prediction = tk.Label(self.left)
+        self.prediction.pack()
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
                                         + self.gt_variable.get()
@@ -222,6 +254,8 @@ class MainWindow:
                                         + self.winner))
         self._reset_teams_button()
         self._reset_button()
+        self._reset_model_button()
+
         self.prediction_button.config(state=tk.DISABLED)
 
     def _reset_teams_button(self):
@@ -229,11 +263,12 @@ class MainWindow:
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.pack(side=tk.RIGHT)
+        self.reset_teams_button.pack(anchor=tk.SE)
 
     def _reset_teams(self):
         self.prediction_button.pack_forget()
 
+        self.reset_model_button.pack_forget()
         self.reset_teams_button.pack_forget()
         self.reset_button.pack_forget()
 
@@ -242,32 +277,63 @@ class MainWindow:
 
         self._make_prediction()
 
+    def _reset_model_button(self):
+        self.reset_model_button = tk.Button(
+            self.root,
+            text="chose new model",
+            command=self._reset_model)
+        self.reset_model_button.pack(anchor=tk.S)
+
+    def _reset_model(self):
+
+        self.train_ml_button.pack_forget()
+        self.model_opt.pack_forget()
+        self.model_label.pack_forget()
+
+        self.gt_label.pack_forget()
+        self.ht_label.pack_forget()
+        self.gt_opt.pack_forget()
+        self.ht_opt.pack_forget()
+        self.prediction_button.pack_forget()
+
+        self.reset_button.pack_forget()
+        self.reset_model_button.pack_forget()
+        self.reset_teams_button.pack_forget()
+
+        self.picked_home_team = None
+        self.picked_guest_team = None
+        self.trained_model = None
+
+        self._choose_model()
+
     def _reset_button(self):
         self.reset_button = tk.Button(
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.pack(side=tk.LEFT)
+        self.reset_button.pack(anchor=tk.SW)
 
     def _reset_values(self):
-        self.prediction_button.pack_forget()
-        self.train_ml_button.pack_forget()
-        self.act_crawler_button.pack_forget()
-        self.download_time_label.pack_forget()
-        self.date_label.pack_forget()
         self.slider.pack_forget()
-        self.prediction.pack_forget()
-        self.prediction.destroy()
-        self.prediction_button.pack_forget()
-        self.gt_opt.pack_forget()
-        self.ht_opt.pack_forget()
+        self.act_crawler_button.pack_forget()
+
+        self.train_ml_button.pack_forget()
+
         self.gt_label.pack_forget()
         self.ht_label.pack_forget()
+        self.gt_opt.pack_forget()
+        self.ht_opt.pack_forget()
+        self.prediction_button.pack_forget()
+
         self.model_label.pack_forget()
         self.model_opt.pack_forget()
-        self.reset_teams_button.pack_forget()
 
+        self.download_time_label.pack_forget()
+        self.date_label.pack_forget()
+
+        self.reset_teams_button.pack_forget()
         self.reset_button.pack_forget()
+        self.reset_model_button.pack_forget()
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
