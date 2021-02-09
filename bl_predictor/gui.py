@@ -49,7 +49,6 @@ class MainWindow:
 
         self.result_label.configure(font="Verdana 20 underline bold")
         self.result_label.pack(in_=self.left)
-
         self.root.mainloop()
 
     def _upcoming_matchday(self):
@@ -126,6 +125,8 @@ class MainWindow:
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # add time range label to results
+        empty_label = tk.Label(self.left, text="")
+        empty_label.pack()
         self.time_range_label = tk.Label(self.left,
                                          text=("Time range: "
                                                + "1st of "
@@ -231,15 +232,19 @@ class MainWindow:
                                       background='green')
         # delete first result, if too many for window
         result_frame_y = self.left.winfo_height()
-        high_window = 700
+        high_window = 600
         results = self.left.winfo_children()
         if result_frame_y >= high_window:
-            if results[3].cget("text")[0:4] == "Time":
+            if results[5].cget("text")[0:4] == "Time":
                 results[0].destroy()
                 results[1].destroy()
                 results[2].destroy()
+                results[3].destroy()
+            elif results[4].cget("text")[0:4] == "calc":
+                results[3].destroy()
+                results[4].destroy()
             else:
-                results[2].destroy()
+                results[3].destroy()
 
         if self.winner is None:
             # No matches in data
