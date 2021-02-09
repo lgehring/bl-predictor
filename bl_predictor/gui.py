@@ -102,18 +102,18 @@ class MainWindow:
         last_game = first_game + 9
         for i in range(first_game, last_game):
             # loads the logos into gui
-            self.image1 = Image.open(
-                dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
-            self.image2 = Image.open(
-                dir_path + "/team_logos/" + matchday['guest_team'][i] + ".png")
-            self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
-            self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
-            self.img1 = ImageTk.PhotoImage(self.image1)
-            self.img2 = ImageTk.PhotoImage(self.image2)
-            self.panel1 = tk.Label(self.root, image=self.img1)
-            self.panel2 = tk.Label(self.root, image=self.img2)
-            self.panel1.photo = self.img1
-            self.panel2.photo = self.img2
+            #self.image1 = Image.open(
+            #    dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
+            #self.image2 = Image.open(
+            #    dir_path + "/team_logos/" + matchday['guest_team'][i] + ".png")
+            #self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
+            #self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
+            #self.img1 = ImageTk.PhotoImage(self.image1)
+            #self.img2 = ImageTk.PhotoImage(self.image2)
+            #self.panel1 = tk.Label(self.root, image=self.img1)
+            #self.panel2 = tk.Label(self.root, image=self.img2)
+            #self.panel1.photo = self.img1
+            #self.panel2.photo = self.img2
 
             # shows date and time of each match
             if i == first_game or \
@@ -130,9 +130,9 @@ class MainWindow:
                                    font=("Calibri Light", 13))
 
             home_label.grid(row=2 * i, column=0, sticky=tk.E)
-            self.panel1.grid(row=2 * i, column=1)
+            #self.panel1.grid(row=2 * i, column=1)
             versus_label.grid(row=2 * i, column=2, padx=10)
-            self.panel2.grid(row=2 * i, column=3)
+            #self.panel2.grid(row=2 * i, column=3)
             guest_label.grid(row=2 * i, column=4, sticky=tk.W)
 
             self.root.grid_columnconfigure(0, weight=1)
