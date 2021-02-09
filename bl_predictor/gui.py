@@ -257,9 +257,10 @@ class MainWindow:
                                         + self.gt_variable.get()
                                         + ": "
                                         + self.winner))
-        self._reset_teams_button()
+
         self._reset_button()
         self._reset_model_button()
+        self._reset_teams_button()
 
         self.prediction_button.config(state=tk.DISABLED)
 
@@ -268,7 +269,7 @@ class MainWindow:
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.pack(anchor=tk.SE)
+        self.reset_teams_button.pack(side=tk.LEFT)
 
     def _reset_teams(self):
         self.prediction_button.pack_forget()
@@ -287,7 +288,7 @@ class MainWindow:
             self.root,
             text="chose new model",
             command=self._reset_model)
-        self.reset_model_button.pack(anchor=tk.S)
+        self.reset_model_button.pack(side=tk.LEFT)
 
     def _reset_model(self):
 
@@ -316,7 +317,7 @@ class MainWindow:
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.pack(anchor=tk.SW)
+        self.reset_button.pack(side=tk.LEFT)
 
     def _reset_values(self):
         self.slider.pack_forget()
