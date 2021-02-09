@@ -318,10 +318,10 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
 
         for game in json_response:  # all matches in scrape
 
-            # save_logos(json_response[game]['team1']['teamName'],
-            #            json_response[game]['team1']['teamIconUrl'])
-            # save_logos(json_response[game]['team2']['teamName'],
-            #            json_response[game]['team2']['teamIconUrl'])
+            save_logos(json_response[game]['team1']['teamName'],
+                        json_response[game]['team1']['teamIconUrl'])
+            save_logos(json_response[game]['team2']['teamName'],
+                        json_response[game]['team2']['teamIconUrl'])
 
             # appends response item-array to matches, !ORDER SENSITIVE!
             if game['matchIsFinished']:
