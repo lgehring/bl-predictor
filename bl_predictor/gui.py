@@ -125,10 +125,8 @@ class MainWindow:
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # add time range label to results
-        empty_label = tk.Label(self.left, text="")
-        empty_label.pack()
         self.time_range_label = tk.Label(self.left,
-                                         text=("Time range: "
+                                         text=("\nTime range: "
                                                + "1st of "
                                                + str(int(
                                                      self.slider.get_values()[
@@ -235,16 +233,15 @@ class MainWindow:
         high_window = 600
         results = self.left.winfo_children()
         if result_frame_y >= high_window:
-            if results[5].cget("text")[0:4] == "Time":
+            if results[3].cget("text")[0:4] == "\nTim":
                 results[0].destroy()
                 results[1].destroy()
                 results[2].destroy()
-                results[3].destroy()
-            elif results[4].cget("text")[0:4] == "calc":
-                results[3].destroy()
-                results[4].destroy()
+            elif results[3].cget("text")[0:4] == "calc":
+                results[1].destroy()
+                results[2].destroy()
             else:
-                results[3].destroy()
+                results[2].destroy()
 
         if self.winner is None:
             # No matches in data
