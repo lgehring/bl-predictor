@@ -9,7 +9,7 @@ import tkinter as tk
 from datetime import date
 
 import pandas as pd
-from PIL import ImageTk, Image
+# from PIL import ImageTk, Image
 
 from bl_predictor import crawler
 from bl_predictor import models
@@ -35,7 +35,7 @@ class MainWindow:
         """
         self.root = tk.Tk()
         self.left = tk.Frame(self.root)
-        self.left.grid()
+        self.left.grid(column=5)
         self.result_label = tk.Label(self.root, text="Results")
 
         self.crawler_data = pd.DataFrame()
@@ -58,7 +58,7 @@ class MainWindow:
         self._timeframe_slider()
 
         self.result_label.configure(font="Verdana 20 underline")
-        self.result_label.grid(in_=self.left)
+        self.result_label.grid(column=5)
 
         self.root.mainloop()
 
@@ -96,24 +96,24 @@ class MainWindow:
         matchdaygames_label.grid(columnspan=5)
 
         # path of gui.py
-        gui_path = os.path.abspath(__file__)
+        # gui_path = os.path.abspath(__file__)
         # path to team project
-        dir_path = os.path.dirname(gui_path)
+        # dir_path = os.path.dirname(gui_path)
         last_game = first_game + 9
         for i in range(first_game, last_game):
             # loads the logos into gui
-            #self.image1 = Image.open(
+            # self.image1 = Image.open(
             #    dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
-            #self.image2 = Image.open(
+            # self.image2 = Image.open(
             #    dir_path + "/team_logos/" + matchday['guest_team'][i] + ".png")
-            #self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
-            #self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
-            #self.img1 = ImageTk.PhotoImage(self.image1)
-            #self.img2 = ImageTk.PhotoImage(self.image2)
-            #self.panel1 = tk.Label(self.root, image=self.img1)
-            #self.panel2 = tk.Label(self.root, image=self.img2)
-            #self.panel1.photo = self.img1
-            #self.panel2.photo = self.img2
+            # self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
+            # self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
+            # self.img1 = ImageTk.PhotoImage(self.image1)
+            # self.img2 = ImageTk.PhotoImage(self.image2)
+            # self.panel1 = tk.Label(self.root, image=self.img1)
+            # self.panel2 = tk.Label(self.root, image=self.img2)
+            # self.panel1.photo = self.img1
+            # self.panel2.photo = self.img2
 
             # shows date and time of each match
             if i == first_game or \
@@ -130,9 +130,9 @@ class MainWindow:
                                    font=("Calibri Light", 13))
 
             home_label.grid(row=2 * i, column=0, sticky=tk.E)
-            #self.panel1.grid(row=2 * i, column=1)
+            # self.panel1.grid(row=2 * i, column=1)
             versus_label.grid(row=2 * i, column=2, padx=10)
-            #self.panel2.grid(row=2 * i, column=3)
+            # self.panel2.grid(row=2 * i, column=3)
             guest_label.grid(row=2 * i, column=4, sticky=tk.W)
 
             self.root.grid_columnconfigure(0, weight=1)
@@ -155,6 +155,7 @@ class MainWindow:
                                        datetime.datetime.now().year],
                              show_value=True)
         self.slider.grid(columnspan=5)
+        self._activate_crawler()
 
     def _activate_crawler(self):
         """
@@ -311,7 +312,7 @@ class MainWindow:
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.pack(side=tk.RIGHT)
+        self.reset_teams_button.grid(column=0)
 
     def _reset_teams(self):
         self.prediction_button.pack_forget()
@@ -329,7 +330,7 @@ class MainWindow:
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.pack(side=tk.LEFT)
+        self.reset_button.grid(column=4)
 
     def _reset_values(self):
         self.prediction_button.pack_forget()
