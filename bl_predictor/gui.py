@@ -35,7 +35,7 @@ class MainWindow:
         """
         self.root = tk.Tk()
         self.left = tk.Frame(self.root)
-        self.left.grid(column=5)
+        self.left.grid(row=40, column=4)
         self.result_label = tk.Label(self.root, text="Results")
 
         self.crawler_data = pd.DataFrame()
@@ -58,7 +58,7 @@ class MainWindow:
         self._timeframe_slider()
 
         self.result_label.configure(font="Verdana 20 underline")
-        self.result_label.grid(column=5)
+        self.result_label.grid(column=4)
 
         self.root.mainloop()
 
@@ -70,7 +70,7 @@ class MainWindow:
         """
         now = date.today()
         date_label = tk.Label(text=now)
-        date_label.grid(sticky=tk.W)
+        date_label.grid(row=0, sticky=tk.W)
 
         # signals crawler to crawl unfinished matches
         current_season = crawler.fetch_data([0, 0], [0, 0])
@@ -84,22 +84,24 @@ class MainWindow:
                 matchday = current_season.loc[i + 1:i + 9]
 
         upcoming_matchday = current_season['matchday'][0]
+        padding = 3
 
         matchday_label = \
             tk.Label(
                 text="Upcoming Matchday: Matchday " + str(upcoming_matchday),
                 font=("Calibri Light", 30))
-        matchday_label.grid(columnspan=5)
+        matchday_label.grid(pady=padding, row=1, column=1, columnspan=3)
 
         matchdaygames_label = tk.Label(text="Upcoming Matches: ",
                                        font=("Calibri Light", 25))
-        matchdaygames_label.grid(columnspan=5)
+        matchdaygames_label.grid(pady=padding, row=2, column=1, columnspan=3)
 
         # path of gui.py
         # gui_path = os.path.abspath(__file__)
         # path to team project
         # dir_path = os.path.dirname(gui_path)
         last_game = first_game + 9
+        rowcount = 1
         for i in range(first_game, last_game):
             # loads the logos into gui
             # self.image1 = Image.open(
@@ -120,7 +122,8 @@ class MainWindow:
                     matchday['date_time'][i] != matchday['date_time'][i - 1]:
                 day_label = tk.Label(text=matchday['date_time'][i],
                                      font=("Calibri Light", 13))
-                day_label.grid(columnspan=5)
+                day_label.grid(pady=padding, row=2 + rowcount, column=1, columnspan=3)
+                rowcount += 1
             # shows match
             home_label = tk.Label(text=matchday['home_team'][i],
                                   font=("Calibri Light", 13))
@@ -129,11 +132,12 @@ class MainWindow:
             guest_label = tk.Label(text=matchday['guest_team'][i],
                                    font=("Calibri Light", 13))
 
-            home_label.grid(row=2 * i, column=0, sticky=tk.E)
+            home_label.grid(pady=padding, row=2 + rowcount, column=1, sticky=tk.E)
             # self.panel1.grid(row=2 * i, column=1)
-            versus_label.grid(row=2 * i, column=2, padx=10)
+            versus_label.grid(pady=padding, row=2 + rowcount, column=2)
             # self.panel2.grid(row=2 * i, column=3)
-            guest_label.grid(row=2 * i, column=4, sticky=tk.W)
+            guest_label.grid(pady=padding, row=2 + rowcount, column=3, sticky=tk.W)
+            rowcount += 1
 
             self.root.grid_columnconfigure(0, weight=1)
             self.root.grid_columnconfigure(4, weight=1)
@@ -144,7 +148,7 @@ class MainWindow:
         """
         date_label = tk.Label(text="Choose a period of time:",
                               font=("Calibri Light", 13))
-        date_label.grid(columnspan=5)
+        date_label.grid(row=1, column=4)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=400,
@@ -152,9 +156,9 @@ class MainWindow:
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
-                                       datetime.datetime.now().year],
+                                       datetime.datetime.now().year-1],
                              show_value=True)
-        self.slider.grid(columnspan=5)
+        self.slider.grid(row=2, column=4)
         self._activate_crawler()
 
     def _activate_crawler(self):
@@ -164,14 +168,14 @@ class MainWindow:
         """
         download_time_label = tk.Label(text="Downloading might take a while",
                                        font=("Calibri Light", 13))
-        download_time_label.grid(columnspan=5)
+        download_time_label.grid(row=3, column=4)
 
         self.act_crawler_button = tk.Button(
             self.root,
             text="Download Data",
             font=("Calibri Light", 13),
             command=self._activate_crawler_helper)
-        self.act_crawler_button.grid(columnspan=5)
+        self.act_crawler_button.grid(row=4, column=4)
 
     def _activate_crawler_helper(self):
         """
@@ -203,12 +207,12 @@ class MainWindow:
 
         # Menu title shown above
         model_label = tk.Label(text="Choose a prediction model:")
-        model_label.grid(columnspan=5)
+        model_label.grid(row=5, column=4)
         # Initialize options
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
         model_opt = tk.OptionMenu(self.root, self.model_variable, *model_list)
-        model_opt.grid(columnspan=5)
+        model_opt.grid(row=6, column=4)
 
         # Show train model button
         self._train_model()
@@ -221,7 +225,7 @@ class MainWindow:
             self.root,
             text="Train prediction model",
             command=self._train_model_helper)
-        self.train_ml_button.grid(columnspan=5)
+        self.train_ml_button.grid(row=7, column=4)
 
     def _train_model_helper(self):
         """
@@ -251,21 +255,21 @@ class MainWindow:
 
         # home team dropdown list
         ht_label = tk.Label(self.root, text="Home team:")
-        ht_label.grid(columnspan=5)
+        ht_label.grid(row=8, column=4)
 
         self.ht_variable = tk.StringVar(self.root)
         self.ht_variable.set(option_list[0])
         ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
-        ht_opt.grid(columnspan=5)
+        ht_opt.grid(row=9, column=4)
 
         # guest team dropdown list
         gt_label = tk.Label(self.root, text="Guest team:")
-        gt_label.grid(columnspan=5)
+        gt_label.grid(row=10, column=4)
 
         self.gt_variable = tk.StringVar(self.root)
         self.gt_variable.set(option_list[0])
         gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
-        gt_opt.grid(columnspan=5)
+        gt_opt.grid(row=11, column=4)
 
         # Show prediction button
         self._make_prediction()
@@ -278,7 +282,7 @@ class MainWindow:
             self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
-        self.prediction_button.grid(columnspan=5)
+        self.prediction_button.grid(row=12, column=4)
 
     def _make_prediction_helper(self):
         """
@@ -297,7 +301,7 @@ class MainWindow:
             self.winner = "Not enough data"
 
         self.prediction = tk.Label(self.root, text="Not calculated")
-        self.prediction.grid(columnspan=5)
+        self.prediction.grid(column=4)
 
         self.prediction.configure(text=(self.ht_variable.get() + " vs "
                                         + self.gt_variable.get()
@@ -312,7 +316,7 @@ class MainWindow:
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.grid(column=0)
+        self.reset_teams_button.grid(row=13, column=4)
 
     def _reset_teams(self):
         self.prediction_button.pack_forget()
@@ -330,7 +334,7 @@ class MainWindow:
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.grid(column=4)
+        self.reset_button.grid(row=14, column=4)
 
     def _reset_values(self):
         self.prediction_button.pack_forget()
