@@ -7,6 +7,7 @@ import tkinter as tk
 from datetime import date
 
 import pandas as pd
+import os
 
 from bl_predictor import crawler
 from bl_predictor import models
@@ -25,6 +26,11 @@ class MainWindow:
         :param str test: str or none. Put in "test" for an objekt to be
             tested. None otherwise. For a test objekt there is no implmentation
             of a mainloop. """
+
+        # Do to an _tkinter.TclError that accurs only on github.
+        if os.environ.get('DISPLAY', '') == '':
+            print('no display found. Using :0.0')
+            os.environ.__setitem__('DISPLAY', ':0.0')
 
         self.test = test
         self.root = tk.Tk()
