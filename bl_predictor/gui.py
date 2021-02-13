@@ -20,8 +20,13 @@ class MainWindow:
     The GUI window can be shown with show_window()
     """
 
-    def __init__(self):
+    def __init__(self, test):
+        """
+        :param str test: str or none. Put in "test" for an objekt to be
+            tested. None otherwise. For a test objekt there is no implmentation
+            of a mainloop. """
 
+        self.test = test
         self.root = tk.Tk()
         self.left = tk.Frame(self.root)
         self.left.pack(side=tk.RIGHT, expand=True)
@@ -31,6 +36,7 @@ class MainWindow:
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
         self.picked_guest_team = None
+        self.show_window()
 
     def show_window(self):
         """
@@ -43,13 +49,13 @@ class MainWindow:
         """
         self.root.title("Bl-predictor GUI")
         self.root.geometry("1000x800")
-
         self._upcoming_matchday()
         self._timeframe_slider()
 
         self.result_label.configure(font="Verdana 20 underline bold")
         self.result_label.pack(in_=self.left)
-        self.root.mainloop()
+        if self.test != "test":
+            self.root.mainloop()
 
     def _upcoming_matchday(self):
         now = date.today()
@@ -113,15 +119,17 @@ class MainWindow:
         self.act_crawler_button.pack()
 
     def _activate_crawler_helper(self):
+
         first_day_of_season = 1
         last_day_of_season = 34
 
+        self.slider_first_value = self.slider.get_values()[0]
+        self.slider_last_value = self.slider.get_values()[1]
+
         self.crawler_data = crawler.fetch_data([first_day_of_season,
-                                                int(self.slider.get_values()
-                                                    [0])],
+                                                int(self.slider_first_value)],
                                                [last_day_of_season,
-                                                int(self.slider.get_values()
-                                                    [1])])
+                                                int(self.slider_last_value)])
         self.act_crawler_button.config(text='Download complete',
                                        background='green')
         # add time range label to results
@@ -129,12 +137,11 @@ class MainWindow:
                                          text=("\nTime range: "
                                                + "1st of "
                                                + str(int(
-                                                     self.slider.get_values()[
-                                                         0]))
+                                                     self.slider_first_value))
                                                + " until "
                                                  "34th of " + str(int(
-                                                     self.slider.get_values()[
-                                                         1]))))
+                                                     self.slider_first_value)))
+                                         )
         self.time_range_label.configure(font="Verdana 15 bold")
         self.time_range_label.pack(in_=self.left)
         # Show model selection menu
@@ -197,18 +204,20 @@ class MainWindow:
         self.ht_label = tk.Label(self.root, text="Home team:")
         self.ht_label.pack()
 
-        self.ht_variable = tk.StringVar(self.root)
-        self.ht_variable.set(option_list[0])
-        self.ht_opt = tk.OptionMenu(self.root, self.ht_variable, *option_list)
+        self.picked_home_team = tk.StringVar(self.root)
+        self.picked_home_team.set(option_list[0])
+        self.ht_opt = tk.OptionMenu(self.root, self.picked_home_team,
+                                    *option_list)
         self.ht_opt.pack()
 
         # Guest team dropdown list
         self.gt_label = tk.Label(self.root, text="Guest team:")
         self.gt_label.pack()
 
-        self.gt_variable = tk.StringVar(self.root)
-        self.gt_variable.set(option_list[0])
-        self.gt_opt = tk.OptionMenu(self.root, self.gt_variable, *option_list)
+        self.picked_guest_team = tk.StringVar(self.root)
+        self.picked_guest_team.set(option_list[0])
+        self.gt_opt = tk.OptionMenu(self.root, self.picked_guest_team,
+                                    *option_list)
         self.gt_opt.pack()
 
         # Show prediction button
@@ -223,9 +232,10 @@ class MainWindow:
         self.prediction_button.pack()
 
     def _make_prediction_helper(self):
+        print("9")
         self.winner = self.trained_model.predict_winner(
-            self.ht_variable.get(),
-            self.gt_variable.get())
+            self.picked_home_team.get(),
+            self.picked_guest_team.get())
         self.prediction_button.config(text='Winner predicted',
                                       background='green')
         # delete first result, if too many for window
@@ -250,8 +260,8 @@ class MainWindow:
         self.prediction = tk.Label(self.left)
         self.prediction.pack()
 
-        self.prediction.configure(text=(self.ht_variable.get() + " vs "
-                                        + self.gt_variable.get()
+        self.prediction.configure(text=(self.picked_home_team.get() + " vs "
+                                        + self.picked_guest_team.get()
                                         + ": "
                                         + self.winner))
 
@@ -269,6 +279,7 @@ class MainWindow:
         self.reset_teams_button.pack(side=tk.LEFT)
 
     def _reset_teams(self):
+        print("team")
         self.prediction_button.pack_forget()
 
         self.reset_model_button.pack_forget()
@@ -288,7 +299,7 @@ class MainWindow:
         self.reset_model_button.pack(side=tk.LEFT)
 
     def _reset_model(self):
-
+        print("model")
         self.train_ml_button.pack_forget()
         self.model_opt.pack_forget()
         self.model_label.pack_forget()
@@ -310,6 +321,7 @@ class MainWindow:
         self._choose_model()
 
     def _reset_button(self):
+        print("reset")
         self.reset_button = tk.Button(
             self.root,
             text="Reset",
