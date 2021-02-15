@@ -282,7 +282,7 @@ class BettingPoissonModel:
             guest_team_win_prob = np.round(np.sum(np.triu(sim_match, 1)), 5)
             draw_prob = np.round(np.sum(np.diag(sim_match)), 5)
 
-            # TODO: determine threshold experimentally
+            # Threshold is just a guess
             significance_threshold = 0.1  # chance (home win, guest win, draw)
             if home_team_win_prob > guest_team_win_prob and \
                     (home_team_win_prob

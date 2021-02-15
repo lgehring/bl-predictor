@@ -57,22 +57,45 @@ test_crawler_data = crawler.fetch_data([1, 2018], [34, 2019])
 FMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: FrequencyModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
+
+\x1b[93mPerformance per class\x1b[0m
+              precision    recall  f1-score   support
+
+        draw      0.000     0.000     0.000       1.0
+  guest_team      0.000     0.000     0.000       0.0
+   home_team      0.000     0.000     0.000       1.0
+
+    accuracy                          0.000       2.0
+   macro avg      0.000     0.000     0.000       2.0
+weighted avg      0.000     0.000     0.000       2.0
 
 """
 
 PMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: PoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
+
+\x1b[93mPerformance per class\x1b[0m
+              precision    recall  f1-score   support
+
+        draw      0.000     0.000     0.000       1.0
+  guest_team      0.000     0.000     0.000       0.0
+   home_team      0.000     0.000     0.000       1.0
+
+    accuracy                          0.000       2.0
+   macro avg      0.000     0.000     0.000       2.0
+weighted avg      0.000     0.000     0.000       2.0
 
 \x1b[93mTeam Ranking\x1b[0m
 The given coefficients are an unaltered result of the PoissonModel training
 and do NOT represent actual wins or true rankings
+
 |    |   home_coef | hometeam_ranking   | guestteam_ranking   |   guest_coef |
 |---:|------------:|:-------------------|:--------------------|-------------:|
 |  1 |      1.5166 | C                  | C                   |      -1.5166 |
@@ -82,13 +105,25 @@ and do NOT represent actual wins or true rankings
 BPMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: BettingPoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
+
+\x1b[93mPerformance per class\x1b[0m
+              precision    recall  f1-score   support
+
+        draw      0.000     0.000     0.000       1.0
+  guest_team      0.000     0.000     0.000       0.0
+   home_team      0.000     0.000     0.000       1.0
+
+    accuracy                          0.000       2.0
+   macro avg      0.000     0.000     0.000       2.0
+weighted avg      0.000     0.000     0.000       2.0
 
 \x1b[93mTeam Ranking\x1b[0m
 The given coefficients are an unaltered result of the PoissonModel training
 and do NOT represent actual wins or true rankings
+
 |    |   home_coef | hometeam_ranking   | guestteam_ranking   |   guest_coef |
 |---:|------------:|:-------------------|:--------------------|-------------:|
 |  1 |      1.5166 | C                  | C                   |      -1.5166 |
