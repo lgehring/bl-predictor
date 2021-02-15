@@ -4,7 +4,6 @@ This file is used for testing model evaluators in a variety of cases
 import pandas as pd
 import pytest
 
-from bl_predictor import crawler
 from bl_predictor import prediction_evaluation
 
 norm_train = pd.DataFrame([
@@ -51,8 +50,6 @@ draw_train = pd.DataFrame([
     ['A', 2, 2, 'B'],
 ], columns=[
     'home_team', 'home_score', 'guest_score', 'guest_team'])
-
-test_crawler_data = crawler.fetch_data([1, 2018], [34, 2019])
 
 FMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: FrequencyModel
@@ -144,6 +141,40 @@ def test_evaluator(modelname, trainset, testset_size, result, capfd):
                                          testset_size).print_results()
     out, err = capfd.readouterr()
     assert out == result
+
+
+# ModelCompare testsuite
+@pytest.mark.parametrize(
+    "modelname1,modelname2,trainset,testset_size, model1, model2",
+    [("FrequencyModel", "PoissonModel", norm_train, 2,
+      "FrequencyModel", "PoissonModel"),
+     ("PoissonModel", "BettingPoissonModel", norm_train, 2,
+      "PoissonModel", "BettingPoissonModel"),
+     ])
+def test_compare(modelname1, modelname2,
+                 trainset, testset_size, model1, model2, capfd):
+    prediction_evaluation.ModelCompare(modelname1,
+                                       modelname2,
+                                       trainset,
+                                       testset_size).print_results()
+    out, err = capfd.readouterr()
+    assert model1 in out
+    assert model2 in out
+
+
+# ModelByTimespan testsuite
+@pytest.mark.parametrize(
+    "modelnames,testset_size,start_year,end_year",
+    [(["PoissonModel", "FrequencyModel"],
+      10, 2019, 2019),
+     ])
+def test_timespan(modelnames,
+                  testset_size, start_year, end_year, capfd):
+    result = prediction_evaluation.ModelByTimespan(modelnames,
+                                                   testset_size,
+                                                   start_year, end_year)
+    assert result.multiple_accuracy_df is not None
+    assert result.multiple_f1_df is not None
 
 
 # WholeDataFrequencies testsuite
