@@ -26,8 +26,8 @@ class ModelByTimespan:
         self.testset_size = testset_size
         self.first_year = first_year
         self.last_year = last_year
-        self.multiple_accuracy_df = self._multiple_models_accuracy()
-        self.multiple_f1_df = self._multiple_models_f1()
+        self.multiple_accuracy_df = self.multiple_models_accuracy()
+        self.multiple_f1_df = self.multiple_models_f1()
 
     def _model_accuracy(self, modelname, print_plot=False):
         """
@@ -65,7 +65,7 @@ class ModelByTimespan:
             plt.show()
         return accuracy_df
 
-    def _multiple_models_accuracy(self, print_plot=False):
+    def multiple_models_accuracy(self, print_plot=False):
         """
         Uses ModelEvaluator to calculate accuracies for multiple models
         for trainsets:
@@ -144,7 +144,7 @@ class ModelByTimespan:
             plt.show()
         return f1_df
 
-    def _multiple_models_f1(self, print_plot=False):
+    def multiple_models_f1(self, print_plot=False):
         """
         Uses ModelEvaluator to calculate accuracies for multiple models
         for trainsets:
@@ -241,11 +241,11 @@ class ModelEvaluator:
 
         for index, row in self.testset_df.iterrows():
             if row['home_score'] > row['guest_score']:
-                true_winner_df.loc[len(true_winner_df)] = row['home_team']
+                true_winner_df.loc[len(true_winner_df)] = 'home_team'
             elif row['home_score'] < row['guest_score']:
-                true_winner_df.loc[len(true_winner_df)] = row['guest_team']
+                true_winner_df.loc[len(true_winner_df)] = 'guest_team'
             else:
-                true_winner_df.loc[len(true_winner_df)] = "Draw"
+                true_winner_df.loc[len(true_winner_df)] = 'draw'
         return true_winner_df
 
     def _predict_testset(self):
@@ -269,8 +269,20 @@ class ModelEvaluator:
         for index, row in self.testset_df.iterrows():
             predicted_winner = trained_model.predict_winner(row['home_team'],
                                                             row['guest_team'])
-            predicted_result_df.loc[
-                len(predicted_result_df)] = predicted_winner
+            predicted_winner = predicted_winner.split(':', 1)[0]
+            if predicted_winner == row['home_team']:
+                predicted_result_df.loc[
+                    len(predicted_result_df)] = 'home_team'
+            elif predicted_winner == row['guest_team']:
+                predicted_result_df.loc[
+                    len(predicted_result_df)] = 'guest_team'
+            elif predicted_winner == 'Draw':
+                predicted_result_df.loc[
+                    len(predicted_result_df)] = 'draw'
+            else:
+                predicted_result_df.loc[
+                    len(predicted_result_df)] = 'ERROR: faulty model'
+
         return predicted_result_df, trained_model
 
     def calc_metrics(self):
@@ -282,17 +294,12 @@ class ModelEvaluator:
 
         :return: triple - accuracy, f1_score, confusion_matrix
         """
-        true_and_pred_df = self.true_winner_df.join(self.predicted_result_df)
-        for index, row in true_and_pred_df.iterrows():
-            # cut off percentages
-            true_and_pred_df.loc[index, 'predicted_result'] = \
-                row['predicted_result'].split(':', 1)[0]
-
-        true_winner = true_and_pred_df['true_winner']
-        predicted_winner = true_and_pred_df['predicted_result']
+        true_winner = self.true_winner_df['true_winner']
+        predicted_winner = self.predicted_result_df['predicted_result']
         accuracy = skm.accuracy_score(true_winner, predicted_winner)
+        # F1 = Calculate metrics for each label, and find their unweighted mean
         f1_score = skm.f1_score(true_winner, predicted_winner,
-                                average='weighted')
+                                average='macro', zero_division=0)
         conf_matrix = skm.confusion_matrix(true_winner, predicted_winner)
         return accuracy, f1_score, conf_matrix
 
@@ -314,7 +321,8 @@ class ModelEvaluator:
         print("Model: " + self.modelname)
         print("Accuracy (proportion of correct testset predictions): "
               + green + "{:.1%}".format(self.accuracy) + end)
-        print("F1-score (weighted average of the precision and recall): "
+        print("F1-score (mean of the weighted average of"
+              " precision and recall per class): "
               + green + "{:.1%}".format(self.f1_score) + end)
         print("Size of: Trainset: " + str(len(self.trainset_df.index))
               + " ({:.1%}".format(len(self.trainset_df.index)
@@ -324,6 +332,11 @@ class ModelEvaluator:
                                     / len(self.data_df.index)) + ")")
         print("")
 
+        print(yellow + 'Performance per class' + end)
+        print(skm.classification_report(
+            self.true_winner_df, self.predicted_result_df,
+            digits=3, zero_division=0))
+
         if self.modelname == 'PoissonModel' or \
                 self.modelname == 'BettingPoissonModel':
             # only the PoissonModel has this functionality
@@ -331,22 +344,17 @@ class ModelEvaluator:
             print("The given coefficients are an unaltered result "
                   "of the PoissonModel training")
             print("and do NOT represent actual wins or true rankings")
+            print("")
             self.model.team_ranking_df.index += 1  # adjust index for printing
             print(self.model.team_ranking_df.to_markdown())
 
         if print_plot:
-            true_and_pred_df = \
-                self.true_winner_df.join(self.predicted_result_df)
-            for index, row in true_and_pred_df.iterrows():
-                # cut off percentages
-                true_and_pred_df.loc[index, 'predicted_result'] = \
-                    row['predicted_result'].split(':', 1)[0]
-
-            true_winner = true_and_pred_df['true_winner']
+            true_winner = self.true_winner_df['true_winner']
             labels = true_winner.drop_duplicates().sort_values()
-            skm.ConfusionMatrixDisplay(self.conf_matrix, labels).plot()
+            skm.ConfusionMatrixDisplay(
+                self.conf_matrix, display_labels=labels).plot(cmap='Greys')
             plt.title('Confusion matrix: ' + self.modelname)
-            plt.xticks(rotation=90)
+            plt.xticks(rotation=45)
             plt.xlabel('Predicted winner')
             plt.ylabel('True winner')
             plt.tight_layout()
@@ -382,15 +390,6 @@ class ModelCompare:
 
         :return: int - kappa_score
         """
-        for index, row in self.model1.predicted_result_df.iterrows():
-            # cut off percentages
-            self.model1.predicted_result_df.loc[index, 'predicted_result'] = \
-                row['predicted_result'].split(':', 1)[0]
-        for index, row in self.model2.predicted_result_df.iterrows():
-            # cut off percentages
-            self.model2.predicted_result_df.loc[index, 'predicted_result'] = \
-                row['predicted_result'].split(':', 1)[0]
-
         model1_pred = self.model1.predicted_result_df
         model2_pred = self.model2.predicted_result_df
         kappa_score = skm.cohen_kappa_score(model1_pred, model2_pred)
@@ -457,6 +456,16 @@ class ModelCompare:
         print("Better F1-score: " + bold + self.better_f1_mod + end
               + " by " + green + "{:.1%}".format(self.f1_diff) + end)
         print("")
+        print("Cohen's kappa: " + yellow
+              + str(round(self.kappa, 2)) + end)
+        print(bold + "Interpretation guide:" + end)
+        print(
+            '''    kappa < 0 = no agreement
+    0.00 – 0.20 = slight
+    0.21 – 0.40 = fair
+    0.41 – 0.60 = moderate
+    0.61 – 0.80 = substantial
+    0.81 – 1.00 = almost perfect agreement''')
 
 
 class WholeDataFrequencies:
@@ -535,3 +544,10 @@ class WholeDataFrequencies:
         else:
             self.guest_team_avg_goals = (sum_of_guest_team_goals
                                          / num_of_guest_team_games)
+
+
+# testset = crawler.fetch_data([1, 2003], [34, 2019])
+# ModelEvaluator("FrequencyModel", testset, 90).print_results(True)
+# ModelCompare("FrequencyModel", "PoissonModel", testset, 90).print_results()
+# ModelByTimespan(["BettingPoissonModel", "PoissonModel", "FrequencyModel"],
+# 90, 2003, 2019).multiple_models_f1(True)
