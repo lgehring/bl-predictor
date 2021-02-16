@@ -31,16 +31,18 @@ class MainWindow:
 
 
         :param str test: str or none. Put in "test" for an objekt to be
-            tested. None otherwise. For a test objekt there is no implementation
-            of a mainloop.
+            tested. None otherwise. For a test objekt there is no
+            implementation of a mainloop.
 
         :type self:
         """
 
         self.test = test
         self.root = tk.Tk()
+
         self.left = tk.Frame(self.root)
-        self.left.grid(row=2, column=7, padx=2, pady=5, rowspan=40, sticky=tk.N)
+        self.left.grid(row=2, column=7, padx=2, pady=5, rowspan=40,
+                       sticky=tk.N)
         self.result_label = tk.Label(self.root,
                                      text="Results")
 
@@ -59,13 +61,15 @@ class MainWindow:
         two teams that will be compared
         """
         self.root.title("Bl-predictor GUI")
+        self.root.geometry("1400x700")
         self.root.state('zoomed')
 
         self._upcoming_matchday()
         self._timeframe_slider()
 
         self.result_label.configure(font="Verdana 20 underline")
-        self.result_label.grid(row=1, column=7, padx=200, pady=40)
+        self.result_label.grid(row=1, column=7, padx=180, pady=10,
+                               sticky=tk.S)
 
         if self.test != "test":
             self.root.mainloop()
@@ -78,7 +82,7 @@ class MainWindow:
         """
         now = date.today()
         self.date_label = tk.Label(text=now)
-        self.date_label.grid(row=0, columnspan=2, sticky=tk.W)
+        self.date_label.grid(row=0, columnspan=2, padx=3, pady=10, sticky=tk.W)
 
         # signals crawler to crawl unfinished matches
         current_season = crawler.fetch_data([0, 0], [0, 0])
@@ -98,11 +102,13 @@ class MainWindow:
             tk.Label(
                 text="Upcoming Matchday: Matchday " + str(upcoming_matchday),
                 font=("Calibri Light", 30))
-        matchday_label.grid(pady=padding, padx=15, row=1, column=1, columnspan=3, sticky=tk.NS)
+        matchday_label.grid(pady=padding, padx=15, row=1, column=1,
+                            columnspan=3, sticky=tk.NS)
 
         matchdaygames_label = tk.Label(text="Upcoming Matches: ",
                                        font=("Calibri Light", 25))
-        matchdaygames_label.grid(pady=padding, padx=15, row=2, column=1, columnspan=3)
+        matchdaygames_label.grid(pady=padding, padx=15, row=2, column=1,
+                                 columnspan=3)
 
         # path of gui.py
         # gui_path = os.path.abspath(__file__)
@@ -148,7 +154,7 @@ class MainWindow:
             versus_label.grid(pady=padding, row=2 + rowcount, column=2)
             # self.panel2.grid(row=2 * i, column=3)
             guest_label.grid(pady=padding, row=2 + rowcount,
-                             column=3, sticky=tk.W)
+                             column=3, sticky=tk.W,)
             rowcount += 1
 
             self.root.grid_columnconfigure(0, weight=1)
