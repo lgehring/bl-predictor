@@ -4,7 +4,6 @@ This file is used for testing model evaluators in a variety of cases
 import pandas as pd
 import pytest
 
-from bl_predictor import crawler
 from bl_predictor import prediction_evaluation
 
 norm_train = pd.DataFrame([
@@ -52,27 +51,48 @@ draw_train = pd.DataFrame([
 ], columns=[
     'home_team', 'home_score', 'guest_score', 'guest_team'])
 
-test_crawler_data = crawler.fetch_data([1, 2018], [34, 2019])
-
 FMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: FrequencyModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
+
+\x1b[93mPerformance per class\x1b[0m
+              precision    recall  f1-score   support
+
+        draw      0.000     0.000     0.000       1.0
+  guest_team      0.000     0.000     0.000       0.0
+   home_team      0.000     0.000     0.000       1.0
+
+    accuracy                          0.000       2.0
+   macro avg      0.000     0.000     0.000       2.0
+weighted avg      0.000     0.000     0.000       2.0
 
 """
 
 PMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: PoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
+
+\x1b[93mPerformance per class\x1b[0m
+              precision    recall  f1-score   support
+
+        draw      0.000     0.000     0.000       1.0
+  guest_team      0.000     0.000     0.000       0.0
+   home_team      0.000     0.000     0.000       1.0
+
+    accuracy                          0.000       2.0
+   macro avg      0.000     0.000     0.000       2.0
+weighted avg      0.000     0.000     0.000       2.0
 
 \x1b[93mTeam Ranking\x1b[0m
 The given coefficients are an unaltered result of the PoissonModel training
 and do NOT represent actual wins or true rankings
+
 |    |   home_coef | hometeam_ranking   | guestteam_ranking   |   guest_coef |
 |---:|------------:|:-------------------|:--------------------|-------------:|
 |  1 |      1.5166 | C                  | C                   |      -1.5166 |
@@ -82,13 +102,25 @@ and do NOT represent actual wins or true rankings
 BPMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: BettingPoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (weighted average of the precision and recall): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
+
+\x1b[93mPerformance per class\x1b[0m
+              precision    recall  f1-score   support
+
+        draw      0.000     0.000     0.000       1.0
+  guest_team      0.000     0.000     0.000       0.0
+   home_team      0.000     0.000     0.000       1.0
+
+    accuracy                          0.000       2.0
+   macro avg      0.000     0.000     0.000       2.0
+weighted avg      0.000     0.000     0.000       2.0
 
 \x1b[93mTeam Ranking\x1b[0m
 The given coefficients are an unaltered result of the PoissonModel training
 and do NOT represent actual wins or true rankings
+
 |    |   home_coef | hometeam_ranking   | guestteam_ranking   |   guest_coef |
 |---:|------------:|:-------------------|:--------------------|-------------:|
 |  1 |      1.5166 | C                  | C                   |      -1.5166 |
@@ -109,6 +141,40 @@ def test_evaluator(modelname, trainset, testset_size, result, capfd):
                                          testset_size).print_results()
     out, err = capfd.readouterr()
     assert out == result
+
+
+# ModelCompare testsuite
+@pytest.mark.parametrize(
+    "modelname1,modelname2,trainset,testset_size, model1, model2",
+    [("FrequencyModel", "PoissonModel", norm_train, 2,
+      "FrequencyModel", "PoissonModel"),
+     ("PoissonModel", "BettingPoissonModel", norm_train, 2,
+      "PoissonModel", "BettingPoissonModel"),
+     ])
+def test_compare(modelname1, modelname2,
+                 trainset, testset_size, model1, model2, capfd):
+    prediction_evaluation.ModelCompare(modelname1,
+                                       modelname2,
+                                       trainset,
+                                       testset_size).print_results()
+    out, err = capfd.readouterr()
+    assert model1 in out
+    assert model2 in out
+
+
+# ModelByTimespan testsuite
+@pytest.mark.parametrize(
+    "modelnames,testset_size,start_year,end_year",
+    [(["PoissonModel", "FrequencyModel"],
+      10, 2019, 2019),
+     ])
+def test_timespan(modelnames,
+                  testset_size, start_year, end_year, capfd):
+    result = prediction_evaluation.ModelByTimespan(modelnames,
+                                                   testset_size,
+                                                   start_year, end_year)
+    assert result.multiple_accuracy_df is not None
+    assert result.multiple_f1_df is not None
 
 
 # WholeDataFrequencies testsuite
