@@ -4,7 +4,7 @@ This module contains the GUI code.
 
 import datetime
 import inspect
-import os
+# import os
 import tkinter as tk
 from datetime import date
 
@@ -122,7 +122,8 @@ class MainWindow:
                     matchday['date_time'][i] != matchday['date_time'][i - 1]:
                 day_label = tk.Label(text=matchday['date_time'][i],
                                      font=("Calibri Light", 13))
-                day_label.grid(pady=padding, row=2 + rowcount, column=1, columnspan=3)
+                day_label.grid(pady=padding, row=2 + rowcount,
+                               column=1, columnspan=3)
                 rowcount += 1
             # shows match
             home_label = tk.Label(text=matchday['home_team'][i],
@@ -132,11 +133,13 @@ class MainWindow:
             guest_label = tk.Label(text=matchday['guest_team'][i],
                                    font=("Calibri Light", 13))
 
-            home_label.grid(pady=padding, row=2 + rowcount, column=1, sticky=tk.E)
+            home_label.grid(pady=padding, row=2 + rowcount,
+                            column=1, sticky=tk.E)
             # self.panel1.grid(row=2 * i, column=1)
             versus_label.grid(pady=padding, row=2 + rowcount, column=2)
             # self.panel2.grid(row=2 * i, column=3)
-            guest_label.grid(pady=padding, row=2 + rowcount, column=3, sticky=tk.W)
+            guest_label.grid(pady=padding, row=2 + rowcount,
+                             column=3, sticky=tk.W)
             rowcount += 1
 
             self.root.grid_columnconfigure(0, weight=1)
@@ -156,7 +159,7 @@ class MainWindow:
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
-                                       datetime.datetime.now().year-1],
+                                       datetime.datetime.now().year - 1],
                              show_value=True)
         self.slider.grid(row=2, column=4)
         self._activate_crawler()
