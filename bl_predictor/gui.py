@@ -107,7 +107,8 @@ class MainWindow:
             # self.image1 = Image.open(
             #    dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
             # self.image2 = Image.open(
-            #    dir_path + "/team_logos/" + matchday['guest_team'][i] + ".png")
+            #    dir_path + "/team_logos/" + matchday['guest_team'][i]
+            #    + ".png")
             # self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
             # self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
             # self.img1 = ImageTk.PhotoImage(self.image1)
