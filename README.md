@@ -6,7 +6,8 @@
 [![PyPI](https://img.shields.io/pypi/v/bl-predictor)](https://pypi.org/project/bl-predictor/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)  
 [![pytest](https://github.com/lgehring/bl-predictor/workflows/pytest/badge.svg)](https://github.com/lgehring/bl-predictor/tree/main/tests) 
-[![flake8](https://github.com/lgehring/bl-predictor/workflows/pep8/badge.svg)](https://www.python.org/dev/peps/pep-0008/)  
+[![flake8](https://github.com/lgehring/bl-predictor/workflows/pep8/badge.svg)](https://www.python.org/dev/peps/pep-0008/)
+[![CodeQL](https://github.com/lgehring/bl-predictor/workflows/CodeQL/badge.svg)](https://codeql.github.com/docs/codeql-overview/)  
 
 -------------
 #Documentation
