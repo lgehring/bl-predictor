@@ -27,10 +27,7 @@ class MainWindow:
             tested. None otherwise. For a test objekt there is no implmentation
             of a mainloop. """
 
-        # Do to an _tkinter.TclError that accurs only on github.
-        if os.environ.get('DISPLAY', '') == '':
-            print('no display found. Using :0.0')
-            os.environ.__setitem__('DISPLAY', ':0.0')
+
 
         self.test = test
         self.root = tk.Tk()
