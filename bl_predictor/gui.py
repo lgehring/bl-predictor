@@ -7,6 +7,7 @@ import inspect
 import tkinter as tk
 import tkinter.ttk as ttk
 from ttkthemes import ThemedStyle
+from ttkthemes import ThemedTk
 from datetime import date
 
 import pandas as pd
@@ -28,6 +29,7 @@ class MainWindow:
         Init MainClass.
 
         Initializes interpreter and creates root window.
+        Sets the theme
         Stores crawled data.
         Stores the home- and guest-team.
 
@@ -92,7 +94,7 @@ class MainWindow:
 
         switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
-        switch_theme_menu.add_command(label="dark Mode", command=self.donothing)
+        switch_theme_menu.add_command(label="Dark Mode", command=self.donothing)
         switch_theme_menu.add_command(label="Default Mode", command=self.donothing)
 
     def night_on(self):
@@ -430,7 +432,7 @@ class MainWindow:
     def _reset_model_button(self):
         self.reset_model_button = ttk.Button(
             self.root,
-            text="chose new model",
+            text="choose new model",
             command=self._reset_model)
         self.reset_model_button.grid(row=13, column=5)
 
