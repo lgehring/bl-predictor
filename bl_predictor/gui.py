@@ -280,6 +280,7 @@ class MainWindow:
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
         self.model_opt = ttk.OptionMenu(self.root, self.model_variable,
+                                       model_list[0],
                                        *model_list)
         self.model_opt.grid(row=6, column=4, columnspan=3)
 
@@ -336,6 +337,7 @@ class MainWindow:
         self.picked_home_team = tk.StringVar(self.root)
         self.picked_home_team.set(option_list[0])
         self.ht_opt = ttk.OptionMenu(self.root, self.picked_home_team,
+                                    option_list[0],
                                     *option_list)
         self.ht_opt.grid(row=9, column=4, columnspan=3)
 
@@ -346,6 +348,7 @@ class MainWindow:
         self.picked_guest_team = tk.StringVar(self.root)
         self.picked_guest_team.set(option_list[0])
         self.gt_opt = ttk.OptionMenu(self.root, self.picked_guest_team,
+                                    option_list[0],
                                     *option_list)
         self.gt_opt.grid(row=11, column=4, columnspan=3)
 
