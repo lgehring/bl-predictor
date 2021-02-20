@@ -92,7 +92,7 @@ class MainWindow:
 
         switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
-        switch_theme_menu.add_command(label="Night Mode", command=self.donothing)
+        switch_theme_menu.add_command(label="dark Mode", command=self.donothing)
         switch_theme_menu.add_command(label="Default Mode", command=self.donothing)
 
     def night_on(self):
