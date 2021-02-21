@@ -206,12 +206,12 @@ class MainWindow:
         date_label.grid(row=1, column=4, columnspan=3)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
-        self.slider = Slider(self.root, width=400,
+        self.slider = Slider(self.root, width=300,
                              height=60,
                              #fg="#a6a6a6",
                              #bg="#464646",
                              min_val=first_recorded_bl_year,
-                             max_val=datetime.datetime.now().year,
+                             max_val=datetime.datetime.now().year - 1,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
                                        datetime.datetime.now().year - 1],
                              show_value=True)
@@ -319,9 +319,9 @@ class MainWindow:
                                    )
 
         self.result_model_label = ttk.Label(self.left,
-                                           text=("calculated with: "
-                                                 + self.model_variable.get()
-                                                 ))
+                                            text=("\nCalculated with: "
+                                                  + self.model_variable.get()
+                                                  ))
         self.result_model_label.configure(font="Verdana 12 bold")
         self.result_model_label.pack(in_=self.left)
         # Show team selection menu
