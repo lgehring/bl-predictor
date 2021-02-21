@@ -4,9 +4,12 @@ This module contains the GUI code.
 
 import datetime
 import inspect
+import os
+from os import path
 import tkinter as tk
 import tkinter.ttk as ttk
 from ttkthemes import ThemedStyle
+from PIL import ImageTk, Image
 
 from datetime import date
 
@@ -29,13 +32,14 @@ class MainWindow:
         Init MainClass.
 
         Initializes interpreter and creates root window.
+        Sets the application logo as icon for the root window.
         Sets the theme
         Stores crawled data.
         Stores the home- and guest-team.
 
 
-        :param str test: str or none. Put in "test" for an objekt to be
-            tested. None otherwise. For a test objekt there is no
+        :param str test: str or none. Put in "test" for an object to be
+            tested. None otherwise. For a test object there is no
             implementation of a mainloop.
 
         :type self:
@@ -66,13 +70,17 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("1400x700")
         self.root.state('zoomed')
-
+        # Sets the theme
         style = ThemedStyle(self.root)
         style.set_theme("arc")
         self.root.config(bg="#f5f6f7")
+        # Sets the logo
+        logo = tk.PhotoImage(file='bl-predictor_logo.png')
+        self.root.iconphoto(False, logo)
 
         self._menu_bar()
         self._upcoming_matchday()
+        self._blpredictor_logo()
         self._timeframe_slider()
 
         self.result_label.configure(font="Verdana 20 underline")
@@ -143,7 +151,7 @@ class MainWindow:
                             columnspan=3, sticky=tk.NS)
 
         matchdaygames_label = ttk.Label(text="Upcoming Matches: ",
-                                       font=("Calibri Light", 25))
+                                        font=("Calibri Light", 25))
         matchdaygames_label.grid(pady=padding, padx=15, row=2, column=1,
                                  columnspan=3)
 
@@ -173,17 +181,17 @@ class MainWindow:
             if i == first_game or \
                     matchday['date_time'][i] != matchday['date_time'][i - 1]:
                 day_label = ttk.Label(text=matchday['date_time'][i],
-                                     font=("Calibri Light", 13))
+                                      font=("Calibri Light", 13))
                 day_label.grid(pady=padding, row=2 + rowcount,
                                column=1, columnspan=3)
                 rowcount += 1
             # shows match
             home_label = ttk.Label(text=matchday['home_team'][i],
-                                  font=("Calibri Light", 13))
-            versus_label = ttk.Label(text=" vs ",
-                                    font=("Calibri Light", 13))
-            guest_label = ttk.Label(text=matchday['guest_team'][i],
                                    font=("Calibri Light", 13))
+            versus_label = ttk.Label(text=" vs ",
+                                     font=("Calibri Light", 13))
+            guest_label = ttk.Label(text=matchday['guest_team'][i],
+                                    font=("Calibri Light", 13))
 
             home_label.grid(pady=padding, row=2 + rowcount,
                             column=1, sticky=tk.E)
@@ -191,25 +199,41 @@ class MainWindow:
             versus_label.grid(pady=padding, row=2 + rowcount, column=2)
             # self.panel2.grid(row=2 * i, column=3)
             guest_label.grid(pady=padding, row=2 + rowcount,
-                             column=3, sticky=tk.W,)
+                             column=3, sticky=tk.W, )
             rowcount += 1
 
             self.root.grid_columnconfigure(0, weight=1)
             self.root.grid_columnconfigure(4, weight=1)
+
+    def _blpredictor_logo(self):
+        """
+        Adds the application logo and packs it in the bottom left of the window
+        """
+        logo_path = tk.PhotoImage(file="bl-predictor_logo.png")
+        logo_path_pack = ttk.Label(self.root, image=logo_path)
+        #self.root.
+        logo_path_pack.grid(row=2, columnspan=2, padx=3, pady=10, sticky=tk.SW)
+        #logo_path = os.path.dirname(__file__)
+        #predictor_logo_image = Image.open(logo_path + r"\bl-predictor_logo.png")
+        #predictor_logo_label = tk.Label(predictor_logo_image)
+        #predictor_logo_image.place(x=tk.S, y=tk.W)
+
+        #predictor_logo_label.place(x=tk.S, y=tk.W)
+        #pass
 
     def _timeframe_slider(self):
         """
         Builds a slider ro adjust the to crawl period.
         """
         date_label = ttk.Label(text="Choose a period of time:",
-                              font=("Calibri Light", 13))
+                               font=("Calibri Light", 13))
         date_label.grid(row=1, column=4, columnspan=3)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=300,
                              height=60,
-                             #fg="#a6a6a6",
-                             #bg="#464646",
+                             # fg="#a6a6a6",
+                             # bg="#464646",
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year - 1,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
@@ -231,7 +255,7 @@ class MainWindow:
         self.act_crawler_button = ttk.Button(
             self.root,
             text="Download Data",
-            #font=("Calibri Light", 13),
+            # font=("Calibri Light", 13),
             command=self._activate_crawler_helper)
         self.act_crawler_button.grid(row=4, column=4, columnspan=3)
 
@@ -254,18 +278,18 @@ class MainWindow:
                                                [last_day_of_season,
                                                 int(self.slider_last_value)])
         self.act_crawler_button.config(text='Download complete'
-                                       #,background='green'
-                                      )
+                                       # ,background='green'
+                                       )
         # add time range label to results
         self.time_range_label = ttk.Label(self.left,
                                           text=("\nTime range: "
                                                 + "1st of "
                                                 + str(int(
-                                                     self.slider_first_value))
+                                                      self.slider_first_value))
                                                 + " until "
                                                   "34th of " + str(int(
-                                                     self.slider_last_value)))
-                                         )
+                                                      self.slider_last_value)))
+                                          )
         self.time_range_label.configure(font="Verdana 12 bold")
         self.time_range_label.pack(in_=self.left)
         # Show model selection menu
@@ -290,8 +314,8 @@ class MainWindow:
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
         self.model_opt = ttk.OptionMenu(self.root, self.model_variable,
-                                       model_list[0],
-                                       *model_list)
+                                        model_list[0],
+                                        *model_list)
         self.model_opt.grid(row=6, column=4, columnspan=3)
 
         # Show train model button
@@ -315,8 +339,8 @@ class MainWindow:
         self.trained_model = getattr(models, self.model_variable.get())(
             self.crawler_data)
         self.train_ml_button.config(text='Model trained'
-                                    #,background='green'
-                                   )
+                                    # ,background='green'
+                                    )
 
         self.result_model_label = ttk.Label(self.left,
                                             text=("\nCalculated with: "
@@ -347,8 +371,8 @@ class MainWindow:
         self.picked_home_team = tk.StringVar(self.root)
         self.picked_home_team.set(option_list[0])
         self.ht_opt = ttk.OptionMenu(self.root, self.picked_home_team,
-                                    option_list[0],
-                                    *option_list)
+                                     option_list[0],
+                                     *option_list)
         self.ht_opt.grid(row=9, column=4, columnspan=3)
 
         # guest team dropdown list
@@ -358,8 +382,8 @@ class MainWindow:
         self.picked_guest_team = tk.StringVar(self.root)
         self.picked_guest_team.set(option_list[0])
         self.gt_opt = ttk.OptionMenu(self.root, self.picked_guest_team,
-                                    option_list[0],
-                                    *option_list)
+                                     option_list[0],
+                                     *option_list)
         self.gt_opt.grid(row=11, column=4, columnspan=3)
 
         # Show prediction button
@@ -385,8 +409,8 @@ class MainWindow:
             self.picked_home_team.get(),
             self.picked_guest_team.get())
         self.prediction_button.config(text='Winner predicted'
-                                      #,background='green'
-                                     )
+                                      # ,background='green'
+                                      )
         # delete first result, if too many for window
         result_frame_y = self.left.winfo_height()
         high_window = 500
@@ -408,10 +432,10 @@ class MainWindow:
 
         self.prediction = ttk.Label(self.left)
 
-        self.prediction.configure(text=(self.picked_home_team.get() + " vs "
-                                        + self.picked_guest_team.get()
-                                        + ": "
-                                        + self.winner))
+        self.prediction.configure(text="\n" + (self.picked_home_team.get() + " vs "
+                                               + self.picked_guest_team.get()
+                                               + ": "
+                                               + self.winner))
         self.prediction.pack(in_=self.left)
         self._reset_teams_button()
         self._reset_button()
