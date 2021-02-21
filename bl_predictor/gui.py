@@ -7,7 +7,7 @@ import inspect
 import tkinter as tk
 import tkinter.ttk as ttk
 from ttkthemes import ThemedStyle
-from ttkthemes import ThemedTk
+
 from datetime import date
 
 import pandas as pd
@@ -43,8 +43,9 @@ class MainWindow:
 
         self.test = test
         self.root = tk.Tk()
-        style = ThemedStyle(self.root)
-        style.set_theme("equilux")
+        #style = ThemedStyle(self.root)
+        #style.set_theme("arc")
+        #self.root.config(bg="SystemButtonFace")
 
         self.left = ttk.Frame(self.root)
         self.left.grid(row=2, column=7, padx=2, pady=5, rowspan=40,
@@ -70,6 +71,10 @@ class MainWindow:
         self.root.geometry("1400x700")
         self.root.state('zoomed')
 
+        style = ThemedStyle(self.root)
+        style.set_theme("arc")
+        self.root.config(bg="SystemButtonFace")
+
         self._menu_bar()
         self._upcoming_matchday()
         self._timeframe_slider()
@@ -94,14 +99,19 @@ class MainWindow:
 
         switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
-        switch_theme_menu.add_command(label="Dark Mode", command=self.donothing)
-        switch_theme_menu.add_command(label="Default Mode", command=self.donothing)
+        switch_theme_menu.add_command(label="Dark Mode", command=self.night_on)
+        switch_theme_menu.add_command(label="Default Mode", command=self.night_off)
 
     def night_on(self):
-        pass
+        style = ThemedStyle(self.root)
+        style.set_theme("equilux")
+        self.root.config(bg='black')
 
     def night_off(self):
-        pass
+        style = ThemedStyle(self.root)
+        style.set_theme("arc")
+        self.root.config(bg='SystemButtonFace')
+
 
     def _upcoming_matchday(self):
         """
@@ -200,6 +210,8 @@ class MainWindow:
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=400,
                              height=60,
+                             #fg="#a6a6a6",
+                             #bg="#464646",
                              min_val=first_recorded_bl_year,
                              max_val=datetime.datetime.now().year,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
