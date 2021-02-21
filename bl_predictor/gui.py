@@ -43,10 +43,6 @@ class MainWindow:
 
         self.test = test
         self.root = tk.Tk()
-        #style = ThemedStyle(self.root)
-        #style.set_theme("arc")
-        #self.root.config(bg="SystemButtonFace")
-
         self.left = ttk.Frame(self.root)
         self.left.grid(row=2, column=7, padx=2, pady=5, rowspan=40,
                        sticky=tk.N)
@@ -108,16 +104,15 @@ class MainWindow:
         """
         style = ThemedStyle(self.root)
         style.set_theme("equilux")
-        self.root.config(bg='black')
+        self.root.config(bg="#464646")
 
     def night_off(self):
         """
-        Button to deactivate Dark Mode Theme
+        Button to go back to Default Mode
         """
         style = ThemedStyle(self.root)
         style.set_theme("arc")
         self.root.config(bg='SystemButtonFace')
-
 
     def _upcoming_matchday(self):
         """
