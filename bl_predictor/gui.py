@@ -82,9 +82,6 @@ class MainWindow:
         if self.test != "test":
             self.root.mainloop()
 
-    def donothing(self):
-        x = 0
-
     def _menu_bar(self):
         """
         Adds a menu bar for the main window, with "Exit" and "Switch Theme" buttons
