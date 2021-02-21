@@ -103,11 +103,17 @@ class MainWindow:
         switch_theme_menu.add_command(label="Default Mode", command=self.night_off)
 
     def night_on(self):
+        """
+        Button to activate Dark Mode Theme
+        """
         style = ThemedStyle(self.root)
         style.set_theme("equilux")
         self.root.config(bg='black')
 
     def night_off(self):
+        """
+        Button to deactivate Dark Mode Theme
+        """
         style = ThemedStyle(self.root)
         style.set_theme("arc")
         self.root.config(bg='SystemButtonFace')
