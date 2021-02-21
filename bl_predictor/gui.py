@@ -47,7 +47,7 @@ class MainWindow:
         self.left.grid(row=2, column=7, padx=2, pady=5, rowspan=40,
                        sticky=tk.N)
         self.result_label = ttk.Label(self.root,
-                                     text="Results")
+                                      text="Results")
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
@@ -69,7 +69,7 @@ class MainWindow:
 
         style = ThemedStyle(self.root)
         style.set_theme("arc")
-        self.root.config(bg="SystemButtonFace")
+        self.root.config(bg="#f5f6f7")
 
         self._menu_bar()
         self._upcoming_matchday()
@@ -109,7 +109,7 @@ class MainWindow:
         """
         style = ThemedStyle(self.root)
         style.set_theme("arc")
-        self.root.config(bg='SystemButtonFace')
+        self.root.config(bg="#f5f6f7")
 
     def _upcoming_matchday(self):
         """
@@ -258,15 +258,15 @@ class MainWindow:
                                       )
         # add time range label to results
         self.time_range_label = ttk.Label(self.left,
-                                         text=("\nTime range: "
-                                               + "1st of "
-                                               + str(int(
+                                          text=("\nTime range: "
+                                                + "1st of "
+                                                + str(int(
                                                      self.slider_first_value))
-                                               + " until "
-                                                 "34th of " + str(int(
+                                                + " until "
+                                                  "34th of " + str(int(
                                                      self.slider_last_value)))
                                          )
-        self.time_range_label.configure(font="Verdana 15 bold")
+        self.time_range_label.configure(font="Verdana 12 bold")
         self.time_range_label.pack(in_=self.left)
         # Show model selection menu
         self._choose_model()
@@ -322,7 +322,7 @@ class MainWindow:
                                            text=("calculated with: "
                                                  + self.model_variable.get()
                                                  ))
-        self.result_model_label.configure(font="Verdana 15 bold")
+        self.result_model_label.configure(font="Verdana 12 bold")
         self.result_model_label.pack(in_=self.left)
         # Show team selection menu
         self._choose_teams()
