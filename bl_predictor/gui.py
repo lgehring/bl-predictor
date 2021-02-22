@@ -28,7 +28,6 @@ class MainWindow:
 
     The GUI window can be shown with show_window()
     """
-
     def __init__(self, test):
         """
         Init MainClass.
@@ -46,7 +45,6 @@ class MainWindow:
 
         :type self:
         """
-
         self.test = test
         self.root = tk.Tk()
         self.left = ttk.Frame(self.root)
@@ -231,7 +229,9 @@ class MainWindow:
         Adds the application logo and packs it in the bottom left of the window
         """
         # Create a canvas
-        my_canvas_final = tk.Canvas(self.root, width=100, height=100, highlightthickness=0)
+        my_canvas_final = tk.Canvas(self.root, width=100,
+                                    height=100,
+                                    highlightthickness=0)
         my_canvas_final.grid(row=100, columnspan=3,
                              padx=3,
                              pady=58,
