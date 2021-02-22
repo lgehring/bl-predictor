@@ -48,7 +48,7 @@ class MainWindow:
         self.test = test
         self.root = tk.Tk()
         self.left = ttk.Frame(self.root)
-        self.left.grid(row=2, column=7, padx=2, pady=5, rowspan=40,
+        self.left.grid(row=3, column=7, padx=2, pady=5, rowspan=40,
                        sticky=tk.N)
         self.result_label = ttk.Label(self.root,
                                       text="Results")
@@ -127,7 +127,7 @@ class MainWindow:
         """
         now = date.today()
         self.date_label = ttk.Label(text=now)
-        self.date_label.grid(row=0, columnspan=2, padx=3, pady=10, sticky=tk.W)
+        self.date_label.grid(row=0, columnspan=2, padx=3, sticky=tk.W)
 
         # signals crawler to crawl unfinished matches
         current_season = crawler.fetch_data([0, 0], [0, 0])
@@ -209,10 +209,24 @@ class MainWindow:
         """
         Adds the application logo and packs it in the bottom left of the window
         """
+        # Create a canvas
+        my_canvas_empty = tk.Canvas(self.root, width=10, height=100, bg="#464646")
+        my_canvas_empty.grid(row=99, columnspan=2, padx=3, pady=10, sticky=tk.SW)
+        my_canvas_final = tk.Canvas(self.root, width=100, height=100)
+        my_canvas_final.grid(row=100, columnspan=2, padx=3, pady=10, sticky=tk.SW)
+        #my_canvas_final.pack(anchor="w", side="bottom")
+        #self.root.config(bg="#464646")
+        #self.root.config(bg="#f5f6f7")
+
+        logo_path = Image.open("bl-predictor_logo.png")
+        logo_path.resize((100, 100), Image.ANTIALIAS)
         logo_path = tk.PhotoImage(file="bl-predictor_logo.png")
-        logo_path_pack = ttk.Label(self.root, image=logo_path)
+        my_canvas_final.create_image(0, 0, image=logo_path, anchor="nw")
+        #logo_path_pack = ttk.Label(self.root, image=logo_path)
+        # Set image in canvas
+        #my_canvas.create_image(0, 0, image=logo_path, anchor="nw")
         #self.root.
-        logo_path_pack.grid(row=2, columnspan=2, padx=3, pady=10, sticky=tk.SW)
+        #logo_path_pack.grid(row=2, columnspan=2, padx=3, pady=10, sticky=tk.SW)
         #logo_path = os.path.dirname(__file__)
         #predictor_logo_image = Image.open(logo_path + r"\bl-predictor_logo.png")
         #predictor_logo_label = tk.Label(predictor_logo_image)
@@ -441,7 +455,7 @@ class MainWindow:
         self._reset_button()
         self._reset_model_button()
 
-        self.prediction_button.config(state=ttk.DISABLED)
+        self.prediction_button.config(state=tk.DISABLED)
 
     def _reset_teams_button(self):
         self.reset_teams_button = ttk.Button(
