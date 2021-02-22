@@ -19,9 +19,11 @@ from bl_predictor import crawler
 from bl_predictor import models
 from bl_predictor.gui_slider_widget import Slider
 
-# Keep track of current main window theme
-# global default_theme
+"""
+This boolean variable keeps track of current main window theme
+"""
 default_theme = True
+
 
 class MainWindow:
     """
@@ -125,8 +127,8 @@ class MainWindow:
         """
         style = ThemedStyle(self.root)
         style.set_theme("equilux")
-        self.root.config(bg="#464646") #equilux's background color is dark grey
-        #self._blpredictor_logo.config(bg="#464646")
+        self.root.config(bg="#464646")  # equilux's background color is dark grey
+        # self._blpredictor_logo.config(bg="#464646")
 
     def night_off(self):
         """
@@ -134,8 +136,8 @@ class MainWindow:
         """
         style = ThemedStyle(self.root)
         style.set_theme("arc")
-        self.root.config(bg="#f5f6f7") #arc's background color is almost white
-        #self._blpredictor_logo.config(bg="#f5f6f7")
+        self.root.config(bg="#f5f6f7")  # arc's background color is almost white
+        # self._blpredictor_logo.config(bg="#f5f6f7")
 
     def _upcoming_matchday(self):
         """
