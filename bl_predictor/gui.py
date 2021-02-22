@@ -4,16 +4,13 @@ This module contains the GUI code.
 
 import datetime
 import inspect
-import os
-from os import path
 import tkinter as tk
 import tkinter.ttk as ttk
-from ttkthemes import ThemedStyle
-from PIL import ImageTk, Image
-
 from datetime import date
 
 import pandas as pd
+from PIL import ImageTk, Image
+from ttkthemes import ThemedStyle
 
 from bl_predictor import crawler
 from bl_predictor import models
@@ -123,6 +120,10 @@ class MainWindow:
         style = ThemedStyle(self.root)
         style.set_theme("equilux")
         self.root.config(bg="#464646")  # equilux's background color is dark grey
+        #style_slider = ThemedStyle(self._timeframe_slider)
+        #style_slider.set_theme("equilux")
+        #style_logo = ThemedStyle(self._blpredictor_logo)
+        #style_logo.set_theme("equilux")
         #self._blpredictor_logo.config(bg="#464646")
 
     def night_off(self):
@@ -132,6 +133,10 @@ class MainWindow:
         style = ThemedStyle(self.root)
         style.set_theme("arc")
         self.root.config(bg="#f5f6f7")  # arc's background color is almost white
+        #style_slider = ThemedStyle(self._timeframe_slider)
+        #style_slider.set_theme("arc")
+        #style_logo = ThemedStyle(self._blpredictor_logo)
+        #style_logo.set_theme("arc")
         #self._blpredictor_logo.config(bg="#f5f6f7")
 
     def _upcoming_matchday(self):
