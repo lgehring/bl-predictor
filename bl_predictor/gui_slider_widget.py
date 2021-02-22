@@ -32,8 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from tkinter import Canvas
 from tkinter import Frame
 
-from ttkthemes import ThemedStyle
-
 
 class Slider(Frame):
     LINE_COLOR = "#476b6b"
@@ -73,8 +71,11 @@ class Slider(Frame):
             bar = {"Pos": pos, "Ids": ids, "Value": value}
             self.bars.append(bar)
 
-        self.canv = Canvas(self, height=self.canv_H, width=self.canv_W + 8, highlightthickness=0,
-                           #bg="#f5f6f7"
+        self.canv = Canvas(self,
+                           height=self.canv_H,
+                           width=self.canv_W + 8,
+                           highlightthickness=0,
+                           # bg="#f5f6f7"
                            )
         self.canv.pack()
         self.canv.bind("<Motion>", self._mouse_motion)
@@ -137,7 +138,7 @@ class Slider(Frame):
                                              text=format(
                                                  value,
                                                  Slider.DIGIT_PRECISION)
-                                             #, fill="#5c616c"
+                                             # , fill="#5c616c"
                                              )
             return [id_outer, id_inner, id_value]
         else:

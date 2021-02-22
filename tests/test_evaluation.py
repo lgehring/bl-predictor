@@ -54,7 +54,8 @@ draw_train = pd.DataFrame([
 FMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: FrequencyModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average
+of precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
 
@@ -74,7 +75,8 @@ weighted avg      0.000     0.000     0.000       2.0
 PMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: PoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of
+precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
 
@@ -102,7 +104,8 @@ and do NOT represent actual wins or true rankings
 BPMOutput = """\x1b[4m\x1b[1m\x1b[36mEvaluation Results\x1b[0m
 Model: BettingPoissonModel
 Accuracy (proportion of correct testset predictions): \x1b[92m0.0%\x1b[0m
-F1-score (mean of the weighted average of precision and recall per class): \x1b[92m0.0%\x1b[0m
+F1-score (mean of the weighted average of
+precision and recall per class): \x1b[92m0.0%\x1b[0m
 Size of: Trainset: 4 (66.7%)
          Testset:  2   (33.3%)
 
