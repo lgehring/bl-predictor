@@ -1,2 +1,12 @@
 # takes packages from setup.py
  -e .
+
+pandas~=1.1.5
+pytest~=6.1.2
+setuptools~=51.1.2
+pillow~=8.1.0
+ttkthemes~=2.3.0
+numpy~=1.19.2
+statsmodels~=0.12.1
+scipy~=1.5.2
+requests~=2.24.0
