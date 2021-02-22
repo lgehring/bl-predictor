@@ -20,7 +20,7 @@ from bl_predictor import models
 from bl_predictor.gui_slider_widget import Slider
 
 """
-This boolean variable keeps track of current main window theme
+This boolean variable keeps track of the current main window theme
 """
 default_theme = True
 
@@ -102,12 +102,7 @@ class MainWindow:
         menu_bar = tk.Menu(self.root)
         self.root.config(menu=menu_bar)
         menu_bar.add_cascade(label="Exit", command=self.root.destroy)
-
-        switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
-        # menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
         menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
-        # switch_theme_menu.add_command(label="Dark Mode", command=self.night_on)
-        # switch_theme_menu.add_command(label="Default Mode", command=self.night_off)
 
     def switch_theme(self):
         """
@@ -128,7 +123,7 @@ class MainWindow:
         style = ThemedStyle(self.root)
         style.set_theme("equilux")
         self.root.config(bg="#464646")  # equilux's background color is dark grey
-        # self._blpredictor_logo.config(bg="#464646")
+        #self._blpredictor_logo.config(bg="#464646")
 
     def night_off(self):
         """
@@ -137,7 +132,7 @@ class MainWindow:
         style = ThemedStyle(self.root)
         style.set_theme("arc")
         self.root.config(bg="#f5f6f7")  # arc's background color is almost white
-        # self._blpredictor_logo.config(bg="#f5f6f7")
+        #self._blpredictor_logo.config(bg="#f5f6f7")
 
     def _upcoming_matchday(self):
         """
@@ -230,30 +225,17 @@ class MainWindow:
         Adds the application logo and packs it in the bottom left of the window
         """
         # Create a canvas
-        # my_canvas_empty = tk.Canvas(self.root, width=10, height=100, bg="#464646")
-        # my_canvas_empty.grid(row=99, columnspan=3, padx=3, pady=10, sticky=tk.SW)
-        my_canvas_final = tk.Canvas(self.root, width=100, height=100, bg="#464646")
-        my_canvas_final.grid(row=100, columnspan=3, padx=3, pady=10, sticky=tk.SW)
-        # my_canvas_final.pack(anchor="w", side="bottom")
-        # self.root.config(bg="#464646")
-        # self.root.config(bg="#f5f6f7")
+        my_canvas_final = tk.Canvas(self.root, width=100, height=100, highlightthickness=0)
+        my_canvas_final.grid(row=100, columnspan=3,
+                             padx=3,
+                             pady=58,
+                             sticky="sw")
 
-        logo_path = Image.open("bl-predictor_logo.png")
-        logo_resized = logo_path.resize((100, 100), Image.ANTIALIAS)
-        logo_final = ImageTk.PhotoImage(logo_resized)
-        my_canvas_final.create_image(0, 0, image=logo_final, anchor="nw")
-        # logo_path_pack = ttk.Label(self.root, image=logo_path)
-        # Set image in canvas
-        # my_canvas.create_image(0, 0, image=logo_path, anchor="nw")
-        # self.root.
-        # logo_path_pack.grid(row=2, columnspan=2, padx=3, pady=10, sticky=tk.SW)
-        # logo_path = os.path.dirname(__file__)
-        # predictor_logo_image = Image.open(logo_path + r"\bl-predictor_logo.png")
-        # predictor_logo_label = tk.Label(predictor_logo_image)
-        # predictor_logo_image.place(x=tk.S, y=tk.W)
-
-        # predictor_logo_label.place(x=tk.S, y=tk.W)
-        # pass
+        # Import the logo image and put it in the canvas
+        self.logo_path = Image.open("bl-predictor_logo.png")
+        self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
+        self.logo_final = ImageTk.PhotoImage(self.logo_resized)
+        my_canvas_final.create_image(0, 0, image=self.logo_final, anchor="nw")
 
     def _timeframe_slider(self):
         """

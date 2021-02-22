@@ -71,7 +71,7 @@ class Slider(Frame):
             bar = {"Pos": pos, "Ids": ids, "Value": value}
             self.bars.append(bar)
 
-        self.canv = Canvas(self, height=self.canv_H, width=self.canv_W)
+        self.canv = Canvas(self, height=self.canv_H, width=self.canv_W + 8, highlightthickness=0, bg="#f5f6f7")
         self.canv.pack()
         self.canv.bind("<Motion>", self._mouse_motion)
         self.canv.bind("<B1-Motion>", self._move_bar)
@@ -132,7 +132,8 @@ class Slider(Frame):
                                              y_value,
                                              text=format(
                                                  value,
-                                                 Slider.DIGIT_PRECISION))
+                                                 Slider.DIGIT_PRECISION)
+                                             , fill="#5c616c")
             return [id_outer, id_inner, id_value]
         else:
             return [id_outer, id_inner]
