@@ -4,6 +4,7 @@ This module contains the GUI code.
 
 import datetime
 import inspect
+import os
 import tkinter as tk
 import tkinter.ttk as ttk
 from datetime import date
@@ -15,10 +16,6 @@ from ttkthemes import ThemedStyle
 from bl_predictor import crawler
 from bl_predictor import models
 from bl_predictor.gui_slider_widget import Slider
-
-
-# This boolean variable keeps track of the current main window theme
-DEFAULT_THEME = True
 
 
 class MainWindow:
@@ -56,6 +53,8 @@ class MainWindow:
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
         self.picked_guest_team = None
+        # This boolean variable keeps track of the current main window theme
+        self.default_theme = True
         self.show_window()
 
     def show_window(self):
@@ -75,7 +74,8 @@ class MainWindow:
         style.set_theme("arc")
         self.root.config(bg="#f5f6f7")
         # Sets the logo
-        logo = tk.PhotoImage(file='bl-predictor_logo.png')
+        logo = tk.PhotoImage(file=os.path.join(os.getcwd(),
+                                               "bl-predictor_logo.png"))
         self.root.iconphoto(False, logo)
 
         self._menu_bar()
@@ -120,13 +120,13 @@ class MainWindow:
         """
         Builds menu bar button functionality to switch between Themes
         """
-        global DEFAULT_THEME
-        if DEFAULT_THEME:
+        if self.default_theme:
+            self.default_theme = False
             self.night_on()
-            DEFAULT_THEME = False
         else:
+            self.default_theme = True
             self.night_off()
-            DEFAULT_THEME = True
+
 
     def night_on(self):
         """
@@ -138,6 +138,7 @@ class MainWindow:
             bg="#464646")  # equilux's background color is dark grey
         self.slider.change_canvas_colour("#464646")
         self.slider.canv.itemconfig(self.slider.id_value, fill="#a6a6a6")
+        self._blpredictor_logo()
 
     def night_off(self):
         """
@@ -149,6 +150,7 @@ class MainWindow:
             bg="#f5f6f7")  # arc's background color is almost white
         self.slider.change_canvas_colour("#f5f6f7")
         self.slider.canv.itemconfig(self.slider.id_value, fill="#5c616c")
+        self._blpredictor_logo()
 
     def _upcoming_matchday(self):
         """
@@ -245,13 +247,19 @@ class MainWindow:
                                     width=100,
                                     height=100,
                                     highlightthickness=0)
+        if self.default_theme:
+            my_canvas_final.config(bg='#f5f6f7')
+        else:
+            my_canvas_final.config(bg='#464646')
+
         my_canvas_final.grid(row=100, columnspan=3,
                              padx=3,
                              pady=58,
                              sticky="sw")
 
         # Import the logo image and put it in the canvas
-        self.logo_path = Image.open("bl-predictor_logo.png")
+        self.logo_path = Image.open(os.path.join(os.getcwd(),
+                                                 "bl-predictor_logo.png"))
         self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
         self.logo_final = ImageTk.PhotoImage(self.logo_resized)
         my_canvas_final.create_image(0, 0, image=self.logo_final, anchor="nw")
