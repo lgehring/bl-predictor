@@ -16,10 +16,9 @@ from bl_predictor import crawler
 from bl_predictor import models
 from bl_predictor.gui_slider_widget import Slider
 
-"""
-This boolean variable keeps track of the current main window theme
-"""
-default_theme = True
+
+# This boolean variable keeps track of the current main window theme
+DEFAULT_THEME = True
 
 
 class MainWindow:
@@ -101,36 +100,33 @@ class MainWindow:
         menu_bar.add_cascade(label="Exit", command=self.root.destroy)
         menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
 
-    # Todo can be deleted. Is a Version that works for mac
-    '''
-    def _menu_bar(self):
-         """
-         Adds a menu bar for the main window, with "Exit"
-         and "Switch Theme" buttons
-         """
-         menu_bar = tk.Menu(self.root)
-         self.root.config(menu=menu_bar)
-         menu_bar.add_cascade(label="Exit", command=self.root.destroy)
-
-         switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
-         menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
-         switch_theme_menu.add_command(
-         label="Night Mode", command=self.switch_theme)
-         switch_theme_menu.add_command(
-         label="Default Mode", command=self.switch_theme)
-    '''
+    # def _menu_bar(self):
+    #      """
+    #      Adds a menu bar for the main window, with "Exit"
+    #      and "Switch Theme" buttons
+    #      """
+    #      menu_bar = tk.Menu(self.root)
+    #      self.root.config(menu=menu_bar)
+    #      menu_bar.add_cascade(label="Exit", command=self.root.destroy)
+    #
+    #      switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
+    #      menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
+    #      switch_theme_menu.add_command(
+    #      label="Night Mode", command=self.switch_theme)
+    #      switch_theme_menu.add_command(
+    #      label="Default Mode", command=self.switch_theme)
 
     def switch_theme(self):
         """
         Builds menu bar button functionality to switch between Themes
         """
-        global default_theme
-        if default_theme:
+        global DEFAULT_THEME
+        if DEFAULT_THEME:
             self.night_on()
-            default_theme = False
+            DEFAULT_THEME = False
         else:
             self.night_off()
-            default_theme = True
+            DEFAULT_THEME = True
 
     def night_on(self):
         """
