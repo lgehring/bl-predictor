@@ -105,7 +105,7 @@ class MainWindow:
     '''
     def _menu_bar(self):
          """
-         Adds a menu bar for the main window, with "Exit" 
+         Adds a menu bar for the main window, with "Exit"
          and "Switch Theme" buttons
          """
          menu_bar = tk.Menu(self.root)
