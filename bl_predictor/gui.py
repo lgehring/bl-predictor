@@ -246,22 +246,22 @@ class MainWindow:
         """
         # Create a canvas
         self.my_canvas_final = tk.Canvas(self.root,
-                                    width=100,
-                                    height=100,
-                                    highlightthickness=0)
-
+                                         width=100,
+                                         height=100,
+                                         highlightthickness=0)
 
         self.my_canvas_final.grid(row=100, columnspan=3,
-                             padx=3,
-                             pady=58,
-                             sticky="sw")
+                                  padx=3,
+                                  pady=58,
+                                  sticky="sw")
 
         # Import the logo image and put it in the canvas
         self.logo_path = Image.open(os.path.join(os.getcwd(),
                                                  "bl-predictor_logo.png"))
         self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
         self.logo_final = ImageTk.PhotoImage(self.logo_resized)
-        self.my_canvas_final.create_image(0, 0, image=self.logo_final, anchor="nw")
+        self.my_canvas_final.create_image(0, 0, image=self.logo_final,
+                                          anchor="nw")
 
     def _timeframe_slider(self):
         """
