@@ -140,8 +140,8 @@ class Slider(Frame):
                                                   y_value,
                                                   text=format(
                                                       value,
-                                                      Slider.DIGIT_PRECISION)
-                                                  , fill="#5c616c"
+                                                      Slider.DIGIT_PRECISION),
+                                                  fill="#5c616c"
                                                   )
             return [id_outer, id_inner, self.id_value]
         else:
