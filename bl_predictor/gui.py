@@ -98,8 +98,22 @@ class MainWindow:
         """
         menu_bar = tk.Menu(self.root)
         self.root.config(menu=menu_bar)
-        menu_bar.add_cascade(label="Exit", command=self.root.destroy)
-        menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
+
+    # Todo can be deleted. Is a Version that works for mac
+    '''
+    def _menu_bar(self):
+         """
+         Adds a menu bar for the main window, with "Exit" and "Switch Theme" buttons
+         """
+         menu_bar = tk.Menu(self.root)
+         self.root.config(menu=menu_bar)
+         menu_bar.add_cascade(label="Exit", command=self.root.destroy)
+
+         switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
+         menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
+         switch_theme_menu.add_command(label="Night Mode", command=self.switch_theme)
+         switch_theme_menu.add_command(label="Default Mode", command=self.switch_theme)
+    '''
 
     def switch_theme(self):
         """
@@ -119,12 +133,10 @@ class MainWindow:
         """
         style = ThemedStyle(self.root)
         style.set_theme("equilux")
-        self.root.config(bg="#464646")  # equilux's backg color is dark grey
-        # style_slider = ThemedStyle(self._timeframe_slider)
-        # style_slider.set_theme("equilux")
-        # style_logo = ThemedStyle(self._blpredictor_logo)
-        # style_logo.set_theme("equilux")
-        # self._blpredictor_logo.config(bg="#464646")
+        self.root.config(
+            bg="#464646")  # equilux's background color is dark grey
+        self.slider.change_canvas_colour("#464646")
+        self.slider.canv.itemconfig(self.slider.id_value, fill="grey")
 
     def night_off(self):
         """
@@ -132,12 +144,10 @@ class MainWindow:
         """
         style = ThemedStyle(self.root)
         style.set_theme("arc")
-        self.root.config(bg="#f5f6f7")  # arc backgr color is almost white
-        # style_slider = ThemedStyle(self._timeframe_slider)
-        # style_slider.set_theme("arc")
-        # style_logo = ThemedStyle(self._blpredictor_logo)
-        # style_logo.set_theme("arc")
-        # self._blpredictor_logo.config(bg="#f5f6f7")
+        self.root.config(
+            bg="#f5f6f7")  # arc's background color is almost white
+        self.slider.change_canvas_colour("#f5f6f7")
+        self.slider.canv.itemconfig(self.slider.id_value, fill="grey40")
 
     def _upcoming_matchday(self):
         """

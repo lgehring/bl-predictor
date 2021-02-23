@@ -75,7 +75,7 @@ class Slider(Frame):
                            height=self.canv_H,
                            width=self.canv_W + 8,
                            highlightthickness=0,
-                           # bg="#f5f6f7"
+                           bg="#f5f6f7"
                            )
         self.canv.pack()
         self.canv.bind("<Motion>", self._mouse_motion)
@@ -85,6 +85,9 @@ class Slider(Frame):
                          self.canv_W - self.slider_x, self.slider_y)
         for bar in self.bars:
             bar["Ids"] = self.__add_bar(bar["Pos"])
+
+    def change_canvas_colour(self, colour):
+        self.canv.configure(bg=colour)
 
     def get_values(self):
         values = [bar["Value"] for bar in self.bars]
@@ -133,14 +136,14 @@ class Slider(Frame):
         if self.show_value:
             y_value = y + Slider.BAR_RADIUS + 8
             value = pos * (self.max_val - self.min_val) + self.min_val
-            id_value = self.canv.create_text(x,
-                                             y_value,
-                                             text=format(
-                                                 value,
-                                                 Slider.DIGIT_PRECISION)
-                                             # , fill="#5c616c"
-                                             )
-            return [id_outer, id_inner, id_value]
+            self.id_value = self.canv.create_text(x,
+                                                  y_value,
+                                                  text=format(
+                                                      value,
+                                                      Slider.DIGIT_PRECISION)
+                                                  , fill="#5c616c"
+                                                  )
+            return [id_outer, id_inner, self.id_value]
         else:
             return [id_outer, id_inner]
 
