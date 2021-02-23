@@ -43,5 +43,6 @@ setuptools.setup(
                       'lxml~=4.6.1',
                       'tabulate~=0.8.7',
                       'scikit-learn~=0.24.1',
-                      'ttkthemes~=3.2.2'],
+                      'ttkthemes~=3.2.2',
+                      'pyvirtualdisplay~=2.0'],
 )
