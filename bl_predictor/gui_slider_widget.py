@@ -73,7 +73,7 @@ class Slider(Frame):
 
         self.canv = Canvas(self,
                            height=self.canv_H,
-                           width=self.canv_W + 8,
+                           width=self.canv_W + 10,
                            highlightthickness=0,
                            bg="#f5f6f7"
                            )
@@ -134,7 +134,7 @@ class Slider(Frame):
                                          fill=Slider.BAR_COLOR_INNER,
                                          outline="")
         if self.show_value:
-            y_value = y + Slider.BAR_RADIUS + 8
+            y_value = y + Slider.BAR_RADIUS + 10
             value = pos * (self.max_val - self.min_val) + self.min_val
             self.id_value = self.canv.create_text(x,
                                                   y_value,

@@ -98,6 +98,8 @@ class MainWindow:
         """
         menu_bar = tk.Menu(self.root)
         self.root.config(menu=menu_bar)
+        menu_bar.add_cascade(label="Exit", command=self.root.destroy)
+        menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
 
     # Todo can be deleted. Is a Version that works for mac
     '''
@@ -136,7 +138,7 @@ class MainWindow:
         self.root.config(
             bg="#464646")  # equilux's background color is dark grey
         self.slider.change_canvas_colour("#464646")
-        self.slider.canv.itemconfig(self.slider.id_value, fill="grey")
+        self.slider.canv.itemconfig(self.slider.id_value, fill="#a6a6a6")
 
     def night_off(self):
         """
@@ -147,7 +149,7 @@ class MainWindow:
         self.root.config(
             bg="#f5f6f7")  # arc's background color is almost white
         self.slider.change_canvas_colour("#f5f6f7")
-        self.slider.canv.itemconfig(self.slider.id_value, fill="grey40")
+        self.slider.canv.itemconfig(self.slider.id_value, fill="#5c616c")
 
     def _upcoming_matchday(self):
         """
