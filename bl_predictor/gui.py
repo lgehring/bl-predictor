@@ -48,7 +48,8 @@ class MainWindow:
         self.left.grid(row=3, column=7, padx=2, pady=5, rowspan=40,
                        sticky=tk.N)
         self.result_label = ttk.Label(self.root,
-                                      text="Results")
+                                      text="Results",
+                                      font=("Calibri Light", 20, 'bold'))
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
@@ -82,14 +83,13 @@ class MainWindow:
         self._upcoming_matchday()
         self._blpredictor_logo()
         self._timeframe_slider()
-
-        self.result_label.configure(font="Verdana 20 underline")
         self.result_label.grid(row=1, column=7, padx=180, pady=10,
                                sticky=tk.S)
 
         if self.test != "test":
             self.root.mainloop()
 
+    '''
     def _menu_bar(self):
         """
         Adds a menu bar for the main window,
@@ -99,22 +99,23 @@ class MainWindow:
         self.root.config(menu=menu_bar)
         menu_bar.add_cascade(label="Exit", command=self.root.destroy)
         menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
+    '''
 
-    # def _menu_bar(self):
-    #      """
-    #      Adds a menu bar for the main window, with "Exit"
-    #      and "Switch Theme" buttons
-    #      """
-    #      menu_bar = tk.Menu(self.root)
-    #      self.root.config(menu=menu_bar)
-    #      menu_bar.add_cascade(label="Exit", command=self.root.destroy)
-    #
-    #      switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
-    #      menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
-    #      switch_theme_menu.add_command(
-    #      label="Night Mode", command=self.switch_theme)
-    #      switch_theme_menu.add_command(
-    #      label="Default Mode", command=self.switch_theme)
+    def _menu_bar(self):
+        """
+        Adds a menu bar for the main window, with "Exit"
+        and "Switch Theme" buttons
+        """
+        menu_bar = tk.Menu(self.root)
+        self.root.config(menu=menu_bar)
+        menu_bar.add_cascade(label="Exit", command=self.root.destroy)
+
+        switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
+        switch_theme_menu.add_command(
+            label="Night Mode", command=self.switch_theme)
+        switch_theme_menu.add_command(
+            label="Default Mode", command=self.switch_theme)
 
     def switch_theme(self):
         """
@@ -127,7 +128,6 @@ class MainWindow:
             self.default_theme = True
             self.night_off()
 
-
     def night_on(self):
         """
         Activates Night Theme for whole window
@@ -136,9 +136,9 @@ class MainWindow:
         style.set_theme("equilux")
         self.root.config(
             bg="#464646")  # equilux's background color is dark grey
-        self.slider.change_canvas_colour("#464646")
+        self.slider.canv.configure(bg="#464646")
         self.slider.canv.itemconfig(self.slider.id_value, fill="#a6a6a6")
-        self._blpredictor_logo()
+        self.my_canvas_final.config(bg='#464646')
 
     def night_off(self):
         """
@@ -148,9 +148,10 @@ class MainWindow:
         style.set_theme("arc")
         self.root.config(
             bg="#f5f6f7")  # arc's background color is almost white
-        self.slider.change_canvas_colour("#f5f6f7")
+        self.slider.canv.configure(bg="#f5f6f7")
         self.slider.canv.itemconfig(self.slider.id_value, fill="#5c616c")
         self._blpredictor_logo()
+        self.my_canvas_final.config(bg='#f5f6f7')
 
     def _upcoming_matchday(self):
         """
@@ -179,12 +180,13 @@ class MainWindow:
         matchday_label = \
             ttk.Label(
                 text="Upcoming Matchday: Matchday " + str(upcoming_matchday),
-                font=("Calibri Light", 30))
+                font=("Calibri Light", 30, 'bold'))
+
         matchday_label.grid(pady=padding, padx=15, row=1, column=1,
                             columnspan=3, sticky=tk.NS)
 
         matchdaygames_label = ttk.Label(text="Upcoming Matches: ",
-                                        font=("Calibri Light", 25))
+                                        font=("Calibri Light", 25, 'bold'))
         matchdaygames_label.grid(pady=padding, padx=15, row=2, column=1,
                                  columnspan=3)
 
@@ -214,7 +216,7 @@ class MainWindow:
             if i == first_game or \
                     matchday['date_time'][i] != matchday['date_time'][i - 1]:
                 day_label = ttk.Label(text=matchday['date_time'][i],
-                                      font=("Calibri Light", 13))
+                                      font=("Calibri Light", 13, 'bold'))
                 day_label.grid(pady=padding, row=2 + rowcount,
                                column=1, columnspan=3)
                 rowcount += 1
@@ -243,16 +245,13 @@ class MainWindow:
         Adds the application logo and packs it in the bottom left of the window
         """
         # Create a canvas
-        my_canvas_final = tk.Canvas(self.root,
+        self.my_canvas_final = tk.Canvas(self.root,
                                     width=100,
                                     height=100,
                                     highlightthickness=0)
-        if self.default_theme:
-            my_canvas_final.config(bg='#f5f6f7')
-        else:
-            my_canvas_final.config(bg='#464646')
 
-        my_canvas_final.grid(row=100, columnspan=3,
+
+        self.my_canvas_final.grid(row=100, columnspan=3,
                              padx=3,
                              pady=58,
                              sticky="sw")
@@ -262,7 +261,7 @@ class MainWindow:
                                                  "bl-predictor_logo.png"))
         self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
         self.logo_final = ImageTk.PhotoImage(self.logo_resized)
-        my_canvas_final.create_image(0, 0, image=self.logo_final, anchor="nw")
+        self.my_canvas_final.create_image(0, 0, image=self.logo_final, anchor="nw")
 
     def _timeframe_slider(self):
         """

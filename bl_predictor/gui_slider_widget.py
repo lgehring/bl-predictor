@@ -86,9 +86,6 @@ class Slider(Frame):
         for bar in self.bars:
             bar["Ids"] = self.__add_bar(bar["Pos"])
 
-    def change_canvas_colour(self, colour):
-        self.canv.configure(bg=colour)
-
     def get_values(self):
         values = [bar["Value"] for bar in self.bars]
         return sorted(values)
@@ -143,6 +140,7 @@ class Slider(Frame):
                                                       Slider.DIGIT_PRECISION),
                                                   fill="#5c616c"
                                                   )
+
             return [id_outer, id_inner, self.id_value]
         else:
             return [id_outer, id_inner]
