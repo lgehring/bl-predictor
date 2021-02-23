@@ -99,7 +99,7 @@ class MainWindow:
         self.root.config(menu=menu_bar)
         menu_bar.add_cascade(label="Exit", command=self.root.destroy)
         menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
-    '''
+        '''
 
     def _menu_bar(self):
         """
@@ -108,8 +108,12 @@ class MainWindow:
         """
         menu_bar = tk.Menu(self.root)
         self.root.config(menu=menu_bar)
-        menu_bar.add_cascade(label="Exit", command=self.root.destroy)
-        menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
+
+        switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="Options", menu=switch_theme_menu)
+        switch_theme_menu.add_command(
+            label="Switch Theme", command=self.switch_theme)
+        switch_theme_menu.add_command(label="Exit", command=self.root.destroy)
 
     def switch_theme(self):
         """
