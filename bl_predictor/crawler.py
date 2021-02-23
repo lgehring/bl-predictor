@@ -356,17 +356,17 @@ def crawl_openligadb(urls, unfinished_matches, matches, csv_file):
     return unfinished_matches
 
 
-def save_logos(teamname, teamicon):
-    """
-    checks if logos are missing in the folder "team_logos" and download,
-    if necessary
-
-    :param teamname: string with the name the file should be called
-    :param teamname: Web URL where the image is saved
-    """
-    gui_path = os.path.abspath(__file__)
-    dir_path = os.path.dirname(gui_path)
-    if not os.path.isfile(dir_path + "/team_logos/" + teamname + ".png"):
-        save_logo = open(dir_path + "/team_logos/" + teamname + ".png", "wb")
-        save_logo.write(requests.get(teamicon).content)
-        save_logo.close()
+# def save_logos(teamname, teamicon):
+#    """
+#    checks if logos are missing in the folder "team_logos" and download,
+#    if necessary#
+#
+#    :param teamname: string with the name the file should be called
+#    :param teamname: Web URL where the image is saved
+#    """
+#    gui_path = os.path.abspath(__file__)
+#    dir_path = os.path.dirname(gui_path)
+#    if not os.path.isfile(dir_path + "/team_logos/" + teamname + ".png"):
+#        save_logo = open(dir_path + "/team_logos/" + teamname + ".png", "wb")
+#        save_logo.write(requests.get(teamicon).content)
+#        save_logo.close()

@@ -42,5 +42,6 @@ setuptools.setup(
                       'pillow~=8.1.0',
                       'lxml~=4.6.1',
                       'tabulate~=0.8.7',
-                      'scikit-learn~=0.24.1'],
+                      'scikit-learn~=0.24.1',
+                      'ttkthemes~=3.2.2'],
 )

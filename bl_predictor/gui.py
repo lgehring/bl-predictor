@@ -2,12 +2,16 @@
 This module contains the GUI code.
 """
 
+import datetime
 import inspect
+import os
 import tkinter as tk
+import tkinter.ttk as ttk
 from datetime import date
 
 import pandas as pd
-import os
+from PIL import ImageTk, Image
+from ttkthemes import ThemedStyle
 
 from bl_predictor import crawler
 from bl_predictor import models
@@ -16,32 +20,42 @@ from bl_predictor.gui_slider_widget import Slider
 
 class MainWindow:
     """
-    Graphical User Interface for the bl-predictor project.
+    Graphical User Interface for the bl_predictor project.
 
     The GUI window can be shown with show_window()
     """
 
     def __init__(self, test):
         """
-        :param str test: str or none. Put in "test" for an objekt to be
-            tested. None otherwise. For a test objekt there is no implmentation
-            of a mainloop. """
+        Init MainClass.
 
-        # Do to an _tkinter.TclError that accurs only on github.
-        if os.environ.get('DISPLAY', '') == '':
-            print('no display found. Using :0.0')
-            os.environ.__setitem__('DISPLAY', ':0.0')
+        Initializes interpreter and creates root window.
+        Sets the application logo as icon for the root window.
+        Sets the theme
+        Stores crawled data.
+        Stores the home- and guest-team.
 
+
+        :param str test: str or none. Put in "test" for an object to be
+            tested. None otherwise. For a test object there is no
+            implementation of a mainloop.
+
+        :type self:
+        """
         self.test = test
         self.root = tk.Tk()
-        self.left = tk.Frame(self.root)
-        self.left.pack(side=tk.RIGHT, expand=True)
-        self.result_label = tk.Label(self.root,
-                                     text="Results")
+        self.left = ttk.Frame(self.root)
+        self.left.grid(row=3, column=7, padx=2, pady=5, rowspan=40,
+                       sticky=tk.N)
+        self.result_label = ttk.Label(self.root,
+                                      text="Results",
+                                      font=("Calibri Light", 20, 'bold'))
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
         self.picked_guest_team = None
+        # This boolean variable keeps track of the current main window theme
+        self.default_theme = True
         self.show_window()
 
     def show_window(self):
@@ -54,78 +68,247 @@ class MainWindow:
         two teams that will be compared
         """
         self.root.title("Bl-predictor GUI")
-        self.root.geometry("1000x800")
-        self._upcoming_matchday()
-        self._timeframe_slider()
+        self.root.geometry("1400x700")
+        self.root.state('zoomed')
+        # Sets the theme
+        style = ThemedStyle(self.root)
+        style.set_theme("arc")
+        self.root.config(bg="#f5f6f7")
+        # Sets the logo
+        logo = tk.PhotoImage(file=os.path.join(os.getcwd(),
+                                               "bl-predictor_logo.png"))
+        self.root.iconphoto(False, logo)
 
-        self.result_label.configure(font="Verdana 20 underline bold")
-        self.result_label.pack(in_=self.left)
+        self._menu_bar()
+        self._upcoming_matchday()
+        self._blpredictor_logo()
+        self._timeframe_slider()
+        self.result_label.grid(row=1, column=7, padx=180, pady=10,
+                               sticky=tk.S)
+
         if self.test != "test":
             self.root.mainloop()
 
+    '''
+    def _menu_bar(self):
+        """
+        Adds a menu bar for the main window,
+        with "Exit" and "Switch Theme" buttons
+        """
+        menu_bar = tk.Menu(self.root)
+        self.root.config(menu=menu_bar)
+        menu_bar.add_cascade(label="Exit", command=self.root.destroy)
+        menu_bar.add_cascade(label="Switch Theme", command=self.switch_theme)
+    '''
+
+    def _menu_bar(self):
+        """
+        Adds a menu bar for the main window, with "Exit"
+        and "Switch Theme" buttons
+        """
+        menu_bar = tk.Menu(self.root)
+        self.root.config(menu=menu_bar)
+        menu_bar.add_cascade(label="Exit", command=self.root.destroy)
+
+        switch_theme_menu = tk.Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="Switch Theme", menu=switch_theme_menu)
+        switch_theme_menu.add_command(
+            label="Night Mode", command=self.switch_theme)
+        switch_theme_menu.add_command(
+            label="Default Mode", command=self.switch_theme)
+
+    def switch_theme(self):
+        """
+        Builds menu bar button functionality to switch between Themes
+        """
+        if self.default_theme:
+            self.default_theme = False
+            self.night_on()
+        else:
+            self.default_theme = True
+            self.night_off()
+
+    def night_on(self):
+        """
+        Activates Night Theme for whole window
+        """
+        style = ThemedStyle(self.root)
+        style.set_theme("equilux")
+        self.root.config(
+            bg="#464646")  # equilux's background color is dark grey
+        self.slider.canv.configure(bg="#464646")
+        self.slider.canv.itemconfig(self.slider.id_value, fill="#a6a6a6")
+        self.my_canvas_final.config(bg='#464646')
+
+    def night_off(self):
+        """
+        Goes back to to Default Theme for whole window
+        """
+        style = ThemedStyle(self.root)
+        style.set_theme("arc")
+        self.root.config(
+            bg="#f5f6f7")  # arc's background color is almost white
+        self.slider.canv.configure(bg="#f5f6f7")
+        self.slider.canv.itemconfig(self.slider.id_value, fill="#5c616c")
+        self._blpredictor_logo()
+        self.my_canvas_final.config(bg='#f5f6f7')
+
     def _upcoming_matchday(self):
+        """
+        Writes matches of upcoming matchday in the window. This includes
+        date and time of the matches, the teams that are going to
+        play and their logos.
+        """
         now = date.today()
-        date_label = tk.Label(text=now)
-        date_label.pack()
+        self.date_label = ttk.Label(text=now)
+        self.date_label.grid(row=0, columnspan=2, padx=3, sticky=tk.W)
 
         # signals crawler to crawl unfinished matches
         current_season = crawler.fetch_data([0, 0], [0, 0])
-        for i in range(9):
+        num_games_a_day = 9
+
+        # checking if first 9 games of current season are on the same day
+        for i in range(num_games_a_day):
             if current_season['matchday'][i] \
                     != current_season['matchday'][i + 1]:
                 first_game = i + 1
                 matchday = current_season.loc[i + 1:i + 9]
 
         upcoming_matchday = current_season['matchday'][0]
+        padding = 3
 
         matchday_label = \
-            tk.Label(
-                text="Upcoming Matchday: Matchday " + str(upcoming_matchday))
-        matchday_label.pack()
+            ttk.Label(
+                text="Upcoming Matchday: Matchday " + str(upcoming_matchday),
+                font=("Calibri Light", 30, 'bold'))
 
-        matchdaygames_label = tk.Label(text="Upcoming Matches: ")
-        matchdaygames_label.pack()
+        matchday_label.grid(pady=padding, padx=15, row=1, column=1,
+                            columnspan=3, sticky=tk.NS)
 
-        for i in range(first_game, first_game + 8):
+        matchdaygames_label = ttk.Label(text="Upcoming Matches: ",
+                                        font=("Calibri Light", 25, 'bold'))
+        matchdaygames_label.grid(pady=padding, padx=15, row=2, column=1,
+                                 columnspan=3)
+
+        # path of gui.py
+        # gui_path = os.path.abspath(__file__)
+        # path to team project
+        # dir_path = os.path.dirname(gui_path)
+        last_game = first_game + 9
+        rowcount = 1
+        for i in range(first_game, last_game):
+            # loads the logos into gui
+            # self.image1 = Image.open(
+            #    dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
+            # self.image2 = Image.open(
+            #    dir_path + "/team_logos/" + matchday['guest_team'][i]
+            #    + ".png")
+            # self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
+            # self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
+            # self.img1 = ImageTk.PhotoImage(self.image1)
+            # self.img2 = ImageTk.PhotoImage(self.image2)
+            # self.panel1 = tk.Label(self.root, image=self.img1)
+            # self.panel2 = tk.Label(self.root, image=self.img2)
+            # self.panel1.photo = self.img1
+            # self.panel2.photo = self.img2
+
             # shows date and time of each match
-            day_label = tk.Label(text=matchday['date_time'][i])
-            day_label.pack()
+            if i == first_game or \
+                    matchday['date_time'][i] != matchday['date_time'][i - 1]:
+                day_label = ttk.Label(text=matchday['date_time'][i],
+                                      font=("Calibri Light", 13, 'bold'))
+                day_label.grid(pady=padding, row=2 + rowcount,
+                               column=1, columnspan=3)
+                rowcount += 1
             # shows match
-            h_t_name = matchday['home_team'][i]
-            g_t_name = matchday['guest_team'][i]
-            season_label = tk.Label(text=h_t_name + " vs " + g_t_name)
-            season_label.pack()
+            home_label = ttk.Label(text=matchday['home_team'][i],
+                                   font=("Calibri Light", 13))
+            versus_label = ttk.Label(text=" vs ",
+                                     font=("Calibri Light", 13))
+            guest_label = ttk.Label(text=matchday['guest_team'][i],
+                                    font=("Calibri Light", 13))
+
+            home_label.grid(pady=padding, row=2 + rowcount,
+                            column=1, sticky=tk.E)
+            # self.panel1.grid(row=2 * i, column=1)
+            versus_label.grid(pady=padding, row=2 + rowcount, column=2)
+            # self.panel2.grid(row=2 * i, column=3)
+            guest_label.grid(pady=padding, row=2 + rowcount,
+                             column=3, sticky=tk.W, )
+            rowcount += 1
+
+            self.root.grid_columnconfigure(0, weight=1)
+            self.root.grid_columnconfigure(4, weight=1)
+
+    def _blpredictor_logo(self):
+        """
+        Adds the application logo and packs it in the bottom left of the window
+        """
+        # Create a canvas
+        self.my_canvas_final = tk.Canvas(self.root,
+                                         width=100,
+                                         height=100,
+                                         highlightthickness=0)
+
+        self.my_canvas_final.grid(row=100, columnspan=3,
+                                  padx=3,
+                                  pady=58,
+                                  sticky="sw")
+
+        # Import the logo image and put it in the canvas
+        self.logo_path = Image.open(os.path.join(os.getcwd(),
+                                                 "bl-predictor_logo.png"))
+        self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
+        self.logo_final = ImageTk.PhotoImage(self.logo_resized)
+        self.my_canvas_final.create_image(0, 0, image=self.logo_final,
+                                          anchor="nw")
 
     def _timeframe_slider(self):
-        self.date_label = tk.Label(text="Choose a period of time:")
-        self.date_label.pack()
+        """
+        Builds a slider ro adjust the to crawl period.
+        """
+        date_label = ttk.Label(text="Choose a period of time:",
+                               font=("Calibri Light", 13))
+        date_label.grid(row=1, column=4, columnspan=3)
 
-        first_recorded_bl_year = 2003  # 1964 openliga has only new matches
-        current_season = crawler.get_current_date()[1]
-        self.slider = Slider(self.root, width=400,
+        first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
+        self.slider = Slider(self.root, width=300,
                              height=60,
+                             # fg="#a6a6a6",
+                             # bg="#464646",
                              min_val=first_recorded_bl_year,
-                             max_val=current_season,
+                             max_val=datetime.datetime.now().year - 1,
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
-                                       current_season],
+                                       datetime.datetime.now().year - 1],
                              show_value=True)
-        self.slider.pack()
+        self.slider.grid(row=2, column=4, columnspan=3)
         self._activate_crawler()
 
     def _activate_crawler(self):
-        self.download_time_label = tk.Label(
-            text="Downloading might take a while")
+        """
+        Builds Download button. When used _activate_crawler_helper is
+        activated, to crawl the data in selected time range.
+        """
+        self.download_time_label = ttk.Label(
+            text="Downloading might take a while",
+            font=("Calibri Light", 13))
+        self.download_time_label.grid(row=3, column=4, columnspan=3)
 
-        self.download_time_label.pack()
-
-        self.act_crawler_button = tk.Button(
+        self.act_crawler_button = ttk.Button(
             self.root,
             text="Download Data",
+            # font=("Calibri Light", 13),
             command=self._activate_crawler_helper)
-        self.act_crawler_button.pack()
+        self.act_crawler_button.grid(row=4, column=4, columnspan=3)
 
     def _activate_crawler_helper(self):
-
+        """
+        Takes values from slider and fetches the data between these seasons
+        Begins on 1. matchday of first value until last matchday of the second
+        value.
+        After completion the button signal this and _choose_model is activated,
+        which shows the model selection menu.
+        """
         first_day_of_season = 1
         last_day_of_season = 34
 
@@ -136,24 +319,28 @@ class MainWindow:
                                                 int(self.slider_first_value)],
                                                [last_day_of_season,
                                                 int(self.slider_last_value)])
-        self.act_crawler_button.config(text='Download complete',
-                                       background='green')
+        self.act_crawler_button.config(text='Download complete'
+                                       # ,background='green'
+                                       )
         # add time range label to results
-        self.time_range_label = tk.Label(self.left,
-                                         text=("\nTime range: "
-                                               + "1st of "
-                                               + str(int(
-                                                     self.slider_first_value))
-                                               + " until "
-                                                 "34th of " + str(int(
-                                                     self.slider_first_value)))
-                                         )
-        self.time_range_label.configure(font="Verdana 15 bold")
+        self.time_range_label = ttk.Label(self.left,
+                                          text=("\nTime range: "
+                                                + "1st of "
+                                                + str(int(
+                                                      self.slider_first_value))
+                                                + " until "
+                                                  "34th of " + str(int(
+                                                      self.slider_last_value)))
+                                          )
+        self.time_range_label.configure(font="Verdana 12 bold")
         self.time_range_label.pack(in_=self.left)
         # Show model selection menu
         self._choose_model()
 
     def _choose_model(self):
+        """
+        Builds list of training models to choose from.
+        """
         # Create a list of all available models
         model_list = [m[0] for m in
                       inspect.getmembers(models, inspect.isclass)
@@ -163,42 +350,55 @@ class MainWindow:
             model_list.remove("WholeDataFrequencies")
 
         # Menu title shown above
-        self.model_label = tk.Label(text="Choose a prediction model:")
-        self.model_label.pack()
+        self.model_label = ttk.Label(text="Choose a prediction model:")
+        self.model_label.grid(row=5, column=4, columnspan=3)
         # Initialize options
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
-        self.model_opt = tk.OptionMenu(self.root, self.model_variable,
-                                       *model_list)
-        self.model_opt.pack()
+        self.model_opt = ttk.OptionMenu(self.root, self.model_variable,
+                                        model_list[0],
+                                        *model_list)
+        self.model_opt.grid(row=6, column=4, columnspan=3)
 
         # Show train model button
         self._train_model()
 
     def _train_model(self):
-        self.train_ml_button = tk.Button(
+        """
+        Builds button to train the model. It activates _train_model_helper.
+        """
+        self.train_ml_button = ttk.Button(
             self.root,
             text="Train prediction model",
             command=self._train_model_helper)
-        self.train_ml_button.pack()
+        self.train_ml_button.grid(row=7, column=4, columnspan=3)
 
     def _train_model_helper(self):
+        """
+        Trains Model. When completed title and color of the button signals it
+        is finished.
+        """
         self.trained_model = getattr(models, self.model_variable.get())(
             self.crawler_data)
-        self.train_ml_button.config(text='Model trained',
-                                    background='green')
+        self.train_ml_button.config(text='Model trained'
+                                    # ,background='green'
+                                    )
 
-        self.result_model_label = tk.Label(self.left,
-                                           text=("calculated with: "
-                                                 + self.model_variable.get()
-                                                 ))
-        self.result_model_label.configure(font="Verdana 15 bold")
+        self.result_model_label = ttk.Label(self.left,
+                                            text=("\nCalculated with: "
+                                                  + self.model_variable.get()
+                                                  ))
+        self.result_model_label.configure(font="Verdana 12 bold")
         self.result_model_label.pack(in_=self.left)
         # Show team selection menu
         self._choose_teams()
 
     def _choose_teams(self):
-        # Create a list of all home and guest teams and drop duplicates
+        """
+        Creates a list of all home and guest teams and drops duplicates.
+        When completed the function activates _make_prediction, it shows a
+        prediction button
+        """
         try:
             option_list = self.crawler_data['home_team']
             option_list = option_list.append(self.crawler_data['guest_team'])
@@ -206,47 +406,56 @@ class MainWindow:
         except KeyError:
             option_list = ["Team1", "Team2"]
 
-        # Hometeam dropdown list
-        self.ht_label = tk.Label(self.root, text="Home team:")
-        self.ht_label.pack()
+        # home team dropdown list
+        self.ht_label = ttk.Label(self.root, text="Home team:")
+        self.ht_label.grid(row=8, column=4, columnspan=3)
 
         self.picked_home_team = tk.StringVar(self.root)
         self.picked_home_team.set(option_list[0])
-        self.ht_opt = tk.OptionMenu(self.root, self.picked_home_team,
-                                    *option_list)
-        self.ht_opt.pack()
+        self.ht_opt = ttk.OptionMenu(self.root, self.picked_home_team,
+                                     option_list[0],
+                                     *option_list)
+        self.ht_opt.grid(row=9, column=4, columnspan=3)
 
-        # Guest team dropdown list
-        self.gt_label = tk.Label(self.root, text="Guest team:")
-        self.gt_label.pack()
+        # guest team dropdown list
+        self.gt_label = ttk.Label(self.root, text="Guest team:")
+        self.gt_label.grid(row=10, column=4, columnspan=3)
 
         self.picked_guest_team = tk.StringVar(self.root)
         self.picked_guest_team.set(option_list[0])
-        self.gt_opt = tk.OptionMenu(self.root, self.picked_guest_team,
-                                    *option_list)
-        self.gt_opt.pack()
+        self.gt_opt = ttk.OptionMenu(self.root, self.picked_guest_team,
+                                     option_list[0],
+                                     *option_list)
+        self.gt_opt.grid(row=11, column=4, columnspan=3)
 
         # Show prediction button
         self._make_prediction()
 
     def _make_prediction(self):
-        self.prediction_button = tk.Button(
+        """
+        Button to activate prediction of the winner.
+        """
+        self.prediction_button = ttk.Button(
             self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
-
-        self.prediction_button.pack()
+        self.prediction_button.grid(row=12, column=4, columnspan=3)
 
     def _make_prediction_helper(self):
-        print("9")
+        """
+        Predicts the winner of the two selected teams. Button signals when
+        it's finished. A label will let you know if there is not enough data
+        for the prediction.
+        """
         self.winner = self.trained_model.predict_winner(
             self.picked_home_team.get(),
             self.picked_guest_team.get())
-        self.prediction_button.config(text='Winner predicted',
-                                      background='green')
+        self.prediction_button.config(text='Winner predicted'
+                                      # ,background='green'
+                                      )
         # delete first result, if too many for window
         result_frame_y = self.left.winfo_height()
-        high_window = 600
+        high_window = 500
         results = self.left.winfo_children()
         if result_frame_y >= high_window:
             if results[3].cget("text")[0:4] == "\nTim":
@@ -263,62 +472,64 @@ class MainWindow:
             # No matches in data
             self.winner = "Not enough data"
 
-        self.prediction = tk.Label(self.left)
-        self.prediction.pack()
+        self.prediction = ttk.Label(self.left)
 
-        self.prediction.configure(text=(self.picked_home_team.get() + " vs "
-                                        + self.picked_guest_team.get()
-                                        + ": "
-                                        + self.winner))
-
+        self.prediction.configure(text="\n"
+                                       + (self.picked_home_team.get() + " vs "
+                                          + self.picked_guest_team.get()
+                                          + ": "
+                                          + self.winner))
+        self.prediction.pack(in_=self.left)
+        self._reset_teams_button()
         self._reset_button()
         self._reset_model_button()
-        self._reset_teams_button()
 
         self.prediction_button.config(state=tk.DISABLED)
 
     def _reset_teams_button(self):
-        self.reset_teams_button = tk.Button(
+        self.reset_teams_button = ttk.Button(
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.pack(side=tk.LEFT)
+        self.reset_teams_button.grid(row=13, column=4)
 
     def _reset_teams(self):
-        print("team")
-        self.prediction_button.pack_forget()
+        self.prediction_button.grid_forget()
 
-        self.reset_model_button.pack_forget()
-        self.reset_teams_button.pack_forget()
-        self.reset_button.pack_forget()
+        self.reset_model_button.grid_forget()
+        self.reset_teams_button.grid_forget()
+        self.reset_button.grid_forget()
+        self.ht_label.grid_forget()
+        self.ht_opt.grid_forget()
+        self.gt_label.grid_forget()
+        self.gt_opt.grid_forget()
 
         self.picked_home_team = None
         self.picked_guest_team = None
 
-        self._make_prediction()
+        self._choose_teams()
 
     def _reset_model_button(self):
-        self.reset_model_button = tk.Button(
+        self.reset_model_button = ttk.Button(
             self.root,
-            text="chose new model",
+            text="choose new model",
             command=self._reset_model)
-        self.reset_model_button.pack(side=tk.LEFT)
+        self.reset_model_button.grid(row=13, column=5)
 
     def _reset_model(self):
-        print("model")
-        self.train_ml_button.pack_forget()
-        self.model_opt.pack_forget()
-        self.model_label.pack_forget()
+        self.train_ml_button.grid_forget()
+        self.model_opt.grid_forget()
+        self.model_label.grid_forget()
 
-        self.gt_label.pack_forget()
-        self.ht_label.pack_forget()
-        self.gt_opt.pack_forget()
-        self.ht_opt.pack_forget()
-        self.prediction_button.pack_forget()
+        self.gt_label.grid_forget()
+        self.ht_label.grid_forget()
+        self.gt_opt.grid_forget()
+        self.ht_opt.grid_forget()
+        self.prediction_button.grid_forget()
 
-        self.reset_button.pack_forget()
-        self.reset_model_button.pack_forget()
-        self.reset_teams_button.pack_forget()
+        self.reset_button.grid_forget()
+        self.reset_model_button.grid_forget()
+        self.reset_teams_button.grid_forget()
 
         self.picked_home_team = None
         self.picked_guest_team = None
@@ -327,34 +538,32 @@ class MainWindow:
         self._choose_model()
 
     def _reset_button(self):
-        print("reset")
-        self.reset_button = tk.Button(
+        self.reset_button = ttk.Button(
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.pack(side=tk.LEFT)
+        self.reset_button.grid(row=13, column=6)
 
     def _reset_values(self):
-        self.slider.pack_forget()
-        self.act_crawler_button.pack_forget()
+        self.slider.grid_forget()
+        self.act_crawler_button.grid_forget()
 
-        self.train_ml_button.pack_forget()
+        self.train_ml_button.grid_forget()
 
-        self.gt_label.pack_forget()
-        self.ht_label.pack_forget()
-        self.gt_opt.pack_forget()
-        self.ht_opt.pack_forget()
-        self.prediction_button.pack_forget()
+        self.gt_label.grid_forget()
+        self.ht_label.grid_forget()
+        self.gt_opt.grid_forget()
+        self.ht_opt.grid_forget()
+        self.prediction_button.grid_forget()
 
-        self.model_label.pack_forget()
-        self.model_opt.pack_forget()
+        self.model_label.grid_forget()
+        self.model_opt.grid_forget()
 
-        self.download_time_label.pack_forget()
-        self.date_label.pack_forget()
+        self.download_time_label.grid_forget()
 
-        self.reset_teams_button.pack_forget()
-        self.reset_button.pack_forget()
-        self.reset_model_button.pack_forget()
+        self.reset_teams_button.grid_forget()
+        self.reset_button.grid_forget()
+        self.reset_model_button.grid_forget()
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
