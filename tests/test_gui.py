@@ -12,9 +12,9 @@ def test_gui():
     # self.pump_events()
     assert (tested_gui.picked_home_team is None)
     assert (tested_gui.picked_guest_team is None)
-    # assert (tested_gui.date_label.cget("text") == "Choose a period of time:")
+    assert (tested_gui.date_label.cget("text") == "Choose a period of time:")
     # timeframe slider
-    assert (tested_gui.slider.W == 400)
+    assert (tested_gui.slider.W == 300)
 
     assert (tested_gui.act_crawler_button.cget("text")
             == "Download Data")
