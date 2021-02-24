@@ -36,7 +36,7 @@ jobs:
         pip install -e .[teamproject]
     
     - name: Coverage
-      run: coverage run -m --omit=*/tests/* pytest
+      run: coverage run -m --omit=*/tests/*,*/bl_predcitor/gui.py pytest
     
     - name: Upload coverage data to coveralls.io
       env:
