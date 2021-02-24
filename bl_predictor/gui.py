@@ -269,7 +269,7 @@ class MainWindow:
         Builds a slider ro adjust the to crawl period.
         """
         self.period_label = ttk.Label(text="Choose a period of time:",
-                               font=("Calibri Light", 13))
+                                      font=("Calibri Light", 13))
         self.period_label.grid(row=2, column=4)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
