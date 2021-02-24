@@ -61,7 +61,7 @@ class Slider(Frame):
             self.slider_y = self.canv_H / 2  # y pos of the slider
         else:
             self.slider_y = self.canv_H * 2 / 5
-        self.slider_x = Slider.BAR_RADIUS  # x pos of the slider (left side)
+        self.slider_x = Slider.BAR_RADIUS  # x pos of the slider (right side)
 
         self.bars = []
         self.selected_idx = None  # current selection bar index
