@@ -56,8 +56,9 @@ class MainWindow:
         # This boolean variable keeps track of the current main window theme
         self.default_theme = True
         self.current_season = crawler.get_current_date()[1]
-        self.root.grid_rowconfigure(19, weight=1)
+        self.root.grid_rowconfigure(21, weight=1)
         self.show_window()
+        self.root.grid_columnconfigure(2, weight=1)
 
     def show_window(self):
         """
@@ -85,6 +86,11 @@ class MainWindow:
                                 text="",
                                 font=20)
         upper_space.grid(row=1, pady=10, columnspan=7)
+
+        right_empty_column = ttk.Label(self.root,
+                                       text="",
+                                       font=20)
+        right_empty_column.grid(column=6, row=0, padx=20, columnspan=7)
 
         self._menu_bar()
         self._upcoming_matchday()
@@ -233,7 +239,7 @@ class MainWindow:
                              column=3, sticky=tk.W)
             rowcount += 1
 
-            self.root.grid_columnconfigure(0, weight=1)
+            self.root.grid_columnconfigure(0, weight=0)
             self.root.grid_columnconfigure(4, weight=1)
 
     def _blpredictor_logo(self):
@@ -247,7 +253,7 @@ class MainWindow:
                                          height=100,
                                          highlightthickness=0, bg='#f5f6f7')
 
-        self.my_canvas_final.grid(column=0, row=20, columnspan=2,
+        self.my_canvas_final.grid(column=0, row=21, columnspan=1,
                                   sticky='SW')
 
         # Import the logo image and put it in the canvas
@@ -262,9 +268,9 @@ class MainWindow:
         """
         Builds a slider ro adjust the to crawl period.
         """
-        date_label = ttk.Label(text="Choose a period of time:",
+        self.period_label = ttk.Label(text="Choose a period of time:",
                                font=("Calibri Light", 13))
-        date_label.grid(row=2, column=4)
+        self.period_label.grid(row=2, column=4)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=300,
@@ -275,6 +281,12 @@ class MainWindow:
                                        self.current_season],
                              show_value=True)
         self.slider.grid(row=3, column=4)
+
+        if self.default_theme:
+            self.slider.canv.configure(bg="#f5f6f7")
+        else:
+            self.slider.canv.configure(bg="#464646")
+
         self._activate_crawler()
 
     def _activate_crawler(self):
@@ -535,7 +547,7 @@ class MainWindow:
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.grid(row=20, column=5, sticky=tk.N)
+        self.reset_button.grid(row=20, column=5)
 
     def _reset_values(self):
         self.slider.grid_forget()
