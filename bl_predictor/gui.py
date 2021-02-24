@@ -2,7 +2,6 @@
 This module contains the GUI code.
 """
 
-import datetime
 import inspect
 import os
 import tkinter as tk

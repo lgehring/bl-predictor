@@ -1,5 +1,4 @@
 from bl_predictor import gui
-import tkinter
 
 
 def test_gui():
@@ -9,13 +8,11 @@ def test_gui():
     except:
         return None
 
-    # self.pump_events()
     assert (tested_gui.picked_home_team is None)
     assert (tested_gui.picked_guest_team is None)
     assert (tested_gui.date_label.cget("text") == "Choose a period of time:")
     # timeframe slider
     assert (tested_gui.slider.W == 300)
-
     assert (tested_gui.act_crawler_button.cget("text")
             == "Download Data")
     # activate crawler
@@ -26,11 +23,12 @@ def test_gui():
     tested_gui._choose_model()
     assert (tested_gui.model_label.cget(
         "text") == "Choose a prediction model:")
+    # testing button to train model
     assert (tested_gui.train_ml_button.cget(
         "text") == "Train prediction model")
     tested_gui._train_model_helper()
     assert (tested_gui.train_ml_button.cget("text") == 'Model trained')
-
+    # testing prediction button
     assert (tested_gui.prediction_button.cget("text")
             == "Show predicted winner!")
     tested_gui._make_prediction_helper()
