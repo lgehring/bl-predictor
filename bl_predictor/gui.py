@@ -78,7 +78,10 @@ class MainWindow:
         style.set_theme("arc")
         self.root.config(bg="#f5f6f7")
         # Sets the logo
-        logo = tk.PhotoImage(file=os.path.join(os.getcwd(),
+        gui_path = os.path.abspath(__file__)
+        # path to team project
+        dir_path = os.path.dirname(gui_path)
+        logo = tk.PhotoImage(file=os.path.join(dir_path,
                                                "bl-predictor_logo.png"))
         self.root.iconphoto(False, logo)
 
@@ -257,7 +260,10 @@ class MainWindow:
                                   sticky='SW')
 
         # Import the logo image and put it in the canvas
-        self.logo_path = Image.open(os.path.join(os.getcwd(),
+        gui_path = os.path.abspath(__file__)
+        # path to team project
+        dir_path = os.path.dirname(gui_path)
+        self.logo_path = Image.open(os.path.join(dir_path,
                                                  "bl-predictor_logo.png"))
         self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
         self.logo_final = ImageTk.PhotoImage(self.logo_resized)
