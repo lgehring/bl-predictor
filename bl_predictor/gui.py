@@ -44,7 +44,7 @@ class MainWindow:
         self.root = tk.Tk()
         self.left = ttk.Frame(self.root)
         self.left.grid(row=3, column=7, padx=2, pady=5, rowspan=40,
-                       sticky=tk.N)
+                       sticky="N")
         self.result_label = ttk.Label(self.root,
                                       text="Results",
                                       font=("Calibri Light", 20, 'bold'))
@@ -84,7 +84,8 @@ class MainWindow:
         upper_space = ttk.Label(self.root,
                                 text="",
                                 font=20)
-        upper_space.grid(row=1, pady=10, columnspan=8)
+        upper_space.grid(row=1, pady=10, columnspan=7)
+
 
         self._menu_bar()
         self._upcoming_matchday()
@@ -174,7 +175,7 @@ class MainWindow:
                 font=("Calibri Light", 30, 'bold'))
 
         matchday_label.grid(pady=padding, padx=15, row=2, column=1,
-                            columnspan=3, sticky=tk.NS)
+                            columnspan=3)
 
         matchdaygames_label = ttk.Label(
             text="Matchday " + str(upcoming_matchday),
@@ -220,7 +221,7 @@ class MainWindow:
             # shows match
             home_label = ttk.Label(text=matchday['home_team'][i],
                                    font=("Calibri Light", 13))
-            versus_label = ttk.Label(text=" vs ",
+            versus_label = ttk.Label(text="| vs |",
                                      font=("Calibri Light", 13))
             guest_label = ttk.Label(text=matchday['guest_team'][i],
                                     font=("Calibri Light", 13))
@@ -477,7 +478,7 @@ class MainWindow:
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.grid(row=14, column=4)
+        self.reset_teams_button.grid(row=14, column=4, sticky=tk.E)
 
     def _reset_teams(self):
         self.prediction_button.grid_forget()
@@ -500,7 +501,7 @@ class MainWindow:
             self.root,
             text="choose new model",
             command=self._reset_model)
-        self.reset_model_button.grid(row=14, column=5)
+        self.reset_model_button.grid(row=14, column=5, sticky=tk.W)
 
     def _reset_model(self):
         self.train_ml_button.grid_forget()
