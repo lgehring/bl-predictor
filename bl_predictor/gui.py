@@ -238,7 +238,8 @@ class MainWindow:
 
     def _blpredictor_logo(self):
         """
-        Adds the application logo and packs it in the bottom right of the window
+        Adds the application logo and packs it in the bottom right of the
+        window
         """
         # Create a canvas
         self.my_canvas_final = tk.Canvas(self.root,
