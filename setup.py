@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="bl-predictor",
-    version="0.0a5",
+    version="0.0a7",
     author="Lukas Gehring, Anabel Stammer, Alex Brylka and "
            "Fabricio Aguilera-Galviz",
     author_email="l.gehring@student.uni-tuebingen.de",

@@ -462,11 +462,6 @@ class MainWindow:
         height_window = 330
         results = self.right.winfo_children()
         if result_frame_y >= height_window:
-            print(results[0].cget("text")[0:10])
-            print(results[1].cget("text")[0:10])
-            print(results[2].cget("text")[0:10])
-            print(results[3].cget("text")[0:4])
-            print(results[3].cget("text")[0:4] == "Calc")
             if results[3].cget("text")[0:4] == "\nTim":
                 results[1].destroy()
                 results[2].destroy()
