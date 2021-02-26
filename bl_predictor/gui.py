@@ -331,6 +331,7 @@ class MainWindow:
                                                [last_day_of_season,
                                                 int(self.slider_last_value)])
         self.act_crawler_button.config(text='Download complete')
+        self.act_crawler_button.config(state=tk.DISABLED)
         # add time range label to results
         self.time_range_label = ttk.Label(self.right,
                                           text=("\nTime range: "
@@ -390,6 +391,7 @@ class MainWindow:
         self.trained_model = getattr(models, self.model_variable.get())(
             self.crawler_data)
         self.train_ml_button.config(text='Model trained')
+        self.train_ml_button.config(state=tk.DISABLED)
 
         self.result_model_label = ttk.Label(self.right,
                                             text=("\nCalculated with: "
@@ -498,7 +500,7 @@ class MainWindow:
             self.root,
             text="put in new teams",
             command=self._reset_teams)
-        self.reset_teams_button.grid(row=18, column=5)
+        self.reset_teams_button.grid(row=17, column=5)
 
     def _reset_teams(self):
         self.prediction_button.grid_forget()
@@ -521,7 +523,7 @@ class MainWindow:
             self.root,
             text="choose new model",
             command=self._reset_model)
-        self.reset_model_button.grid(row=19, column=5)
+        self.reset_model_button.grid(row=18, column=5)
 
     def _reset_model(self):
         self.train_ml_button.grid_forget()
@@ -549,7 +551,7 @@ class MainWindow:
             self.root,
             text="Reset",
             command=self._reset_values)
-        self.reset_button.grid(row=20, column=5)
+        self.reset_button.grid(row=19, column=5)
 
     def _reset_values(self):
         self.slider.grid_forget()
