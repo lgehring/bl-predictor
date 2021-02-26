@@ -72,6 +72,7 @@ class MainWindow:
         self.root.title("Bl-predictor GUI")
         self.root.geometry("1400x750")
         self.root.state('zoomed')
+        self.root.attributes("-fullscreen", True)
 
         # Sets the theme
         style = ThemedStyle(self.root)
