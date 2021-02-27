@@ -117,9 +117,11 @@ class PoissonModel:
             guest_team_win_prob = np.round(np.sum(np.triu(sim_match, 1)), 5)
             draw_prob = np.round(np.sum(np.diag(sim_match)), 5)
 
-            if home_team_win_prob > guest_team_win_prob:
+            if home_team_win_prob > guest_team_win_prob and \
+                    home_team_win_prob > draw_prob:
                 return home_team + ": " + "{:.1%}".format(home_team_win_prob)
-            elif guest_team_win_prob > home_team_win_prob:
+            elif guest_team_win_prob > home_team_win_prob and \
+                    guest_team_win_prob > draw_prob:
                 return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
             else:
                 return "Draw" + ": " + "{:.1%}".format(draw_prob)
@@ -285,12 +287,14 @@ class BettingPoissonModel:
             # Threshold is just a guess
             significance_threshold = 0.1  # chance (home win, guest win, draw)
             if home_team_win_prob > guest_team_win_prob and \
-                    (home_team_win_prob
-                     - guest_team_win_prob) > significance_threshold:
+                    home_team_win_prob > draw_prob and \
+                    (home_team_win_prob - guest_team_win_prob) \
+                    > significance_threshold:
                 return home_team + ": " + "{:.1%}".format(home_team_win_prob)
             elif guest_team_win_prob > home_team_win_prob and \
-                    (guest_team_win_prob
-                     - home_team_win_prob) > significance_threshold:
+                    guest_team_win_prob > draw_prob and \
+                    (guest_team_win_prob - home_team_win_prob) \
+                    > significance_threshold:
                 return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
             else:
                 return "Draw" + ": " + "{:.1%}".format(draw_prob)
@@ -409,12 +413,15 @@ class FrequencyModel:
                 self.matchups_df.index)
             guest_team_win_prob = self._wins(guest_team) / len(
                 self.matchups_df.index)
-            if home_team_win_prob > guest_team_win_prob:
-                return home_team + ": " + "{:.1%}".format(home_team_win_prob) + ", " + guest_team + ": " + "{:.1%}".format(guest_team_win_prob) + ", " + "Draw" + ": " + "{:.1%}".format(abs(1 - guest_team_win_prob + home_team_win_prob))
-            elif home_team_win_prob < guest_team_win_prob:
-                return home_team + ": " + "{:.1%}".format(home_team_win_prob) + ", " + guest_team + ": " + "{:.1%}".format(guest_team_win_prob) + ", " + "Draw" + ": " + "{:.1%}".format(abs(1 - guest_team_win_prob + home_team_win_prob))
+            draw_prob = 1 - (guest_team_win_prob + home_team_win_prob)
+            if home_team_win_prob > guest_team_win_prob and \
+                    home_team_win_prob > draw_prob:
+                return home_team + ": " + "{:.1%}".format(home_team_win_prob)
+            elif home_team_win_prob < guest_team_win_prob and \
+                    guest_team_win_prob > draw_prob:
+                return guest_team + ": " + "{:.1%}".format(guest_team_win_prob)
             else:
-                return home_team + ": " + "{:.1%}".format(home_team_win_prob) + ", " + guest_team + ": " + "{:.1%}".format(guest_team_win_prob) + ", " + "Draw" + ": " + "{:.1%}".format(abs(1 - guest_team_win_prob + home_team_win_prob))
+                return "Draw" + ": " + "{:.1%}".format(draw_prob)
         except KeyError:
             # prevents other modules from failing by casting no prediction/draw
             return "Prediction failed. Check training DataFrame for errors"
