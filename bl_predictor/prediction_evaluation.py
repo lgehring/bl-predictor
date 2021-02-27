@@ -547,7 +547,9 @@ class WholeDataFrequencies:
 
 
 # testset = crawler.fetch_data([1, 2003], [34, 2019])
-# ModelEvaluator("FrequencyModel", testset, 90).print_results(True)
-# ModelCompare("FrequencyModel", "PoissonModel", testset, 90).print_results()
+# ModelEvaluator("FrequencyModel", testset, 100).print_results(True)
+# ModelEvaluator("PoissonModel", testset, 100).print_results(True)
+# ModelEvaluator("BettingPoissonModel", testset, 100).print_results(True)
+# ModelCompare("FrequencyModel", "PoissonModel", testset, 100).print_results()
 # ModelByTimespan(["BettingPoissonModel", "PoissonModel", "FrequencyModel"],
-# 90, 2003, 2019).multiple_models_f1(True)
+#                 100, 2003, 2019).multiple_models_accuracy(True)

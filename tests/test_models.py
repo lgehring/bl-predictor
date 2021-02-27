@@ -56,10 +56,10 @@ draw_train = pd.DataFrame([
 @pytest.mark.parametrize(
     "model,trainset,home_team,guest_team,expected",
     [  # FrequencyModel tests
-        ("FrequencyModel", norm_train, 'A', 'B', 'Draw: 100.0%'),
-        ("FrequencyModel", norm_train, 'B', 'A', 'Draw: 100.0%'),
-        ("FrequencyModel", norm_train, 'C', 'A', 'C: 50.0%'),
-        ("FrequencyModel", norm_train, 'C', 'B', 'C: 50.0%'),
+        ("FrequencyModel", norm_train, 'A', 'B', 'Draw: 0.0%'),
+        ("FrequencyModel", norm_train, 'B', 'A', 'Draw: 0.0%'),
+        ("FrequencyModel", norm_train, 'C', 'A', 'Draw: 50.0%'),
+        ("FrequencyModel", norm_train, 'C', 'B', 'Draw: 50.0%'),
         ("FrequencyModel", norm_train, 'A', 'D', 'Not enough data'),
         ("FrequencyModel", nonsense_matches, 'B', 'C', 'C: 100.0%'),
         ("FrequencyModel", nonsense_matches, 'C', 'B', 'C: 100.0%'),
@@ -67,7 +67,7 @@ draw_train = pd.DataFrame([
         ("FrequencyModel", empty_data, 'C', 'A', 'Not enough data'),
         ("FrequencyModel", empty_data, 'B', 'C', 'Not enough data'),
         ("FrequencyModel", empty_data, 'C', 'A', 'Not enough data'),
-        ("FrequencyModel", too_many_columns, 'A', 'B', 'Draw: 100.0%'),
+        ("FrequencyModel", too_many_columns, 'A', 'B', 'Draw: 0.0%'),
         ("FrequencyModel", missing_column, 'C', 'B', 'Prediction failed. '
                                                      'Check training '
                                                      'DataFrame for errors'),
