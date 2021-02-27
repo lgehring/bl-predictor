@@ -41,14 +41,8 @@ class MainWindow:
         """
         self.test = test
         self.root = tk.Tk()
+        # initialize Frame for results
         self.right = ttk.Frame(self.root)
-        self.right.grid(row=3, column=5, padx=2, pady=5, rowspan=40,
-                        sticky="N")
-        self.result_label = ttk.Label(self.root,
-                                      text="Results",
-                                      font=("Calibri Light", 20, 'bold'))
-        self.result_label.grid(row=2, column=5, padx=180, pady=10,
-                               sticky=tk.S)
 
         self.crawler_data = pd.DataFrame()
         self.picked_home_team = None
@@ -56,9 +50,15 @@ class MainWindow:
         # This boolean variable keeps track of the current main window theme
         self.default_theme = True
         self.current_season = crawler.get_current_date()[1]
-        self.root.grid_rowconfigure(21, weight=1)
+
+        # path of gui.py
+        self.gui_path = os.path.abspath(__file__)
+        # path to team project
+        self.dir_path = os.path.dirname(self.gui_path)
+
+        self.style = ThemedStyle(self.root)
+
         self.show_window()
-        self.root.grid_columnconfigure(2, weight=1)
 
     def show_window(self):
         """
@@ -74,18 +74,22 @@ class MainWindow:
         self.root.state('zoomed')
         self.root.attributes("-fullscreen", True)
 
-        # Sets the theme
-        style = ThemedStyle(self.root)
-        style.set_theme("arc")
-        self.root.config(bg="#f5f6f7")
-        # Sets the logo
-        gui_path = os.path.abspath(__file__)
-        # path to team project
-        dir_path = os.path.dirname(gui_path)
-        logo = tk.PhotoImage(file=os.path.join(dir_path,
-                                               "bl-predictor_logo.png"))
-        self.root.iconphoto(False, logo)
+        self.root.grid_rowconfigure(21, weight=1)
+        self.root.grid_columnconfigure(2, weight=1)
 
+        self.right.grid(row=3, column=5, padx=2, pady=5, rowspan=40,
+                        sticky="N")
+
+        result_label = ttk.Label(self.root,
+                                 text="Results",
+                                 font=("Calibri Light", 20, 'bold'))
+        result_label.grid(row=2, column=5, padx=180, pady=10,
+                          sticky=tk.S)
+        # Sets the theme
+        self.style.set_theme("arc")
+        self.root.config(bg="#f5f6f7")
+
+        # Adding space to edge
         upper_space = ttk.Label(self.root,
                                 text="",
                                 font=20)
@@ -101,6 +105,7 @@ class MainWindow:
         self._blpredictor_logo()
         self._timeframe_slider()
 
+        # if an object is made for testing it does not have a mainloop
         if self.test != "test":
             self.root.mainloop()
 
@@ -133,10 +138,9 @@ class MainWindow:
         """
         Activates Night Theme for whole window
         """
-        style = ThemedStyle(self.root)
-        style.set_theme("equilux")
-        self.root.config(
-            bg="#464646")  # equilux's background color is dark grey
+        self.style.set_theme("equilux")
+        # equilux's background color is dark grey
+        self.root.config(bg="#464646")
         self.slider.canv.configure(bg="#464646")
         self.slider.canv.itemconfig(self.slider.id_value, fill="#a6a6a6")
         self.my_canvas_final.config(bg='#464646')
@@ -145,10 +149,9 @@ class MainWindow:
         """
         Goes back to to Default Theme for whole window
         """
-        style = ThemedStyle(self.root)
-        style.set_theme("arc")
-        self.root.config(
-            bg="#f5f6f7")  # arc's background color is almost white
+        self.style.set_theme("arc")
+        # arc's background color is almost white
+        self.root.config(bg="#f5f6f7")
         self.slider.canv.configure(bg="#f5f6f7")
         self.slider.canv.itemconfig(self.slider.id_value, fill="#5c616c")
         self.my_canvas_final.config(bg='#f5f6f7')
@@ -164,17 +167,17 @@ class MainWindow:
         self.date_label.grid(row=0, columnspan=2, padx=3, sticky=tk.NW)
 
         # signals crawler to crawl unfinished matches
-        current_season = crawler.fetch_data([0, 0], [0, 0])
+        unfinished_matches = crawler.fetch_data([0, 0], [0, 0])
         num_games_a_day = 9
 
         # checking if first 9 games of current season are on the same day
         for i in range(num_games_a_day):
-            if current_season['matchday'][i] \
-                    != current_season['matchday'][i + 1]:
+            if unfinished_matches['matchday'][i] \
+                    != unfinished_matches['matchday'][i + 1]:
                 first_game = i + 1
-                matchday = current_season.loc[i + 1:i + 9]
+                matchday = unfinished_matches.loc[i + 1:i + 9]
 
-        upcoming_matchday = current_season['matchday'][0]
+        upcoming_matchday = unfinished_matches['matchday'][0]
         padding = 3
 
         matchday_label = \
@@ -196,18 +199,15 @@ class MainWindow:
         matchdaygames_label.grid(pady=padding, padx=15, row=4, column=1,
                                  columnspan=3)
 
-        # path of gui.py
-        # gui_path = os.path.abspath(__file__)
-        # path to team project
-        # dir_path = os.path.dirname(gui_path)
         last_game = first_game + 9
         rowcount = 1
         for i in range(first_game, last_game):
             # loads the logos into gui
             # self.image1 = Image.open(
-            #    dir_path + "/team_logos/" + matchday['home_team'][i] + ".png")
+            #    self.dir_path + "/team_logos/" + matchday['home_team'][i]
+            #                                               + ".png")
             # self.image2 = Image.open(
-            #    dir_path + "/team_logos/" + matchday['guest_team'][i]
+            #    self.dir_path + "/team_logos/" + matchday['guest_team'][i]
             #    + ".png")
             # self.image1 = self.image1.resize((30, 30), Image.ANTIALIAS)
             # self.image2 = self.image2.resize((30, 30), Image.ANTIALIAS)
@@ -261,13 +261,10 @@ class MainWindow:
                                   sticky='SW')
 
         # Import the logo image and put it in the canvas
-        gui_path = os.path.abspath(__file__)
-        # path to team project
-        dir_path = os.path.dirname(gui_path)
-        self.logo_path = Image.open(os.path.join(dir_path,
-                                                 "bl-predictor_logo.png"))
-        self.logo_resized = self.logo_path.resize((100, 100), Image.ANTIALIAS)
-        self.logo_final = ImageTk.PhotoImage(self.logo_resized)
+        logo_path = Image.open(os.path.join(self.dir_path,
+                                            "bl-predictor_logo.png"))
+        logo_resized = logo_path.resize((100, 100), Image.ANTIALIAS)
+        self.logo_final = ImageTk.PhotoImage(logo_resized)
         self.my_canvas_final.create_image(0, 0, image=self.logo_final,
                                           anchor="nw")
 
@@ -275,9 +272,9 @@ class MainWindow:
         """
         Builds a slider ro adjust the to crawl period.
         """
-        self.period_label = ttk.Label(text="Choose a period of time:",
-                                      font=("Calibri Light", 13))
-        self.period_label.grid(row=2, column=4)
+        period_label = ttk.Label(text="Choose a period of time:",
+                                 font=("Calibri Light", 13))
+        period_label.grid(row=2, column=4)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=300,
@@ -323,13 +320,13 @@ class MainWindow:
         first_day_of_season = 1
         last_day_of_season = 34
 
-        self.slider_first_value = self.slider.get_values()[0]
-        self.slider_last_value = self.slider.get_values()[1]
+        slider_first_value = self.slider.get_values()[0]
+        slider_last_value = self.slider.get_values()[1]
 
         self.crawler_data = crawler.fetch_data([first_day_of_season,
-                                                int(self.slider_first_value)],
+                                                int(slider_first_value)],
                                                [last_day_of_season,
-                                                int(self.slider_last_value)])
+                                                int(slider_last_value)])
         self.act_crawler_button.config(text='Download complete')
         self.act_crawler_button.config(state=tk.DISABLED)
         # add time range label to results
@@ -337,10 +334,11 @@ class MainWindow:
                                           text=("\nTime range: "
                                                 + "1st of "
                                                 + str(int(
-                                                      self.slider_first_value))
+                                                      slider_first_value))
                                                 + " until "
-                                                  "34th of " + str(int(
-                                                      self.slider_last_value)))
+                                                  "34th of "
+                                                + str(int(
+                                                      slider_last_value)))
                                           )
         self.time_range_label.configure(font="Verdana 15 bold")
         self.time_range_label.pack(in_=self.right)
@@ -369,7 +367,6 @@ class MainWindow:
                                         model_list[0],
                                         *model_list)
         self.model_opt.grid(row=7, column=4)
-
         # Show train model button
         self._train_model()
 
@@ -393,12 +390,12 @@ class MainWindow:
         self.train_ml_button.config(text='Model trained')
         self.train_ml_button.config(state=tk.DISABLED)
 
-        self.result_model_label = ttk.Label(self.right,
-                                            text=("\nCalculated with: "
-                                                  + self.model_variable.get()
-                                                  ))
-        self.result_model_label.configure(font="Verdana 15 bold")
-        self.result_model_label.pack(in_=self.right)
+        result_model_label = ttk.Label(self.right,
+                                       text=("\nCalculated with: "
+                                             + self.model_variable.get()
+                                             ))
+        result_model_label.configure(font="Verdana 15 bold")
+        result_model_label.pack(in_=self.right)
         # Show team selection menu
         self._choose_teams()
 
@@ -456,11 +453,12 @@ class MainWindow:
         it's finished. A label will let you know if there is not enough data
         for the prediction.
         """
-        self.winner = self.trained_model.predict_winner(
+        winner = self.trained_model.predict_winner(
             self.picked_home_team.get(),
             self.picked_guest_team.get())
         self.prediction_button.config(text='Winner predicted')
-        # delete first result, if too many for window
+
+        # delete first result, if necessary
         result_frame_y = self.right.winfo_height()
         height_window = 330
         results = self.right.winfo_children()
@@ -475,17 +473,14 @@ class MainWindow:
             else:
                 results[2].destroy()
 
-        if self.winner is None:
+        if winner is None:
             # No matches in data
-            self.winner = "Not enough data"
+            winner = "Not enough data"
 
         self.prediction = ttk.Label(self.right, font="Verdana 13")
-
-        self.prediction.configure(text="\n"
-                                       + self.winner
-                                          )
-
+        self.prediction.configure(text="\n" + winner)
         self.prediction.pack(in_=self.right)
+
         self._reset_teams_button()
         self._reset_button()
         self._reset_model_button()
