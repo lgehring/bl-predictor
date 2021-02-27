@@ -162,7 +162,7 @@ class MainWindow:
         date and time of the matches, the teams that are going to
         play and their logos.
         """
-        now = date.today()
+        now = date.today().strftime("%a %d.%m.%y")
         self.date_label = ttk.Label(text=now)
         self.date_label.grid(row=0, columnspan=2, padx=3, sticky=tk.NW)
 
@@ -182,22 +182,12 @@ class MainWindow:
 
         matchday_label = \
             ttk.Label(
-                text="Upcoming Matches: ",
+                text="Upcoming: " + "Season " + str(self.current_season)
+                     + ", Matchday " + str(upcoming_matchday),
                 font=("Calibri Light", 30, 'bold'))
 
         matchday_label.grid(pady=padding, padx=15, row=2, column=1,
                             columnspan=3)
-
-        matchdaygames_label = ttk.Label(
-            text="Matchday " + str(upcoming_matchday),
-            font=("Calibri Light", 24, 'bold'))
-        matchseason_label = ttk.Label(
-            text="Season " + str(self.current_season),
-            font=("Calibri Light", 27, 'bold'))
-        matchseason_label.grid(pady=padding, padx=15, row=3, column=1,
-                               columnspan=3)
-        matchdaygames_label.grid(pady=padding, padx=15, row=4, column=1,
-                                 columnspan=3)
 
         last_game = first_game + 9
         rowcount = 1
@@ -221,9 +211,10 @@ class MainWindow:
             # shows date and time of each match
             if i == first_game or \
                     matchday['date_time'][i] != matchday['date_time'][i - 1]:
-                day_label = ttk.Label(text=matchday['date_time'][i].strftime("%a %d.%m. %H:%M"),
-                                      font=("Calibri Light", 17, 'bold'))
-                day_label.grid(pady=padding, row=4 + rowcount,
+                day_label = ttk.Label(
+                    text=matchday['date_time'][i].strftime("%a %d.%m. %H:%M"),
+                    font=("Calibri Light", 17, 'bold'))
+                day_label.grid(pady=padding, row=3 + rowcount,
                                column=1, columnspan=3)
                 rowcount += 1
             # shows match
@@ -234,12 +225,12 @@ class MainWindow:
             guest_label = ttk.Label(text=matchday['guest_team'][i],
                                     font=("Calibri Light", 17))
 
-            home_label.grid(pady=padding, row=4 + rowcount,
+            home_label.grid(pady=padding, row=3 + rowcount,
                             column=1, sticky=tk.E)
             # self.panel1.grid(row=2 * i, column=1)
-            versus_label.grid(pady=padding, row=4 + rowcount, column=2)
+            versus_label.grid(pady=padding, row=3 + rowcount, column=2)
             # self.panel2.grid(row=2 * i, column=3)
-            guest_label.grid(pady=padding, row=4 + rowcount,
+            guest_label.grid(pady=padding, row=3 + rowcount,
                              column=3, sticky=tk.W)
             rowcount += 1
 
