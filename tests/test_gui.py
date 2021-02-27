@@ -1,3 +1,5 @@
+from datetime import date
+
 from bl_predictor import gui
 
 
@@ -10,7 +12,7 @@ def test_gui():
 
     assert (tested_gui.picked_home_team is None)
     assert (tested_gui.picked_guest_team is None)
-    assert (tested_gui.period_label.cget("text") == "Choose a period of time:")
+    assert (tested_gui.date_label.cget("text") == str(date.today()))
     # timeframe slider
     assert (tested_gui.slider.W == 300)
     assert (tested_gui.act_crawler_button.cget("text")
@@ -41,7 +43,7 @@ def test_gui():
     assert (not tested_gui.reset_teams_button.winfo_viewable())
     # testing reset model button
     assert (tested_gui.reset_model_button.cget("text")
-            == "chose new model")
+            == "choose new model")
     tested_gui._reset_model()
     assert (not tested_gui.reset_model_button.winfo_viewable())
     # testing reset button
