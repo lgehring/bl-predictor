@@ -12,7 +12,8 @@ def test_gui():
 
     assert (tested_gui.picked_home_team is None)
     assert (tested_gui.picked_guest_team is None)
-    assert (tested_gui.date_label.cget("text") == str(date.today()))
+    assert (tested_gui.date_label.cget("text") == str(
+        date.today().strftime("%a %d.%m.%y")))
     # timeframe slider
     assert (tested_gui.slider.W == 300)
     assert (tested_gui.act_crawler_button.cget("text")

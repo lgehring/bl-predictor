@@ -82,7 +82,7 @@ class MainWindow:
 
         result_label = ttk.Label(self.root,
                                  text="Results",
-                                 font=("Calibri Light", 20, 'bold'))
+                                 font=("Calibri Light", 25, 'bold'))
         result_label.grid(row=2, column=5, padx=180, pady=10,
                           sticky=tk.S)
         # Sets the theme
@@ -163,7 +163,7 @@ class MainWindow:
         play and their logos.
         """
         now = date.today().strftime("%a %d.%m.%y")
-        self.date_label = ttk.Label(text=now)
+        self.date_label = ttk.Label(text=now, font="Calibri 12")
         self.date_label.grid(row=0, columnspan=2, padx=3, sticky=tk.NW)
 
         # signals crawler to crawl unfinished matches
@@ -182,15 +182,15 @@ class MainWindow:
 
         matchday_label = \
             ttk.Label(
-                text="Upcoming: " + "Season " + str(self.current_season)
-                     + ", Matchday " + str(upcoming_matchday),
-                font=("Calibri Light", 30, 'bold'))
+                text="Upcoming: " + "Matchday " + str(upcoming_matchday)
+                     + ", " + str(self.current_season),
+                font=("Calibri Light", 25, 'bold'))
 
         matchday_label.grid(pady=padding, padx=15, row=2, column=1,
                             columnspan=3)
 
         last_game = first_game + 9
-        rowcount = 1
+        rowcount = 0
         for i in range(first_game, last_game):
             # loads the logos into gui
             # self.image1 = Image.open(
@@ -219,11 +219,11 @@ class MainWindow:
                 rowcount += 1
             # shows match
             home_label = ttk.Label(text=matchday['home_team'][i],
-                                   font=("Calibri Light", 17))
+                                   font=("Calibri", 17))
             versus_label = ttk.Label(text="| vs |",
-                                     font=("Calibri Light", 17))
+                                     font=("Calibri", 17))
             guest_label = ttk.Label(text=matchday['guest_team'][i],
-                                    font=("Calibri Light", 17))
+                                    font=("Calibri", 17))
 
             home_label.grid(pady=padding, row=3 + rowcount,
                             column=1, sticky=tk.E)
@@ -235,8 +235,7 @@ class MainWindow:
             rowcount += 1
 
             self.root.grid_columnconfigure(0, weight=0)
-            self.root.grid_columnconfigure(3, weight=1)
-            self.root.grid_columnconfigure(4, weight=0)
+            self.root.grid_columnconfigure(4, weight=1)
 
     def _blpredictor_logo(self):
         """
@@ -264,10 +263,10 @@ class MainWindow:
         """
         Builds a slider ro adjust the to crawl period.
         """
-        headline = ttk.Label(text="headline",
-                             font=("Calibri Light", 15, 'bold'))
+        headline = ttk.Label(text="Prediction configuration",
+                             font=("Calibri Light", 25, 'bold'))
         headline.grid(row=2, column=4)
-        period_label = ttk.Label(text="Choose a period of time:",
+        period_label = ttk.Label(text="Training set timespan:",
                                  font=("Calibri Light", 13))
         period_label.grid(row=3, column=4)
 
@@ -324,19 +323,7 @@ class MainWindow:
                                                 int(slider_last_value)])
         self.act_crawler_button.config(text='Download complete')
         self.act_crawler_button.config(state=tk.DISABLED)
-        # add time range label to results
-        self.time_range_label = ttk.Label(self.right,
-                                          text=("\nTime range: "
-                                                + "1st of "
-                                                + str(int(
-                                                      slider_first_value))
-                                                + " until "
-                                                  "34th of "
-                                                + str(int(
-                                                      slider_last_value)))
-                                          )
-        self.time_range_label.configure(font="Verdana 15 bold")
-        self.time_range_label.pack(in_=self.right)
+
         # Show model selection menu
         self._choose_model()
 
@@ -385,11 +372,12 @@ class MainWindow:
         self.train_ml_button.config(text='Model trained')
         self.train_ml_button.config(state=tk.DISABLED)
 
-        result_model_label = ttk.Label(self.right,
-                                       text=("\nCalculated with: "
-                                             + self.model_variable.get()
-                                             ))
-        result_model_label.configure(font="Verdana 15 bold")
+        result_model_label = ttk.Label(
+            self.right, text=("\n"
+                              + self.model_variable.get() + ", "
+                              + str(int(self.slider.get_values()[0])) + " to "
+                              + str(int(self.slider.get_values()[1])) + ":"))
+        result_model_label.configure(font="Verdana 13 bold")
         result_model_label.pack(in_=self.right)
         # Show team selection menu
         self._choose_teams()
@@ -458,18 +446,13 @@ class MainWindow:
         height_window = 330
         results = self.right.winfo_children()
         if result_frame_y >= height_window:
-            if results[4].cget("text")[0:4] == "\nTim":
-                results[1].destroy()
-                results[3].destroy()
+            if "Model" in results[3].cget("text"):
                 results[2].destroy()
                 results[0].destroy()
-            elif results[4].cget("text")[0:4] == "\nCal":
-                results[2].destroy()
-                results[3].destroy()
                 results[1].destroy()
             else:
+                results[1].destroy()
                 results[2].destroy()
-                results[3].destroy()
 
         if winner is None:
             # No matches in data
