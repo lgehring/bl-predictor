@@ -221,7 +221,7 @@ class MainWindow:
             # shows date and time of each match
             if i == first_game or \
                     matchday['date_time'][i] != matchday['date_time'][i - 1]:
-                day_label = ttk.Label(text=matchday['date_time'][i],
+                day_label = ttk.Label(text=matchday['date_time'][i].strftime("%a %d.%m. %H:%M"),
                                       font=("Calibri Light", 17, 'bold'))
                 day_label.grid(pady=padding, row=4 + rowcount,
                                column=1, columnspan=3)
@@ -478,7 +478,12 @@ class MainWindow:
             winner = "Not enough data"
 
         self.prediction = ttk.Label(self.right, font="Verdana 13")
-        self.prediction.configure(text="\n" + winner)
+        self.prediction.configure(text="\n"
+                                       + (self.picked_home_team.get() + " vs "
+                                          + self.picked_guest_team.get()
+                                          + ": "
+                                          + winner
+                                          ))
         self.prediction.pack(in_=self.right)
 
         self._reset_teams_button()
