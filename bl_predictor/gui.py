@@ -235,7 +235,8 @@ class MainWindow:
             rowcount += 1
 
             self.root.grid_columnconfigure(0, weight=0)
-            self.root.grid_columnconfigure(4, weight=1)
+            self.root.grid_columnconfigure(3, weight=1)
+            self.root.grid_columnconfigure(4, weight=0)
 
     def _blpredictor_logo(self):
         """
