@@ -45,6 +45,7 @@ def test_fetch_data_exc():
     pytest.warns(Warning, crawler.fetch_data, [0, 2014], [2, 2014])
     pytest.warns(Warning, crawler.fetch_data, [1, 1997], [8, 2004])
 
+
 @pytest.mark.parametrize(
     "start, end",
     [

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="bl-predictor",
-    version="0.0a1",
+    version="0.0a7",
     author="Lukas Gehring, Anabel Stammer, Alex Brylka and "
            "Fabricio Aguilera-Galviz",
     author_email="l.gehring@student.uni-tuebingen.de",
@@ -23,14 +23,14 @@ setuptools.setup(
         "Intended Audience :: End Users/Desktop",
         "Natural Language :: English",
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     entry_points={
         'console_scripts': [
             'bl-predictor-gui = bl_predictor.__main__:main',
         ],
     },
     include_package_data=True,
-    package_data={'': ['team_logos/*']},
+    package_data={'': ['*.csv', '*.png']},
     install_requires=['pandas~=1.1.3',
                       'setuptools~=50.3.0',
                       'statsmodels~=0.12.1',
@@ -42,5 +42,6 @@ setuptools.setup(
                       'pillow~=8.1.0',
                       'lxml~=4.6.1',
                       'tabulate~=0.8.7',
-                      'scikit-learn~=0.24.1'],
+                      'scikit-learn~=0.24.1',
+                      'ttkthemes~=3.2.2'],
 )
