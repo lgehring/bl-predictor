@@ -483,8 +483,11 @@ class MainWindow:
         self.prediction = ttk.Label(self.right, font="Verdana 13")
 
         self.prediction.configure(text="\n"
-                                       + self.winner
-                                          )
+                                       + (self.picked_home_team.get() + " vs "
+                                          + self.picked_guest_team.get()
+                                          + ": "
+                                          + self.winner
+                                          ))
 
         self.prediction.pack(in_=self.right)
         self._reset_teams_button()
