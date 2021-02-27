@@ -263,9 +263,12 @@ class MainWindow:
         """
         Builds a slider ro adjust the to crawl period.
         """
+        headline = ttk.Label(text="headline",
+                             font=("Calibri Light", 15, 'bold'))
+        headline.grid(row=2, column=4)
         period_label = ttk.Label(text="Choose a period of time:",
                                  font=("Calibri Light", 13))
-        period_label.grid(row=2, column=4)
+        period_label.grid(row=3, column=4)
 
         first_recorded_bl_year = 2003  # 1964, Openliga has only new matches
         self.slider = Slider(self.root, width=300,
@@ -275,7 +278,7 @@ class MainWindow:
                              init_lis=[first_recorded_bl_year + 0.4,  # padding
                                        self.current_season],
                              show_value=True)
-        self.slider.grid(row=3, column=4)
+        self.slider.grid(row=4, column=4)
 
         if self.default_theme:
             self.slider.canv.configure(bg="#f5f6f7")
@@ -292,13 +295,13 @@ class MainWindow:
         self.download_time_label = ttk.Label(
             text="Downloading might take a while",
             font=("Calibri Light", 13))
-        self.download_time_label.grid(row=4, column=4)
+        self.download_time_label.grid(row=5, column=4)
 
         self.act_crawler_button = ttk.Button(
             self.root,
             text="Download Data",
             command=self._activate_crawler_helper)
-        self.act_crawler_button.grid(row=5, column=4)
+        self.act_crawler_button.grid(row=6, column=4)
 
     def _activate_crawler_helper(self):
         """
@@ -350,14 +353,14 @@ class MainWindow:
 
         # Menu title shown above
         self.model_label = ttk.Label(text="Choose a prediction model:")
-        self.model_label.grid(row=6, column=4)
+        self.model_label.grid(row=7, column=4)
         # Initialize options
         self.model_variable = tk.StringVar(self.root)
         self.model_variable.set(model_list[0])
         self.model_opt = ttk.OptionMenu(self.root, self.model_variable,
                                         model_list[0],
                                         *model_list)
-        self.model_opt.grid(row=7, column=4)
+        self.model_opt.grid(row=8, column=4)
         # Show train model button
         self._train_model()
 
@@ -369,7 +372,7 @@ class MainWindow:
             self.root,
             text="Train prediction model",
             command=self._train_model_helper)
-        self.train_ml_button.grid(row=8, column=4)
+        self.train_ml_button.grid(row=9, column=4)
 
     def _train_model_helper(self):
         """
@@ -405,25 +408,25 @@ class MainWindow:
 
         # home team dropdown list
         self.ht_label = ttk.Label(self.root, text="Home team:")
-        self.ht_label.grid(row=9, column=4)
+        self.ht_label.grid(row=10, column=4)
 
         self.picked_home_team = tk.StringVar(self.root)
         self.picked_home_team.set(option_list[0])
         self.ht_opt = ttk.OptionMenu(self.root, self.picked_home_team,
                                      option_list[0],
                                      *option_list)
-        self.ht_opt.grid(row=10, column=4)
+        self.ht_opt.grid(row=11, column=4)
 
         # guest team dropdown list
         self.gt_label = ttk.Label(self.root, text="Guest team:")
-        self.gt_label.grid(row=11, column=4)
+        self.gt_label.grid(row=12, column=4)
 
         self.picked_guest_team = tk.StringVar(self.root)
         self.picked_guest_team.set(option_list[0])
         self.gt_opt = ttk.OptionMenu(self.root, self.picked_guest_team,
                                      option_list[0],
                                      *option_list)
-        self.gt_opt.grid(row=12, column=4)
+        self.gt_opt.grid(row=13, column=4)
 
         # Show prediction button
         self._make_prediction()
@@ -436,7 +439,7 @@ class MainWindow:
             self.root,
             text="Show predicted winner!",
             command=self._make_prediction_helper)
-        self.prediction_button.grid(row=13, column=4)
+        self.prediction_button.grid(row=14, column=4)
 
     def _make_prediction_helper(self):
         """
@@ -454,15 +457,18 @@ class MainWindow:
         height_window = 330
         results = self.right.winfo_children()
         if result_frame_y >= height_window:
-            if results[3].cget("text")[0:4] == "\nTim":
+            if results[4].cget("text")[0:4] == "\nTim":
                 results[1].destroy()
+                results[3].destroy()
                 results[2].destroy()
                 results[0].destroy()
-            elif results[3].cget("text")[0:4] == "\nCal":
+            elif results[4].cget("text")[0:4] == "\nCal":
                 results[2].destroy()
+                results[3].destroy()
                 results[1].destroy()
             else:
                 results[2].destroy()
+                results[3].destroy()
 
         if winner is None:
             # No matches in data
@@ -473,9 +479,13 @@ class MainWindow:
                                        + (self.picked_home_team.get() + " vs "
                                           + self.picked_guest_team.get()
                                           + ": "
-                                          + winner
                                           ))
+
+        self.prediction_percent = ttk.Label(self.right, text=winner,
+                                            font="Verdana 13 bold ")
+
         self.prediction.pack(in_=self.right)
+        self.prediction_percent.pack(in_=self.right)
 
         self._reset_teams_button()
         self._reset_button()
