@@ -168,14 +168,11 @@ class MainWindow:
 
         # signals crawler to crawl unfinished matches
         unfinished_matches = crawler.fetch_data([0, 0], [0, 0])
+        pd.set_option("display.max_rows", None, "display.max_columns", None)
+        print(unfinished_matches)
         num_games_a_day = 9
-
-        # checking if first 9 games of current season are on the same day
-        for i in range(num_games_a_day):
-            if unfinished_matches['matchday'][i] \
-                    != unfinished_matches['matchday'][i + 1]:
-                first_game = i + 1
-                matchday = unfinished_matches.loc[i + 1:i + 9]
+        first_game = 0
+        matchday = unfinished_matches.loc[first_game:first_game + 9]
 
         upcoming_matchday = unfinished_matches['matchday'][0]
         padding = 3
