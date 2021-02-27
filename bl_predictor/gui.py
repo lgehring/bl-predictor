@@ -116,6 +116,7 @@ class MainWindow:
         menu_bar.add_cascade(label="Options", menu=switch_theme_menu)
         switch_theme_menu.add_command(
             label="Switch Theme", command=self.switch_theme)
+        switch_theme_menu.add_separator()
         switch_theme_menu.add_command(label="Exit", command=self.root.destroy)
 
     def switch_theme(self):
