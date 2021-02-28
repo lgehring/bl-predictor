@@ -10,7 +10,8 @@
 [![flake8](https://github.com/lgehring/bl-predictor/workflows/pep8/badge.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![CodeQL](https://github.com/lgehring/bl-predictor/workflows/CodeQL/badge.svg)](https://codeql.github.com/docs/codeql-overview/)
 <br />
-<span style="font-family:Helvetica; font-size:1em; font-weight:bold">
+<span style="font-family:Helvetica; font-size:1em; font-weight:bold">  
+
 Bl-predictor is a simple application for predicting game results for the German 1. Bundesliga.  
 It features a clean graphical user interface (including DarkMode to spare your eyes), automatic data crawling, a variety of
 prediction-models to choose from, and a few built-in model evaluation tools.
