@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="bl-predictor",
-    version="0.0a7",
+    version="1.0",
     author="Lukas Gehring, Anabel Stammer, Alex Brylka and "
            "Fabricio Aguilera-Galviz",
     author_email="l.gehring@student.uni-tuebingen.de",
@@ -16,10 +16,10 @@ setuptools.setup(
     url="https://github.com/lgehring/bl-predictor",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: End Users/Desktop",
         "Natural Language :: English",
     ],
