@@ -1,5 +1,4 @@
-# bl-predictor
-<img src="https://raw.githubusercontent.com/lgehring/bl-predictor/master/bl-predictor_logo.svg" width="150" align="right">  
+# bl-predictor <img src="https://raw.githubusercontent.com/lgehring/bl-predictor/master/bl-predictor_logo.svg" width="150" align="right">  
 
 [![Code quality](https://www.code-inspector.com/project/17966/score/svg)](https://frontend.code-inspector.com/public/project/17966/bl-predictor/dashboard) 
 [![Coverage status](https://coveralls.io/repos/github/lgehring/bl-predictor/badge.svg)](https://coveralls.io/github/lgehring/bl-predictor) 
