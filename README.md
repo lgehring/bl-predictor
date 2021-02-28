@@ -1,5 +1,6 @@
-<span style="font-family:Calibri; font-size:4em; font-weight:bold">bl-predictor</span>
+# bl-predictor
 <img src="https://raw.githubusercontent.com/lgehring/bl-predictor/master/bl-predictor_logo.svg" width="150" align="right">  
+
 [![Code quality](https://www.code-inspector.com/project/17966/score/svg)](https://frontend.code-inspector.com/public/project/17966/bl-predictor/dashboard) 
 [![Coverage status](https://coveralls.io/repos/github/lgehring/bl-predictor/badge.svg)](https://coveralls.io/github/lgehring/bl-predictor) 
 [![PyPI](https://img.shields.io/pypi/v/bl-predictor)](https://pypi.org/project/bl-predictor/)
@@ -43,14 +44,14 @@ You can switch to dark mode or exit the application under "Options" in the top-l
 <center> <img src="https://media.giphy.com/media/dQ8b4Lf5XasFzFpUEQ/giphy.gif" alt="dark mode"/></center>  
 
 ## Prediction models
-####PoissonModel
+#### PoissonModel
 A model that predicts the winning team out of two given teams, based on a poisson regression model.  
 **Caution:** The model is sensitive to the order of given teams, because the home_team scores better on average!
 This model is heavily based on a [guideline from David Sheehan](https://dashee87.github.io/football/python/predicting-football-results-with-statistical-modelling/).
-####BettingPoissonModel
+#### BettingPoissonModel
 A adaptation of the PoissonModel improved for betting.  
 If no relevant (>10%) difference in the teams winning probabilities is present, "Draw" is returned.
-####FrequencyModel
+#### FrequencyModel
 A model that uses all results of the last seasons to predict a winner based on the relative frequency of wins.
 
 ## Model Evaluation
@@ -74,10 +75,10 @@ The results will either be given as printout in the console or as plots.png and 
 </center>
 
 <a href="https://imgbb.com/"><img src="https://i.ibb.co/X51FwxH/Model-Compare.jpg" alt="Model-Compare" border="0"></a>
-<center>
 
+<center>
 <a href="https://ibb.co/CMH88xf"><img src="https://i.ibb.co/wwzggDf/Accuracy-over-time.png" alt="Accuracy-over-time" border="0"></a>
-</center>
+</center>  
 
 ## License
 bl-predictor is made available under the [MIT-License](LICENSE.txt)  
