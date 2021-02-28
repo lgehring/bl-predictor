@@ -1,4 +1,6 @@
-# bl-predictor <img src="https://raw.githubusercontent.com/lgehring/bl-predictor/master/bl-predictor_logo.svg" width="150" align="right">  
+# bl-predictor <img src="https://www.python.org/static/community_logos/python-powered-w-70x28.png" alt="Python powered" align="right">  
+<img src="https://raw.githubusercontent.com/lgehring/bl-predictor/master/bl-predictor_logo.svg" width="150" align="right">
+
 
 [![Code quality](https://www.code-inspector.com/project/17966/score/svg)](https://frontend.code-inspector.com/public/project/17966/bl-predictor/dashboard) 
 [![Coverage status](https://coveralls.io/repos/github/lgehring/bl-predictor/badge.svg)](https://coveralls.io/github/lgehring/bl-predictor) 
@@ -7,7 +9,6 @@
 [![pytest](https://github.com/lgehring/bl-predictor/workflows/pytest/badge.svg)](https://github.com/lgehring/bl-predictor/tree/main/tests) 
 [![flake8](https://github.com/lgehring/bl-predictor/workflows/pep8/badge.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![CodeQL](https://github.com/lgehring/bl-predictor/workflows/CodeQL/badge.svg)](https://codeql.github.com/docs/codeql-overview/)
-<img src="https://www.python.org/static/community_logos/python-powered-w-70x28.png" alt="Python powered" align="right">  
 <br />
 <span style="font-family:Helvetica; font-size:1em; font-weight:bold">
 Bl-predictor is a simple application for predicting game results for the German 1. Bundesliga.  
