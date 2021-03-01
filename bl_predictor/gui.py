@@ -169,7 +169,6 @@ class MainWindow:
         # signals crawler to crawl unfinished matches
         unfinished_matches = crawler.fetch_data([0, 0], [0, 0])
         pd.set_option("display.max_rows", None, "display.max_columns", None)
-        print(unfinished_matches)
         first_game = 0
         matchday = unfinished_matches.loc[first_game:first_game + 9]
 
