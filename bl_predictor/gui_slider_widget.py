@@ -28,7 +28,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-
+import math
 from tkinter import Canvas
 from tkinter import Frame
 
@@ -136,7 +136,7 @@ class Slider(Frame):
             self.id_value = self.canv.create_text(x,
                                                   y_value,
                                                   text=format(
-                                                      value,
+                                                      math.floor(value),
                                                       Slider.DIGIT_PRECISION),
                                                   fill="#5c616c"
                                                   )
