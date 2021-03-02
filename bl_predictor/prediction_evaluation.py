@@ -546,10 +546,24 @@ class WholeDataFrequencies:
                                          / num_of_guest_team_games)
 
 
-# testset = crawler.fetch_data([1, 2003], [34, 2019])
-# ModelEvaluator("FrequencyModel", testset, 100).print_results(True)
-# ModelEvaluator("PoissonModel", testset, 100).print_results(True)
-# ModelEvaluator("BettingPoissonModel", testset, 100).print_results(True)
-# ModelCompare("FrequencyModel", "PoissonModel", testset, 100).print_results()
-# ModelByTimespan(["BettingPoissonModel", "PoissonModel", "FrequencyModel"],
-#                 100, 2003, 2019).multiple_models_accuracy(True)
+# # Evaluation usage example
+# start_year = 2015
+# end_year = 2019
+# trainset = crawler.fetch_data([1, start_year], [34, end_year])
+
+# ModelEvaluator("FrequencyModel", trainset, 100).print_results(True)
+# ModelEvaluator("PoissonModel", trainset, 100).print_results(True)
+# ModelEvaluator("BettingPoissonModel", trainset, 100).print_results(True)
+#
+# ModelCompare("FrequencyModel", "PoissonModel", trainset, 100).print_results()
+# ModelCompare("FrequencyModel", "BettingPoissonModel", trainset,
+#              100).print_results()
+# ModelCompare("PoissonModel", "BettingPoissonModel", trainset,
+#              100).print_results()
+#
+# model = ModelByTimespan(["BettingPoissonModel",
+#                          "PoissonModel",
+#                          "FrequencyModel"],
+#                         100, start_year, end_year)
+# model.multiple_models_accuracy(True)
+# model.multiple_models_f1(True)
