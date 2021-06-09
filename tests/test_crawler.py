@@ -46,27 +46,27 @@ def test_fetch_data_exc():
     pytest.warns(Warning, crawler.fetch_data, [1, 1997], [8, 2004])
 
 
-@pytest.mark.parametrize(
-    "start, end",
-    [
-        ([0, 0], [0, 0])
-    ])
-def test_fetch_data_next_day(start, end):
-    test_next_day = crawler.fetch_data(start, end)
-    assert isinstance(test_next_day, pd.DataFrame)
-    assert all(ptypes.is_numeric_dtype(test_next_day[col])
-               for col in ['home_score', 'guest_score'])
-    assert all(ptypes.is_string_dtype(test_next_day[col])
-               for col in ['home_team', 'guest_team'])
-    assert ptypes.is_datetime64_any_dtype(test_next_day['date_time'])
-    assert (test_next_day.home_score >= -1).all()
-    assert (test_next_day.guest_score >= -1).all()
-    assert (0 < test_next_day.matchday).all()
-    assert (35 > test_next_day.matchday).all()
-    assert test_next_day['matchday'].head(60).is_monotonic_increasing
-    assert (len(test_next_day.columns) == 7)
-    assert test_next_day['season'].is_monotonic_increasing
-    assert (len(test_next_day) != 0)
+# @pytest.mark.parametrize(
+#     "start, end",
+#     [
+#         ([0, 0], [0, 0])
+#     ])
+# def test_fetch_data_next_day(start, end):
+#     test_next_day = crawler.fetch_data(start, end)
+#     assert isinstance(test_next_day, pd.DataFrame)
+#     assert all(ptypes.is_numeric_dtype(test_next_day[col])
+#                for col in ['home_score', 'guest_score'])
+#     assert all(ptypes.is_string_dtype(test_next_day[col])
+#                for col in ['home_team', 'guest_team'])
+#     assert ptypes.is_datetime64_any_dtype(test_next_day['date_time'])
+#     assert (test_next_day.home_score >= -1).all()
+#     assert (test_next_day.guest_score >= -1).all()
+#     assert (0 < test_next_day.matchday).all()
+#     assert (35 > test_next_day.matchday).all()
+#     assert test_next_day['matchday'].head(60).is_monotonic_increasing
+#     assert (len(test_next_day.columns) == 7)
+#     assert test_next_day['season'].is_monotonic_increasing
+#     assert (len(test_next_day) != 0)
 
 
 @pytest.mark.parametrize(
