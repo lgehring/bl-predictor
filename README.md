@@ -5,8 +5,6 @@
 [![Coverage status](https://coveralls.io/repos/github/lgehring/bl-predictor/badge.svg)](https://coveralls.io/github/lgehring/bl-predictor) 
 [![PyPI](https://img.shields.io/pypi/v/bl-predictor)](https://pypi.org/project/bl-predictor/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)  
-[![pytest](https://github.com/lgehring/bl-predictor/workflows/pytest/badge.svg)](https://github.com/lgehring/bl-predictor/tree/main/tests) 
-[![flake8](https://github.com/lgehring/bl-predictor/workflows/pep8/badge.svg)](https://www.python.org/dev/peps/pep-0008/)
 <br />
 <span style="font-family:Helvetica; font-size:1em; font-weight:bold">  
 
